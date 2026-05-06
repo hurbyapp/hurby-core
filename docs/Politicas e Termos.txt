@@ -1,0 +1,369 @@
+📄 1. POLÍTICA DE PRIVACIDADE — HURBY
+
+# POLÍTICA DE PRIVACIDADE — HURBY
+
+Última atualização: [DATA]
+
+-------------------------------------
+
+## 1. INTRODUÇÃO
+
+A HURBY é uma plataforma digital de intermediação imobiliária que conecta usuários, corretores, imobiliárias e oportunidades de negócio.
+
+Esta Política de Privacidade explica de forma clara:
+
+- quais dados coletamos
+- como usamos
+- com quem compartilhamos
+- quais são seus direitos
+
+Ao utilizar a plataforma, você declara que leu e concorda com esta política.
+
+-------------------------------------
+
+## 2. TIPOS DE USUÁRIOS E NÍVEIS DE DADOS
+
+A plataforma possui diferentes perfis:
+
+- Usuário comum (busca imóveis)
+- Corretor (profissional)
+- Imobiliária (empresa)
+- Administrador (HURBY)
+
+Cada tipo possui níveis diferentes de coleta e acesso a dados.
+
+-------------------------------------
+
+## 3. DADOS COLETADOS
+
+### 3.1 Dados de cadastro
+
+Podemos coletar:
+
+- Nome
+- E-mail
+- Telefone
+- Senha (criptografada)
+- CPF (quando necessário)
+- Endereço (quando necessário)
+- Documentos profissionais (ex: CRECI)
+
+Esses dados são utilizados para:
+
+- validação de identidade
+- prevenção de fraude
+- cumprimento de obrigações legais
+- formalização de contratos
+
+---
+
+### 3.2 Dados de uso e navegação
+
+Coletamos automaticamente:
+
+- IP
+- localização aproximada (cidade)
+- tipo de dispositivo
+- comportamento na plataforma
+
+Esses dados são utilizados para:
+
+- melhoria da experiência
+- segurança
+- análise de uso
+
+Importante:
+Esses dados NÃO identificam diretamente o usuário como pessoa física.
+
+---
+
+### 3.3 Dados de leads e clientes
+
+Leads são dados fornecidos por usuários interessados em imóveis.
+
+Esses dados podem incluir:
+
+- Nome
+- Telefone
+- Interesse imobiliário
+- Informações fornecidas voluntariamente
+
+Esses dados são:
+
+- acessíveis apenas por corretores autorizados
+- controlados por sistema de desbloqueio (AXE)
+
+---
+
+### 3.4 Dados inseridos por corretores e imobiliárias
+
+Corretores e imobiliárias podem cadastrar:
+
+- clientes
+- proprietários de imóveis
+- informações contratuais
+
+Esses dados:
+
+- são de responsabilidade do corretor/imobiliária
+- são tratados como registros protegidos
+- não são expostos publicamente
+
+A HURBY atua como:
+
+→ plataforma de armazenamento e controle de acesso
+
+-------------------------------------
+
+## 4. COMPARTILHAMENTO DE DADOS
+
+### 4.1 Entre usuários da plataforma
+
+Dados podem ser compartilhados quando:
+
+- um lead é desbloqueado por um corretor
+- um cliente autoriza contato
+
+---
+
+### 4.2 Com parceiros financeiros
+
+A HURBY utiliza parceiros para processar pagamentos (ex: Mercado Pago).
+
+Esses parceiros podem coletar:
+
+- CPF
+- dados de cartão
+- dados bancários
+
+IMPORTANTE:
+
+Esses dados NÃO ficam armazenados na HURBY.
+
+Eles são tratados diretamente pelos parceiros, conforme suas próprias políticas.
+
+---
+
+### 4.3 Com autoridades legais
+
+Dados podem ser fornecidos quando exigido por lei.
+
+-------------------------------------
+
+## 5. SEGURANÇA DOS DADOS
+
+A HURBY utiliza:
+
+- autenticação segura (Supabase Auth)
+- criptografia de dados sensíveis
+- Row Level Security (RLS) no banco de dados
+- controle de acesso por usuário
+- ledger imutável para operações financeiras
+
+Isso garante:
+
+- que usuários só acessam seus próprios dados
+- que dados não são manipulados indevidamente
+- rastreabilidade de operações
+
+-------------------------------------
+
+## 6. TRATAMENTO DE DADOS NA PLATAFORMA
+
+A HURBY trata dados de forma segmentada:
+
+- dados pessoais → vinculados ao usuário
+- dados de leads → controlados por acesso pago
+- dados de clientes → restritos ao corretor responsável
+
+A plataforma NÃO utiliza dados de clientes de corretores para:
+
+- venda
+- exposição pública
+- compartilhamento indevido
+
+-------------------------------------
+
+## 7. RETENÇÃO DE DADOS
+
+- dados de usuários ativos → mantidos enquanto conta existir
+- dados de usuários inativos → até 12 meses
+- após esse período → podem ser anonimizados ou excluídos
+
+Créditos (AXE) não utilizados podem expirar conforme regras da plataforma.
+
+-------------------------------------
+
+## 8. DIREITOS DO USUÁRIO
+
+Você pode:
+
+- solicitar acesso aos seus dados
+- solicitar correção
+- solicitar exclusão
+- revogar consentimento de marketing
+
+Solicitações devem ser feitas via suporte.
+
+-------------------------------------
+
+## 9. MARKETING E COMUNICAÇÃO
+
+A HURBY pode enviar:
+
+- notificações
+- comunicações operacionais
+- ofertas
+
+Você pode optar por sair a qualquer momento.
+
+-------------------------------------
+
+## 10. RESPONSABILIDADES
+
+- Corretores são responsáveis pelos dados que inserem
+- Imobiliárias são responsáveis por seus colaboradores
+- Parceiros financeiros são responsáveis por dados de pagamento
+
+A HURBY atua como plataforma intermediadora.
+
+-------------------------------------
+
+## 11. ALTERAÇÕES
+
+Esta política pode ser atualizada a qualquer momento.
+
+-------------------------------------
+
+
+
+
+📄 2. TERMOS DE USO — HURBY
+
+# TERMOS DE USO — HURBY
+
+-------------------------------------
+
+## 1. OBJETO
+
+A HURBY é uma plataforma digital que conecta usuários, corretores e imobiliárias para negociação de imóveis.
+
+-------------------------------------
+
+## 2. CONTA
+
+O usuário é responsável por:
+
+- veracidade dos dados
+- segurança da conta
+- uso adequado da plataforma
+
+-------------------------------------
+
+## 3. USO DA PLATAFORMA
+
+É proibido:
+
+- inserir dados falsos
+- utilizar a plataforma para fraude
+- compartilhar acesso indevido
+
+-------------------------------------
+
+## 4. ECONOMIA (AXE)
+
+A plataforma utiliza moeda interna (AXE).
+
+- AXE pode ser adquirido
+- AXE pode ser consumido
+- AXE pode expirar (dependendo do tipo)
+
+Não há garantia de reembolso após uso.
+
+-------------------------------------
+
+## 5. LEADS
+
+- Leads são oportunidades comerciais
+- O acesso pode exigir pagamento (AXE)
+- A HURBY não garante conversão
+
+-------------------------------------
+
+## 6. RESPONSABILIDADE SOBRE DADOS
+
+- Corretores são responsáveis pelos dados inseridos
+- Imobiliárias respondem por seus agentes
+- A HURBY não valida integralmente dados inseridos por terceiros
+
+-------------------------------------
+
+## 7. PAGAMENTOS
+
+Pagamentos são processados por parceiros externos.
+
+A HURBY não armazena dados financeiros sensíveis.
+
+-------------------------------------
+
+## 8. CANCELAMENTO
+
+Contas podem ser encerradas a qualquer momento.
+
+Dados podem ser mantidos por prazo legal.
+
+-------------------------------------
+
+## 9. LIMITAÇÃO DE RESPONSABILIDADE
+
+A HURBY não garante:
+
+- fechamento de negócios
+- veracidade total dos dados de terceiros
+
+-------------------------------------
+
+## 10. ACEITE
+
+Ao usar a plataforma, o usuário concorda com estes termos.
+
+-------------------------------------
+
+
+
+📄 2. TERMOS DE USO — HURBY
+
+Ao continuar, você declara que leu e concorda com os Termos de Uso e a Política de Privacidade da HURBY.
+
+Você também autoriza o uso de seus dados conforme descrito, incluindo:
+
+- tratamento de dados para funcionamento da plataforma
+- compartilhamento com corretores quando aplicável
+- uso por parceiros financeiros em transações
+
+🔔 4. TEXTO DE LEAD (FORMULÁRIO)
+
+Ao enviar seus dados, você autoriza que corretores parceiros entrem em contato com você sobre este imóvel.
+
+Seus dados serão utilizados exclusivamente para atendimento imobiliário.
+
+
+📣 5. MARKETING
+
+Você autoriza o envio de comunicações e ofertas da HURBY.
+
+Você pode cancelar a qualquer momento.
+
+
+🎯 RESUMO FINAL
+
+✔ cobre LGPD real
+✔ cobre seu modelo de negócio
+✔ cobre parceiros (Mercado Pago)
+✔ cobre corretores/imobiliárias
+✔ cobre lead e monetização
+✔ cobre retenção e exclusão
+✔ sem juridiquês inútil
+
+
+

@@ -1,57 +1,33 @@
-'use client'
+/*
+=========================================
+HURBY — ROOT PAGE
+LOCAL:
+src/app/page.tsx
 
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+OBJETIVO:
+Redirecionar acesso raiz para login oficial.
 
-export default function Home() {
-  const [result, setResult] = useState<any>(null)
+IMPORTANTE:
+Toda lógica de autenticação foi centralizada em:
+- /login
+- middleware.ts
 
-  useEffect(() => {
-    const run = async () => {
-      // limpa sessão
-      await supabase.auth.signOut()
+NÃO implementar auth duplicado aqui.
 
-      // LOGIN
-      const { data: loginData, error: loginError } =
-        await supabase.auth.signInWithPassword({
-          email: 'test2@hurby.com',
-          password: '123456',
-        })
+HISTÓRICO:
+Código antigo utilizava:
+- user_type = corretor
+- /dashboard
 
-      if (loginError || !loginData?.session) {
-        setResult({ loginError })
-        return
-      }
+O sistema oficial atual utiliza:
+- broker
+- /broker
 
-      // 🔴 FORÇA A SESSÃO NO CLIENTE
-      await supabase.auth.setSession(loginData.session)
+=========================================
+*/
 
-      // 🔴 AGUARDA PROPAGAÇÃO DO TOKEN
-      await new Promise((r) => setTimeout(r, 500))
+import { redirect } from 'next/navigation'
 
-      // 🔴 AGORA SIM: RPC
-      const { error: creditError } = await supabase.rpc('add_credit', {
-        p_amount: 10,
-        p_origin: 'rpc_test',
-      })
-
-      const { data } = await supabase
-        .from('user_wallet_balances')
-        .select('*')
-
-      setResult({
-        creditError,
-        data,
-      })
-    }
-
-    run()
-  }, [])
-
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>RPC Final Test</h1>
-      <pre>{JSON.stringify(result, null, 2)}</pre>
-    </div>
-  )
+export default function HomePage() {
+  redirect('/login')
 }

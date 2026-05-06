@@ -1,26 +1,132 @@
+/*
+=========================================
+HURBY — AUTH MIDDLEWARE
+LOCAL:
+middleware.ts
+
+RESPONSABILIDADES:
+- proteger rotas privadas
+- validar sessão SSR
+- bloquear acesso sem login
+- estabilizar auth no App Router
+- evitar acesso após logout
+
+-----------------------------------------
+
+ROTAS PROTEGIDAS:
+- /broker
+- /owner
+- /agency
+- /statement
+
+-----------------------------------------
+
+IMPORTANTE
+
+Este é o ÚNICO middleware oficial do projeto.
+
+NÃO criar:
+- src/middleware.ts
+- app/middleware.ts
+
+-----------------------------------------
+
+REGRAS DE SEGURANÇA
+
+- nunca confiar apenas no frontend
+- sessão deve ser validada no middleware
+- páginas protegidas devem passar por SSR auth
+- logout deve invalidar sessão completamente
+
+-----------------------------------------
+
+DEPENDÊNCIAS
+
+- @supabase/ssr
+- auth.users
+- users_profile
+
+=========================================
+*/
+
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.getAll().find((c) =>
-    c.name.includes('access-token')
-  )?.value
+  let response = NextResponse.next({
+    request,
+  })
 
-  const isLoginPage = request.nextUrl.pathname === '/login'
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return request.cookies.get(name)?.value
+        },
 
-  // 🔴 se não tem token válido → bloqueia
-  if (!token && !isLoginPage) {
-    return NextResponse.redirect(new URL('/login', request.url))
+        set(name, value, options) {
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+        },
+
+        remove(name, options) {
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
+    }
+  )
+
+  // -------------------------------------
+  // VALIDAÇÃO DE SESSÃO
+  // -------------------------------------
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  // -------------------------------------
+  // ROTAS PROTEGIDAS
+  // -------------------------------------
+
+  const protectedRoutes = [
+    '/broker',
+    '/owner',
+    '/agency',
+    '/statement',
+  ]
+
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  )
+
+  // -------------------------------------
+  // BLOQUEIO SEM LOGIN
+  // -------------------------------------
+
+  if (isProtectedRoute && !session) {
+    return NextResponse.redirect(
+      new URL('/login', request.url)
+    )
   }
 
-  // 🔴 se tem token → impede voltar pro login
-  if (token && isLoginPage) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  return NextResponse.next()
+  return response
 }
 
 export const config = {
-  matcher: ['/dashboard', '/login'],
+  matcher: [
+    '/broker/:path*',
+    '/owner/:path*',
+    '/agency/:path*',
+    '/statement/:path*',
+  ],
 }

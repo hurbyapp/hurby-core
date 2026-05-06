@@ -2,22 +2,22 @@
 
 /*
 =========================================
-HURBY — OWNER AREA
+HURBY — BROKER AREA
 LOCAL:
-src/app/owner/page.tsx
+src/app/broker/page.tsx
 
 RESPONSABILIDADES:
-- validar sessão owner
-- validar acesso administrativo
-- listar usuários
-- adicionar créditos
+- validar sessão do usuário
+- validar acesso broker
+- carregar saldo wallet
+- consumir créditos
 - permitir logout seguro
 
 -----------------------------------------
 
 REGRAS DE ACESSO
 
-- apenas user_type = owner
+- apenas user_type = broker
 - sem sessão → /login
 - perfil inválido → /login
 
@@ -30,8 +30,8 @@ middleware.ts
 
 Esta página mantém:
 - validação client-side complementar
-- controle administrativo
-- carregamento seguro
+- carregamento de dados do usuário
+- renderização segura
 - estabilidade visual da sessão
 
 -----------------------------------------
@@ -39,45 +39,32 @@ Esta página mantém:
 SEGURANÇA
 
 - nunca confiar apenas no frontend
-- nunca usar parâmetros inseguros
-- sempre validar auth no backend
-- RPC deve validar permissões
+- nunca usar user_id via URL
+- sempre usar session.user.id
 - logout deve invalidar sessão completamente
+- consumo financeiro deve depender de RPC segura
 
 -----------------------------------------
 
 DEPENDÊNCIAS
 
 - users_profile
-- credit_credits()
-
------------------------------------------
-
-ATENÇÃO
-
-A RPC:
-credit_credits()
-
-DEVE validar:
-- auth.uid()
-- role owner
-- permissão administrativa
-
-Nunca confiar apenas na tela.
+- wallet_balance
+- consume_coin()
 
 -----------------------------------------
 
 HISTÓRICO
 
 [2026-05-06]
-- removido redirect legado para /dashboard
+- removido redirect legado
 - estabilizado fluxo auth
 - corrigido logout incompleto
 - padronizado com middleware SSR
 - adicionada proteção contra estado inconsistente
 - melhorado tratamento de sessão
-- organizada estrutura administrativa
-- adicionada proteção visual de loading
+- adicionada proteção contra render indevido
+- organizado fluxo financeiro
 
 =========================================
 */
@@ -86,18 +73,12 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 
-export default function OwnerPage() {
+export default function BrokerPage() {
   const router = useRouter()
 
   const [loading, setLoading] = useState(true)
-
-  const [users, setUsers] = useState<any[]>([])
-
-  const [selectedUser, setSelectedUser] =
-    useState('')
-
-  const [amount, setAmount] = useState(0)
-
+  const [user, setUser] = useState<any>(null)
+  const [balance, setBalance] = useState<number>(0)
   const [status, setStatus] = useState('')
 
   useEffect(() => {
@@ -123,6 +104,10 @@ export default function OwnerPage() {
 
         const currentUser = session.user
 
+        if (!mounted) return
+
+        setUser(currentUser)
+
         // -------------------------------------
         // VALIDAR PROFILE
         // -------------------------------------
@@ -139,35 +124,27 @@ export default function OwnerPage() {
         if (
           profileError ||
           !profile ||
-          profile.user_type !== 'owner'
+          profile.user_type !== 'broker'
         ) {
           window.location.href = '/login'
           return
         }
 
         // -------------------------------------
-        // BUSCAR USUÁRIOS
+        // CARREGAR WALLET
         // -------------------------------------
 
         const {
-          data,
-          error: usersError,
+          data: wallet,
+          error: walletError,
         } = await supabase
-          .from('users_profile')
-          .select('id, name')
-          .order('name', {
-            ascending: true,
-          })
+          .from('wallet_balance')
+          .select('balance')
+          .eq('user_id', currentUser.id)
+          .maybeSingle()
 
-        if (usersError) {
-          console.error(
-            'OWNER USERS ERROR:',
-            usersError
-          )
-        }
-
-        if (mounted && data) {
-          setUsers(data)
+        if (!walletError && wallet) {
+          setBalance(wallet.balance || 0)
         }
 
         if (!mounted) return
@@ -175,7 +152,7 @@ export default function OwnerPage() {
         setLoading(false)
       } catch (error) {
         console.error(
-          'OWNER PAGE INIT ERROR:',
+          'BROKER PAGE INIT ERROR:',
           error
         )
 
@@ -191,51 +168,54 @@ export default function OwnerPage() {
   }, [router])
 
   // -------------------------------------
-  // ADICIONAR CRÉDITOS
+  // CONSUMIR CRÉDITOS
   // -------------------------------------
 
-  const handleAddCredit = async () => {
-    if (!selectedUser || amount <= 0) {
-      setStatus(
-        'Informe usuário e valor válido'
-      )
-
-      return
-    }
+  const handleConsume = async () => {
+    if (!user) return
 
     try {
-      setStatus('Processando crédito...')
+      setStatus('Processando...')
 
       const { error } = await supabase.rpc(
-        'credit_credits',
+        'consume_coin',
         {
-          p_user_id: selectedUser,
-          p_amount: amount,
-          p_reason: 'admin_bonus',
+          p_user_id: user.id,
+          p_amount: 10,
+          p_description:
+            'Teste consumo frontend',
         }
       )
 
       if (error) {
         console.error(
-          'OWNER CREDIT ERROR:',
+          'BROKER CONSUME ERROR:',
           error
         )
 
         setStatus(error.message)
-
         return
       }
 
-      setStatus('Crédito adicionado')
+      // atualizar saldo
+      const { data: wallet } = await supabase
+        .from('wallet_balance')
+        .select('balance')
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      if (wallet) {
+        setBalance(wallet.balance || 0)
+      }
+
+      setStatus('Consumo realizado')
     } catch (error) {
       console.error(
-        'OWNER CREDIT FAILURE:',
+        'BROKER RPC FAILURE:',
         error
       )
 
-      setStatus(
-        'Erro ao adicionar crédito'
-      )
+      setStatus('Erro ao consumir créditos')
     }
   }
 
@@ -250,7 +230,7 @@ export default function OwnerPage() {
       await supabase.auth.signOut()
     } catch (error) {
       console.error(
-        'OWNER LOGOUT ERROR:',
+        'BROKER LOGOUT ERROR:',
         error
       )
     }
@@ -277,57 +257,26 @@ export default function OwnerPage() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Dashboard Owner</h1>
+      <h1>Broker Area</h1>
 
-      <h3>Adicionar Crédito</h3>
+      <p>
+        <strong>Usuário:</strong> {user?.email}
+      </p>
 
-      <select
-        value={selectedUser}
-        onChange={(e) =>
-          setSelectedUser(e.target.value)
-        }
-      >
-        <option value="">
-          Selecione usuário
-        </option>
-
-        {users.map((u) => (
-          <option
-            key={u.id}
-            value={u.id}
-          >
-            {u.name} ({u.id})
-          </option>
-        ))}
-      </select>
+      <p>
+        <strong>Saldo (AXE):</strong>{' '}
+        {balance}
+      </p>
 
       <br />
-      <br />
 
-      <input
-        type="number"
-        placeholder="Quantidade"
-        value={amount}
-        onChange={(e) =>
-          setAmount(Number(e.target.value))
-        }
-      />
-
-      <br />
-      <br />
-
-      <button onClick={handleAddCredit}>
-        Adicionar Crédito
+      <button onClick={handleConsume}>
+        Consumir 10 AXE
       </button>
 
-      <br />
-      <br />
-
-      {status && (
-        <p style={{ color: '#666' }}>
-          {status}
-        </p>
-      )}
+      <p style={{ marginTop: 20 }}>
+        {status}
+      </p>
 
       <br />
 
