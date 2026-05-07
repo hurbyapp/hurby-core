@@ -6,78 +6,8 @@ HURBY — OWNER AREA
 LOCAL:
 src/app/owner/page.tsx
 
-RESPONSABILIDADES:
-- validar sessão owner
-- validar acesso administrativo
-- listar usuários
-- adicionar créditos
-- permitir logout seguro
-
------------------------------------------
-
-REGRAS DE ACESSO
-
-- apenas user_type = owner
-- sem sessão → /login
-- perfil inválido → /login
-
------------------------------------------
-
-IMPORTANTE
-
-A proteção principal da rota ocorre em:
-middleware.ts
-
-Esta página mantém:
-- validação client-side complementar
-- controle administrativo
-- carregamento seguro
-- estabilidade visual da sessão
-
------------------------------------------
-
-SEGURANÇA
-
-- nunca confiar apenas no frontend
-- nunca usar parâmetros inseguros
-- sempre validar auth no backend
-- RPC deve validar permissões
-- logout deve invalidar sessão completamente
-
------------------------------------------
-
-DEPENDÊNCIAS
-
-- users_profile
-- credit_credits()
-
------------------------------------------
-
-ATENÇÃO
-
-A RPC:
-credit_credits()
-
-DEVE validar:
-- auth.uid()
-- role owner
-- permissão administrativa
-
-Nunca confiar apenas na tela.
-
------------------------------------------
-
-HISTÓRICO
-
-[2026-05-06]
-- removido redirect legado para /dashboard
-- estabilizado fluxo auth
-- corrigido logout incompleto
-- padronizado com middleware SSR
-- adicionada proteção contra estado inconsistente
-- melhorado tratamento de sessão
-- organizada estrutura administrativa
-- adicionada proteção visual de loading
+STATUS:
+OWNER_STABILIZED
 
 =========================================
 */
@@ -89,16 +19,21 @@ import { supabase } from '@/lib/supabaseClient'
 export default function OwnerPage() {
   const router = useRouter()
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] =
+    useState(true)
 
-  const [users, setUsers] = useState<any[]>([])
+  const [users, setUsers] = useState<any[]>(
+    []
+  )
 
   const [selectedUser, setSelectedUser] =
     useState('')
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] =
+    useState(0)
 
-  const [status, setStatus] = useState('')
+  const [status, setStatus] =
+    useState('')
 
   useEffect(() => {
     let mounted = true
@@ -107,24 +42,39 @@ export default function OwnerPage() {
       try {
         setStatus('')
 
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000)
+        )
+
         // -------------------------------------
-        // VALIDAR SESSÃO
+        // AUTH
         // -------------------------------------
 
         const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession()
+          data: { user: currentUser },
+          error: userError,
+        } = await supabase.auth.getUser()
 
-        if (sessionError || !session) {
-          window.location.href = '/login'
-          return
+        let authUser = currentUser
+
+        if (userError || !currentUser) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000)
+          )
+
+          const retry =
+            await supabase.auth.getUser()
+
+          authUser = retry.data.user
+
+          if (!authUser) {
+            window.location.href = '/login'
+            return
+          }
         }
 
-        const currentUser = session.user
-
         // -------------------------------------
-        // VALIDAR PROFILE
+        // PROFILE
         // -------------------------------------
 
         const {
@@ -133,11 +83,29 @@ export default function OwnerPage() {
         } = await supabase
           .from('users_profile')
           .select('user_type')
-          .eq('id', currentUser.id)
+          .eq('id', authUser.id)
           .maybeSingle()
 
+        if (profileError) {
+          console.error(
+            'OWNER PROFILE ERROR:',
+            profileError
+          )
+
+          setStatus(
+            'Erro ao carregar perfil.'
+          )
+
+          setLoading(false)
+
+          return
+        }
+
+        // -------------------------------------
+        // ROLE PROTECTION
+        // -------------------------------------
+
         if (
-          profileError ||
           !profile ||
           profile.user_type !== 'owner'
         ) {
@@ -146,7 +114,15 @@ export default function OwnerPage() {
         }
 
         // -------------------------------------
-        // BUSCAR USUÁRIOS
+        // USER
+        // -------------------------------------
+
+        if (!mounted) return
+
+        setUser(authUser)
+
+        // -------------------------------------
+        // USERS
         // -------------------------------------
 
         const {
@@ -164,6 +140,10 @@ export default function OwnerPage() {
             'OWNER USERS ERROR:',
             usersError
           )
+
+          setStatus(
+            'Erro ao carregar usuários.'
+          )
         }
 
         if (mounted && data) {
@@ -175,11 +155,15 @@ export default function OwnerPage() {
         setLoading(false)
       } catch (error) {
         console.error(
-          'OWNER PAGE INIT ERROR:',
+          'OWNER INIT ERROR:',
           error
         )
 
-        window.location.href = '/login'
+        setStatus(
+          'Erro interno owner.'
+        )
+
+        setLoading(false)
       }
     }
 
@@ -190,21 +174,26 @@ export default function OwnerPage() {
     }
   }, [router])
 
+  const [user, setUser] =
+    useState<any>(null)
+
   // -------------------------------------
-  // ADICIONAR CRÉDITOS
+  // ADD CREDIT
   // -------------------------------------
 
   const handleAddCredit = async () => {
     if (!selectedUser || amount <= 0) {
       setStatus(
-        'Informe usuário e valor válido'
+        'Informe usuário e valor válido.'
       )
 
       return
     }
 
     try {
-      setStatus('Processando crédito...')
+      setStatus(
+        'Processando crédito...'
+      )
 
       const { error } = await supabase.rpc(
         'credit_credits',
@@ -218,10 +207,17 @@ export default function OwnerPage() {
       if (error) {
         console.error(
           'OWNER CREDIT ERROR:',
-          error
+          JSON.stringify(
+            error,
+            null,
+            2
+          )
         )
 
-        setStatus(error.message)
+        setStatus(
+          error?.message ||
+            'Erro ao adicionar crédito.'
+        )
 
         return
       }
@@ -234,7 +230,7 @@ export default function OwnerPage() {
       )
 
       setStatus(
-        'Erro ao adicionar crédito'
+        'Erro ao adicionar crédito.'
       )
     }
   }
@@ -255,7 +251,6 @@ export default function OwnerPage() {
       )
     }
 
-    // reload completo
     window.location.href = '/login'
   }
 
@@ -278,6 +273,13 @@ export default function OwnerPage() {
   return (
     <div style={{ padding: 20 }}>
       <h1>Dashboard Owner</h1>
+
+      <p>
+        <strong>Usuário:</strong>{' '}
+        {user?.email}
+      </p>
+
+      <br />
 
       <h3>Adicionar Crédito</h3>
 

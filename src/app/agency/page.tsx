@@ -6,53 +6,8 @@ HURBY — AGENCY AREA
 LOCAL:
 src/app/agency/page.tsx
 
-RESPONSABILIDADES:
-- validar sessão do usuário
-- validar acesso agency
-- bloquear acesso indevido
-- permitir logout seguro
-
------------------------------------------
-
-REGRAS DE ACESSO
-
-- apenas user_type = agency
-- sem sessão → /login
-- perfil inválido → /login
-
------------------------------------------
-
-IMPORTANTE
-
-A proteção principal da rota ocorre em:
-middleware.ts
-
-Esta página mantém:
-- validação client-side complementar
-- controle visual
-- estabilidade de sessão
-
------------------------------------------
-
-SEGURANÇA
-
-- nunca confiar apenas no frontend
-- nunca usar user_id via URL
-- sempre usar session.user.id
-- logout deve invalidar sessão completamente
-
------------------------------------------
-
-HISTÓRICO
-
-[2026-05-06]
-- removido redirect legado para /dashboard
-- padronizado redirect para /login
-- corrigido logout incompleto
-- estabilizado fluxo auth
-- padronizado com middleware SSR
-- removidos estados inconsistentes
-- adicionada proteção contra memory state
+STATUS:
+AGENCY_STABILIZED
 
 =========================================
 */
@@ -64,9 +19,14 @@ import { supabase } from '@/lib/supabaseClient'
 export default function AgencyPage() {
   const router = useRouter()
 
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
-  const [status, setStatus] = useState('')
+  const [loading, setLoading] =
+    useState(true)
+
+  const [user, setUser] =
+    useState<any>(null)
+
+  const [status, setStatus] =
+    useState('')
 
   useEffect(() => {
     let mounted = true
@@ -75,28 +35,39 @@ export default function AgencyPage() {
       try {
         setStatus('')
 
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000)
+        )
+
         // -------------------------------------
-        // VALIDAR SESSÃO
+        // AUTH
         // -------------------------------------
 
         const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession()
+          data: { user: currentUser },
+          error: userError,
+        } = await supabase.auth.getUser()
 
-        if (sessionError || !session) {
-          window.location.href = '/login'
-          return
+        let authUser = currentUser
+
+        if (userError || !currentUser) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000)
+          )
+
+          const retry =
+            await supabase.auth.getUser()
+
+          authUser = retry.data.user
+
+          if (!authUser) {
+            window.location.href = '/login'
+            return
+          }
         }
 
-        const currentUser = session.user
-
-        if (!mounted) return
-
-        setUser(currentUser)
-
         // -------------------------------------
-        // VALIDAR PROFILE
+        // PROFILE
         // -------------------------------------
 
         const {
@@ -105,11 +76,29 @@ export default function AgencyPage() {
         } = await supabase
           .from('users_profile')
           .select('user_type')
-          .eq('id', currentUser.id)
+          .eq('id', authUser.id)
           .maybeSingle()
 
+        if (profileError) {
+          console.error(
+            'AGENCY PROFILE ERROR:',
+            profileError
+          )
+
+          setStatus(
+            'Erro ao carregar perfil.'
+          )
+
+          setLoading(false)
+
+          return
+        }
+
+        // -------------------------------------
+        // ROLE PROTECTION
+        // -------------------------------------
+
         if (
-          profileError ||
           !profile ||
           profile.user_type !== 'agency'
         ) {
@@ -117,13 +106,26 @@ export default function AgencyPage() {
           return
         }
 
+        // -------------------------------------
+        // USER
+        // -------------------------------------
+
         if (!mounted) return
+
+        setUser(authUser)
 
         setLoading(false)
       } catch (error) {
-        console.error('AGENCY INIT ERROR:', error)
+        console.error(
+          'AGENCY INIT ERROR:',
+          error
+        )
 
-        window.location.href = '/login'
+        setStatus(
+          'Erro interno agency.'
+        )
+
+        setLoading(false)
       }
     }
 
@@ -144,10 +146,12 @@ export default function AgencyPage() {
     try {
       await supabase.auth.signOut()
     } catch (error) {
-      console.error('LOGOUT ERROR:', error)
+      console.error(
+        'AGENCY LOGOUT ERROR:',
+        error
+      )
     }
 
-    // reload completo
     window.location.href = '/login'
   }
 
@@ -172,7 +176,8 @@ export default function AgencyPage() {
       <h1>Dashboard Agência</h1>
 
       <p>
-        <strong>Usuário:</strong> {user?.email}
+        <strong>Usuário:</strong>{' '}
+        {user?.email}
       </p>
 
       {status && (

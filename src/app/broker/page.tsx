@@ -7,50 +7,51 @@ LOCAL:
 src/app/broker/page.tsx
 
 STATUS:
-AUTH_DEBUG_MODE
+BROKER_STABILIZED
 
-OBJETIVO TEMPORÁRIO:
-- isolar auth cloud
-- validar sessão Vercel
-- validar persistência SSR
-- remover interferências de profile/wallet/RLS
+RESPONSABILIDADES:
+- validar auth
+- validar perfil broker
+- carregar wallet
+- consumir créditos
+- permitir logout
+- estabilizar runtime cloud
 
 -----------------------------------------
 
-IMPORTANTE
+ARQUITETURA
 
-MODO TEMPORÁRIO DE DEBUG.
+IMPORTANTE:
 
-REMOVIDO TEMPORARIAMENTE:
-- validação profile
+AUTH:
+- falha auth → redirect login
+
+NEGÓCIO:
+- profile/wallet/RPC NÃO derrubam auth
+- erros devem aparecer na tela
+- nunca mascarar erro com redirect
+
+-----------------------------------------
+
+CORREÇÕES IMPLEMENTADAS
+
+✔ auth isolado
+✔ profile isolado
+✔ wallet isolado
+✔ tratamento correto RLS
+✔ eliminação redirect indevido
+✔ debug cloud correto
+✔ compatibilidade Vercel SSR
+✔ debug completo RPC
+
+-----------------------------------------
+
+DEPENDÊNCIAS
+
+- middleware.ts
+- users_profile
 - wallet_balance
-- RPC consume_coin
-- redirects automáticos
-
-OBJETIVO:
-descobrir se o auth chega vivo
-na página protegida.
-
------------------------------------------
-
-TESTE ESPERADO
-
-Se funcionar:
-- auth está correto
-- middleware está correto
-- problema está em:
-  - profile
-  - wallet
-  - RLS
-  - RPC
-  - queries internas
-
-Se NÃO funcionar:
-- problema ainda é:
-  - auth SSR
-  - cookies
-  - sessão cloud
-  - runtime Vercel
+- consume_coin()
 
 =========================================
 */
@@ -67,6 +68,9 @@ export default function BrokerPage() {
 
   const [user, setUser] =
     useState<any>(null)
+
+  const [balance, setBalance] =
+    useState<number>(0)
 
   const [status, setStatus] =
     useState('')
@@ -95,36 +99,111 @@ export default function BrokerPage() {
           error: userError,
         } = await supabase.auth.getUser()
 
-        console.log(
-          'AUTH USER:',
-          currentUser
-        )
+        let authUser = currentUser
 
-        console.log(
-          'AUTH ERROR:',
-          userError
-        )
+        // retry hydration
 
-        if (!currentUser) {
-          setStatus('SEM USUARIO')
-          setLoading(false)
-          return
+        if (userError || !currentUser) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000)
+          )
+
+          const retry =
+            await supabase.auth.getUser()
+
+          authUser = retry.data.user
+
+          if (!authUser) {
+            window.location.href = '/login'
+            return
+          }
         }
 
         if (!mounted) return
 
-        setUser(currentUser)
+        setUser(authUser)
 
-        setStatus('AUTH OK')
+        // -------------------------------------
+        // PROFILE
+        // -------------------------------------
+
+        const {
+          data: profile,
+          error: profileError,
+        } = await supabase
+          .from('users_profile')
+          .select('user_type')
+          .eq('id', authUser.id)
+          .maybeSingle()
+
+        if (profileError) {
+          console.error(
+            'PROFILE ERROR:',
+            profileError
+          )
+
+          setStatus(
+            'Erro ao carregar perfil.'
+          )
+
+          setLoading(false)
+
+          return
+        }
+
+        if (
+          !profile ||
+          profile.user_type !== 'broker'
+        ) {
+          setStatus(
+            'Usuário sem acesso broker.'
+          )
+
+          setLoading(false)
+
+          return
+        }
+
+        // -------------------------------------
+        // WALLET
+        // -------------------------------------
+
+        const {
+          data: wallet,
+          error: walletError,
+        } = await supabase
+          .from('wallet_balance')
+          .select('balance')
+          .eq('user_id', authUser.id)
+          .maybeSingle()
+
+        if (walletError) {
+          console.error(
+            'WALLET ERROR:',
+            walletError
+          )
+
+          setStatus(
+            'Erro ao carregar wallet.'
+          )
+        }
+
+        if (wallet) {
+          setBalance(wallet.balance || 0)
+        }
+
+        if (!mounted) return
 
         setLoading(false)
       } catch (error) {
         console.error(
-          'BROKER PAGE INIT ERROR:',
+          'BROKER INIT ERROR:',
           error
         )
 
-        setStatus('ERRO INIT')
+        setStatus(
+          'Erro interno broker.'
+        )
 
         setLoading(false)
       }
@@ -138,6 +217,87 @@ export default function BrokerPage() {
   }, [router])
 
   // -------------------------------------
+  // CONSUME
+  // -------------------------------------
+
+  const handleConsume = async () => {
+    if (!user) return
+
+    try {
+      setStatus('Processando...')
+
+      const { error } = await supabase.rpc(
+        'consume_coin',
+        {
+          p_user_id: user.id,
+          p_amount: 10,
+          p_description:
+            'Teste consumo frontend',
+        }
+      )
+
+      if (error) {
+        console.error(
+          'CONSUME ERROR FULL:',
+          JSON.stringify(
+            error,
+            null,
+            2
+          )
+        )
+
+        setStatus(
+          error?.message ||
+            'Erro ao consumir créditos.'
+        )
+
+        return
+      }
+
+      // -------------------------------------
+      // ATUALIZAR WALLET
+      // -------------------------------------
+
+      const {
+        data: wallet,
+        error: walletError,
+      } = await supabase
+        .from('wallet_balance')
+        .select('balance')
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      if (walletError) {
+        console.error(
+          'WALLET REFRESH ERROR:',
+          walletError
+        )
+
+        setStatus(
+          'Consumo realizado, mas houve erro ao atualizar saldo.'
+        )
+
+        return
+      }
+
+      if (wallet) {
+        setBalance(wallet.balance || 0)
+      }
+
+      setStatus('Consumo realizado')
+    } catch (error) {
+      console.error(
+        'CONSUME FAILURE:',
+        error
+      )
+
+      setStatus(
+        'Erro ao consumir créditos.'
+      )
+    }
+  }
+
+  // -------------------------------------
   // LOGOUT
   // -------------------------------------
 
@@ -148,7 +308,7 @@ export default function BrokerPage() {
       await supabase.auth.signOut()
     } catch (error) {
       console.error(
-        'BROKER LOGOUT ERROR:',
+        'LOGOUT ERROR:',
         error
       )
     }
@@ -177,15 +337,23 @@ export default function BrokerPage() {
       <h1>Broker Area</h1>
 
       <p>
-        <strong>Status:</strong>{' '}
-        {status}
+        <strong>Usuário:</strong>{' '}
+        {user?.email}
+      </p>
+
+      <p>
+        <strong>Saldo (AXE):</strong>{' '}
+        {balance}
       </p>
 
       <br />
 
-      <p>
-        <strong>Usuário:</strong>{' '}
-        {user?.email || 'NÃO LOGADO'}
+      <button onClick={handleConsume}>
+        Consumir 10 AXE
+      </button>
+
+      <p style={{ marginTop: 20 }}>
+        {status}
       </p>
 
       <br />

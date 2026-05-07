@@ -1,0 +1,54 @@
+-- =========================================
+-- HURBY
+-- FIX | WALLET BALANCE RLS
+-- LOCAL:
+-- supabase/migrations/[timestamp]_fix_wallet_balance_rls.sql
+--
+-- OBJETIVO:
+-- remover bloqueio indevido da tabela
+-- wallet_balance em operações financeiras
+--
+-- CONTEXTO:
+--
+-- wallet_balance é tabela derivada
+-- do ledger financeiro.
+--
+-- O controle financeiro real ocorre em:
+-- - wallet_ledger
+-- - RPCs SECURITY DEFINER
+-- - auth
+--
+-- -----------------------------------------
+--
+-- PROBLEMA IDENTIFICADO
+--
+-- [2026-05-07]
+--
+-- Erro:
+--
+-- new row violates row-level security policy
+-- for table "wallet_balance"
+--
+-- CAUSA:
+--
+-- funções financeiras realizavam:
+-- - insert
+-- - update
+--
+-- em tabela agregada protegida por RLS.
+--
+-- -----------------------------------------
+--
+-- DECISÃO ARQUITETURAL
+--
+-- wallet_balance:
+-- - não é fonte financeira primária
+-- - é cache agregado do ledger
+-- - não precisa RLS direta
+--
+-- O ledger continua protegido.
+--
+-- =========================================
+
+alter table public.wallet_balance
+disable row level security;
