@@ -7,80 +7,50 @@ LOCAL:
 src/app/broker/page.tsx
 
 STATUS:
-AUTH_CLOUD_STABILIZED
+AUTH_DEBUG_MODE
 
-RESPONSABILIDADES:
-- validar sessão do usuário
-- validar acesso broker
-- carregar saldo wallet
-- consumir créditos
-- permitir logout seguro
-- estabilizar auth cloud SSR
-
------------------------------------------
-
-REGRAS DE ACESSO
-
-- apenas user_type = broker
-- sem sessão → /login
-- perfil inválido → /login
+OBJETIVO TEMPORÁRIO:
+- isolar auth cloud
+- validar sessão Vercel
+- validar persistência SSR
+- remover interferências de profile/wallet/RLS
 
 -----------------------------------------
 
 IMPORTANTE
 
-A proteção principal da rota ocorre em:
-middleware.ts
+MODO TEMPORÁRIO DE DEBUG.
 
-Esta página mantém:
-- validação client-side complementar
-- carregamento de dados do usuário
-- renderização segura
-- estabilidade visual da sessão
-
------------------------------------------
-
-CORREÇÕES CLOUD SSR
-
-[2026-05-07]
-
-Problemas identificados:
-- loop login -> login
-- getSession() inconsistente
-- sessão null temporária na Vercel
-- hydration auth race condition
-- redirect prematuro
-- SSR/client timing inconsistente
-
------------------------------------------
-
-CORREÇÕES IMPLEMENTADAS
-
-✔ getUser() substituindo getSession()
-✔ retry automático auth hydration
-✔ delay estabilização cloud
-✔ redução redirect prematuro
-✔ compatibilidade Vercel runtime
-✔ estabilização auth client-side
-
------------------------------------------
-
-SEGURANÇA
-
-- nunca confiar apenas no frontend
-- nunca usar user_id via URL
-- sempre usar auth user
-- logout deve invalidar sessão completamente
-- consumo financeiro deve depender de RPC segura
-
------------------------------------------
-
-DEPENDÊNCIAS
-
-- users_profile
+REMOVIDO TEMPORARIAMENTE:
+- validação profile
 - wallet_balance
-- consume_coin()
-- middleware.ts
+- RPC consume_coin
+- redirects automáticos
+
+OBJETIVO:
+descobrir se o auth chega vivo
+na página protegida.
+
+-----------------------------------------
+
+TESTE ESPERADO
+
+Se funcionar:
+- auth está correto
+- middleware está correto
+- problema está em:
+  - profile
+  - wallet
+  - RLS
+  - RPC
+  - queries internas
+
+Se NÃO funcionar:
+- problema ainda é:
+  - auth SSR
+  - cookies
+  - sessão cloud
+  - runtime Vercel
 
 =========================================
 */
@@ -97,9 +67,6 @@ export default function BrokerPage() {
 
   const [user, setUser] =
     useState<any>(null)
-
-  const [balance, setBalance] =
-    useState<number>(0)
 
   const [status, setStatus] =
     useState('')
@@ -120,7 +87,7 @@ export default function BrokerPage() {
         )
 
         // -------------------------------------
-        // VALIDAR AUTH
+        // AUTH
         // -------------------------------------
 
         const {
@@ -128,72 +95,27 @@ export default function BrokerPage() {
           error: userError,
         } = await supabase.auth.getUser()
 
-        let authUser = currentUser
+        console.log(
+          'AUTH USER:',
+          currentUser
+        )
 
-        // -------------------------------------
-        // RETRY AUTH HYDRATION
-        // -------------------------------------
+        console.log(
+          'AUTH ERROR:',
+          userError
+        )
 
-        if (userError || !currentUser) {
-          await new Promise((resolve) =>
-            setTimeout(resolve, 1000)
-          )
-
-          const retry =
-            await supabase.auth.getUser()
-
-          authUser = retry.data.user
-
-          if (!authUser) {
-            window.location.href = '/login'
-            return
-          }
-        }
-
-        if (!mounted) return
-
-        setUser(authUser)
-
-        // -------------------------------------
-        // VALIDAR PROFILE
-        // -------------------------------------
-
-        const {
-          data: profile,
-          error: profileError,
-        } = await supabase
-          .from('users_profile')
-          .select('user_type')
-          .eq('id', authUser.id)
-          .maybeSingle()
-
-        if (
-          profileError ||
-          !profile ||
-          profile.user_type !== 'broker'
-        ) {
-          window.location.href = '/login'
+        if (!currentUser) {
+          setStatus('SEM USUARIO')
+          setLoading(false)
           return
         }
 
-        // -------------------------------------
-        // WALLET
-        // -------------------------------------
-
-        const {
-          data: wallet,
-          error: walletError,
-        } = await supabase
-          .from('wallet_balance')
-          .select('balance')
-          .eq('user_id', authUser.id)
-          .maybeSingle()
-
-        if (!walletError && wallet) {
-          setBalance(wallet.balance || 0)
-        }
-
         if (!mounted) return
+
+        setUser(currentUser)
+
+        setStatus('AUTH OK')
 
         setLoading(false)
       } catch (error) {
@@ -202,7 +124,9 @@ export default function BrokerPage() {
           error
         )
 
-        window.location.href = '/login'
+        setStatus('ERRO INIT')
+
+        setLoading(false)
       }
     }
 
@@ -212,62 +136,6 @@ export default function BrokerPage() {
       mounted = false
     }
   }, [router])
-
-  // -------------------------------------
-  // CONSUMIR CRÉDITOS
-  // -------------------------------------
-
-  const handleConsume = async () => {
-    if (!user) return
-
-    try {
-      setStatus('Processando...')
-
-      const { error } = await supabase.rpc(
-        'consume_coin',
-        {
-          p_user_id: user.id,
-          p_amount: 10,
-          p_description:
-            'Teste consumo frontend',
-        }
-      )
-
-      if (error) {
-        console.error(
-          'BROKER CONSUME ERROR:',
-          error
-        )
-
-        setStatus(error.message)
-
-        return
-      }
-
-      // atualizar saldo
-
-      const { data: wallet } = await supabase
-        .from('wallet_balance')
-        .select('balance')
-        .eq('user_id', user.id)
-        .maybeSingle()
-
-      if (wallet) {
-        setBalance(wallet.balance || 0)
-      }
-
-      setStatus('Consumo realizado')
-    } catch (error) {
-      console.error(
-        'BROKER RPC FAILURE:',
-        error
-      )
-
-      setStatus(
-        'Erro ao consumir créditos'
-      )
-    }
-  }
 
   // -------------------------------------
   // LOGOUT
@@ -284,8 +152,6 @@ export default function BrokerPage() {
         error
       )
     }
-
-    // reload completo
 
     window.location.href = '/login'
   }
@@ -311,23 +177,15 @@ export default function BrokerPage() {
       <h1>Broker Area</h1>
 
       <p>
-        <strong>Usuário:</strong>{' '}
-        {user?.email}
-      </p>
-
-      <p>
-        <strong>Saldo (AXE):</strong>{' '}
-        {balance}
+        <strong>Status:</strong>{' '}
+        {status}
       </p>
 
       <br />
 
-      <button onClick={handleConsume}>
-        Consumir 10 AXE
-      </button>
-
-      <p style={{ marginTop: 20 }}>
-        {status}
+      <p>
+        <strong>Usuário:</strong>{' '}
+        {user?.email || 'NÃO LOGADO'}
       </p>
 
       <br />
