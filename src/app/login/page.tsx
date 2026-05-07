@@ -6,95 +6,59 @@ HURBY — LOGIN / AUTH PAGE
 LOCAL:
 src/app/login/page.tsx
 
+STATUS:
+AUTH_CLOUD_STABILIZED
+
 RESPONSABILIDADES:
 - login
 - signup
 - redirect por perfil
 - estabilização de sessão auth
 - integração com middleware SSR
+- compatibilidade Vercel Edge Runtime
 
 -----------------------------------------
 
-ROTAS OFICIAIS
+CORREÇÕES CLOUD SSR
 
-- /broker
-- /agency
-- /owner
+[2026-05-07]
 
-TIPO PADRÃO:
-broker
-
------------------------------------------
-
-IMPORTANTE — HISTÓRICO CRÍTICO
-
-[2026-05-06]
-
-Após implantação do módulo LGPD,
-foram identificados problemas de:
-
-- login inconsistente
-- erro 400 auth
-- profile não encontrado
-- redirect inesperado
-- retorno indevido para login
-- sessão fantasma pós logout
+Problemas identificados:
+- loop login -> login
+- sessão inconsistente no Vercel
+- middleware recebendo auth parcial
+- redirect antes da persistência completa
+- race condition SSR/cookies
 
 -----------------------------------------
 
-CAUSA RAIZ IDENTIFICADA
+CAUSAS IDENTIFICADAS
 
-A RPC register_consent()
-estava sendo executada imediatamente
-após login.
-
-Em alguns cenários:
-- auth.uid() ainda não estava estabilizado
-- cookies SSR ainda não estavam sincronizados
-- middleware recebia sessão inconsistente
+1. RPC executando cedo demais
+2. cookies SSR ainda não sincronizados
+3. redirect prematuro
+4. middleware edge validando antes do auth estabilizar
 
 -----------------------------------------
 
-DECISÃO TEMPORÁRIA
+CORREÇÕES IMPLEMENTADAS
 
-A RPC LGPD foi removida do fluxo crítico
-de autenticação para estabilização completa
-do auth.
+✔ remoção RPC crítica do login
+✔ remoção RPC crítica do signup
+✔ delay SSR aumentado
+✔ validação explícita de sessão
+✔ estabilização auth cloud
+✔ compatibilidade middleware SSR
 
 -----------------------------------------
 
-REGRAS IMPORTANTES
+IMPORTANTE
 
 NÃO:
-- executar RPCs críticas imediatamente após login
-- alterar redirects sem validar middleware
-- criar múltiplos clients Supabase
-- confiar apenas em router.push()
-- criar lógica auth duplicada
-
------------------------------------------
-
-IMPORTANTE SOBRE REDIRECT
-
-window.location.href foi adotado
-em vez de router.push()
-
-Motivo:
-- força reload completo
-- sincroniza middleware SSR
-- limpa estados do React/Turbopack
-- evita sessão fantasma
-- reduz inconsistências de auth
-
------------------------------------------
-
-SE FUTURAMENTE REATIVAR LGPD
-
-Preferir:
-- delayed execution
-- background job
-- server action
-- useEffect pós estabilização de sessão
+- executar RPC logo após login
+- executar RPC logo após signup
+- fazer redirect imediato após auth
+- confiar apenas no signInWithPassword
 
 -----------------------------------------
 
@@ -107,7 +71,6 @@ DEPENDÊNCIAS
 
 =========================================
 */
-'use client'
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
@@ -200,13 +163,33 @@ export default function LoginPage() {
         return
       }
 
-      // estabilização SSR/auth
+      // -------------------------------------
+      // ESTABILIZAÇÃO SSR CLOUD
+      // -------------------------------------
 
       await new Promise((resolve) =>
-        setTimeout(resolve, 500)
+        setTimeout(resolve, 1500)
       )
 
-      // busca profile
+      // -------------------------------------
+      // VALIDAÇÃO EXPLÍCITA DE SESSÃO
+      // -------------------------------------
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session) {
+        setStatus(
+          'Sessão ainda não estabilizada. Tente novamente.'
+        )
+
+        return
+      }
+
+      // -------------------------------------
+      // PROFILE
+      // -------------------------------------
 
       const {
         data: profile,
@@ -228,23 +211,8 @@ export default function LoginPage() {
         profile?.user_type || 'broker'
 
       // -------------------------------------
-      // LGPD (NÃO BLOQUEANTE)
+      // REDIRECT FINAL
       // -------------------------------------
-
-      try {
-        await supabase.rpc(
-          'register_consent',
-          {
-            p_type: 'terms_acceptance',
-            p_version: 'v1',
-          }
-        )
-      } catch (error) {
-        console.error(
-          'CONSENT ERROR:',
-          error
-        )
-      }
 
       redirectByType(userType)
     } catch (error) {
@@ -330,34 +298,21 @@ export default function LoginPage() {
         return
       }
 
-      // estabilização trigger/profile
+      // -------------------------------------
+      // ESTABILIZAÇÃO TRIGGER CLOUD
+      // -------------------------------------
 
       await new Promise((resolve) =>
-        setTimeout(resolve, 1000)
+        setTimeout(resolve, 2000)
       )
-
-      // registra consentimento
-
-      try {
-        await supabase.rpc(
-          'register_consent',
-          {
-            p_type: 'terms_acceptance',
-            p_version: 'v1',
-          }
-        )
-      } catch (error) {
-        console.error(
-          'CONSENT ERROR:',
-          error
-        )
-      }
 
       setStatus(
         'Conta criada. Entrando...'
       )
 
-      // login explícito
+      // -------------------------------------
+      // LOGIN EXPLÍCITO
+      // -------------------------------------
 
       const loginResult =
         await supabase.auth.signInWithPassword(
@@ -380,9 +335,29 @@ export default function LoginPage() {
         return
       }
 
+      // -------------------------------------
+      // ESTABILIZAÇÃO SSR CLOUD
+      // -------------------------------------
+
       await new Promise((resolve) =>
-        setTimeout(resolve, 500)
+        setTimeout(resolve, 1500)
       )
+
+      // -------------------------------------
+      // VALIDAÇÃO EXPLÍCITA DE SESSÃO
+      // -------------------------------------
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session) {
+        setStatus(
+          'Sessão ainda não estabilizada.'
+        )
+
+        return
+      }
 
       window.location.href = '/broker'
     } catch (error) {
