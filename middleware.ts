@@ -4,12 +4,49 @@ HURBY — AUTH MIDDLEWARE
 LOCAL:
 middleware.ts
 
+STATUS:
+SSR_CLOUD_PATCH
+
 RESPONSABILIDADES:
 - proteger rotas privadas
 - validar sessão SSR
+- sincronizar cookies auth
+- manter persistência auth cloud
+- estabilizar Supabase SSR no Vercel
 - bloquear acesso sem login
-- estabilizar auth no App Router
-- evitar acesso após logout
+- evitar loop login -> login
+
+-----------------------------------------
+
+PROBLEMA CORRIGIDO
+
+[2026-05-07]
+
+Problema identificado em ambiente cloud:
+
+- login funcionava
+- signup funcionava
+- usuário era criado
+- middleware redirecionava novamente para /login
+
+Causa raiz:
+
+- uso de getSession() no middleware edge
+- sincronização incompleta de cookies SSR
+- sessão stale no runtime da Vercel
+
+-----------------------------------------
+
+CORREÇÃO OFICIAL
+
+Implementado:
+
+✔ getUser() no lugar de getSession()
+✔ sincronização completa cookies SSR
+✔ ressincronização response cookies
+✔ compatibilidade App Router
+✔ compatibilidade Vercel Edge Runtime
+✔ persistência auth cloud
 
 -----------------------------------------
 
@@ -63,11 +100,25 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name) {
+        get(name: string) {
           return request.cookies.get(name)?.value
         },
 
-        set(name, value, options) {
+        set(
+          name: string,
+          value: string,
+          options
+        ) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+
+          response = NextResponse.next({
+            request,
+          })
+
           response.cookies.set({
             name,
             value,
@@ -75,7 +126,17 @@ export async function middleware(request: NextRequest) {
           })
         },
 
-        remove(name, options) {
+        remove(name: string, options) {
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+
+          response = NextResponse.next({
+            request,
+          })
+
           response.cookies.set({
             name,
             value: '',
@@ -87,12 +148,23 @@ export async function middleware(request: NextRequest) {
   )
 
   // -------------------------------------
-  // VALIDAÇÃO DE SESSÃO
+  // VALIDAÇÃO SSR OFICIAL
+  // -------------------------------------
+  //
+  // IMPORTANTE:
+  // getUser() é obrigatório em middleware SSR
+  // para evitar stale session na Vercel.
+  //
+  // getSession() pode gerar:
+  // - loop login -> login
+  // - sessão fantasma
+  // - perda de persistência auth
+  //
   // -------------------------------------
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
   // -------------------------------------
   // ROTAS PROTEGIDAS
@@ -105,15 +177,16 @@ export async function middleware(request: NextRequest) {
     '/statement',
   ]
 
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
+  const isProtectedRoute = protectedRoutes.some(
+    (route) =>
+      request.nextUrl.pathname.startsWith(route)
   )
 
   // -------------------------------------
   // BLOQUEIO SEM LOGIN
   // -------------------------------------
 
-  if (isProtectedRoute && !session) {
+  if (isProtectedRoute && !user) {
     return NextResponse.redirect(
       new URL('/login', request.url)
     )
