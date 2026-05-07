@@ -4,77 +4,78 @@ HURBY — SUPABASE CLIENT
 LOCAL:
 src/lib/supabaseClient.ts
 
+STATUS:
+SSR_BROWSER_STABILIZED
+
 RESPONSABILIDADES:
-- criar client único Supabase
-- persistir sessão auth
-- manter refresh automático de token
-- sincronizar auth client-side
-- integrar com middleware SSR
+- criar browser client oficial
+- persistir auth cloud
+- sincronizar cookies SSR
+- compatibilidade App Router
+- compatibilidade middleware SSR
+- estabilizar auth Vercel
+
+-----------------------------------------
+
+PROBLEMAS HISTÓRICOS
+
+[2026-05-07]
+
+Problemas identificados:
+- sessão não persistia na Vercel
+- cookies auth ausentes
+- loop login -> login
+- middleware sem sessão
+- hydration inconsistente
+- auth cloud parcialmente funcional
+
+-----------------------------------------
+
+CAUSA RAIZ
+
+Uso legado:
+- createClient()
+- @supabase/supabase-js
+
+Em arquitetura moderna:
+- Next.js App Router
+- SSR middleware
+- Vercel Edge Runtime
+
+-----------------------------------------
+
+CORREÇÃO IMPLEMENTADA
+
+✔ createBrowserClient()
+✔ @supabase/ssr
+✔ persistência SSR oficial
+✔ cookies compatíveis
+✔ auth cloud estável
+✔ sincronização middleware/browser
 
 -----------------------------------------
 
 IMPORTANTE
 
-Este é o ÚNICO client Supabase
-frontend oficial do projeto.
+Este é o ÚNICO client frontend oficial.
 
 NÃO:
 - criar múltiplos clients
-- criar clients locais em páginas
-- duplicar instâncias auth
-
------------------------------------------
-
-PROBLEMAS HISTÓRICOS IDENTIFICADOS
-
-[2026-05-06]
-
-Problemas anteriores incluíam:
-- sessão fantasma
-- logout inconsistente
-- middleware SSR fora de sincronia
-- redirects incorretos
-- auth intermitente
-
------------------------------------------
-
-DECISÕES TÉCNICAS
-
-persistSession:
-- mantém login após refresh
-
-autoRefreshToken:
-- renova token automaticamente
-
-detectSessionInUrl:
-- necessário para fluxos auth futuros
-- recuperação de senha
-- magic links
-
------------------------------------------
-
-IMPORTANTE SOBRE SSR
-
-O middleware.ts utiliza:
-@supabase/ssr
-
-Este client frontend deve permanecer
-compatível com:
-- cookies SSR
-- App Router
-- middleware auth
+- criar createClient local
+- misturar clients SSR e legado
+- usar localStorage manual
 
 -----------------------------------------
 
 DEPENDÊNCIAS
 
-- @supabase/supabase-js
+- @supabase/ssr
 - middleware.ts
 
 =========================================
 */
 
-import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 
 // -------------------------------------
 // ENVIRONMENT
@@ -90,16 +91,8 @@ const supabaseAnonKey =
 // CLIENT
 // -------------------------------------
 
-export const supabase = createClient(
-  supabaseUrl,
-  supabaseAnonKey,
-  {
-    auth: {
-      persistSession: true,
-
-      autoRefreshToken: true,
-
-      detectSessionInUrl: true,
-    },
-  }
-)
+export const supabase =
+  createBrowserClient(
+    supabaseUrl,
+    supabaseAnonKey
+  )
