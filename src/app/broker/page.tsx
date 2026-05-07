@@ -6,12 +6,16 @@ HURBY — BROKER AREA
 LOCAL:
 src/app/broker/page.tsx
 
+STATUS:
+AUTH_CLOUD_STABILIZED
+
 RESPONSABILIDADES:
 - validar sessão do usuário
 - validar acesso broker
 - carregar saldo wallet
 - consumir créditos
 - permitir logout seguro
+- estabilizar auth cloud SSR
 
 -----------------------------------------
 
@@ -36,11 +40,36 @@ Esta página mantém:
 
 -----------------------------------------
 
+CORREÇÕES CLOUD SSR
+
+[2026-05-07]
+
+Problemas identificados:
+- loop login -> login
+- getSession() inconsistente
+- sessão null temporária na Vercel
+- hydration auth race condition
+- redirect prematuro
+- SSR/client timing inconsistente
+
+-----------------------------------------
+
+CORREÇÕES IMPLEMENTADAS
+
+✔ getUser() substituindo getSession()
+✔ retry automático auth hydration
+✔ delay estabilização cloud
+✔ redução redirect prematuro
+✔ compatibilidade Vercel runtime
+✔ estabilização auth client-side
+
+-----------------------------------------
+
 SEGURANÇA
 
 - nunca confiar apenas no frontend
 - nunca usar user_id via URL
-- sempre usar session.user.id
+- sempre usar auth user
 - logout deve invalidar sessão completamente
 - consumo financeiro deve depender de RPC segura
 
@@ -51,20 +80,7 @@ DEPENDÊNCIAS
 - users_profile
 - wallet_balance
 - consume_coin()
-
------------------------------------------
-
-HISTÓRICO
-
-[2026-05-06]
-- removido redirect legado
-- estabilizado fluxo auth
-- corrigido logout incompleto
-- padronizado com middleware SSR
-- adicionada proteção contra estado inconsistente
-- melhorado tratamento de sessão
-- adicionada proteção contra render indevido
-- organizado fluxo financeiro
+- middleware.ts
 
 =========================================
 */
@@ -76,10 +92,17 @@ import { supabase } from '@/lib/supabaseClient'
 export default function BrokerPage() {
   const router = useRouter()
 
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
-  const [balance, setBalance] = useState<number>(0)
-  const [status, setStatus] = useState('')
+  const [loading, setLoading] =
+    useState(true)
+
+  const [user, setUser] =
+    useState<any>(null)
+
+  const [balance, setBalance] =
+    useState<number>(0)
+
+  const [status, setStatus] =
+    useState('')
 
   useEffect(() => {
     let mounted = true
@@ -89,24 +112,47 @@ export default function BrokerPage() {
         setStatus('')
 
         // -------------------------------------
-        // VALIDAR SESSÃO
+        // ESTABILIZAÇÃO CLOUD
+        // -------------------------------------
+
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000)
+        )
+
+        // -------------------------------------
+        // VALIDAR AUTH
         // -------------------------------------
 
         const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession()
+          data: { user: currentUser },
+          error: userError,
+        } = await supabase.auth.getUser()
 
-        if (sessionError || !session) {
-          window.location.href = '/login'
-          return
+        let authUser = currentUser
+
+        // -------------------------------------
+        // RETRY AUTH HYDRATION
+        // -------------------------------------
+
+        if (userError || !currentUser) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000)
+          )
+
+          const retry =
+            await supabase.auth.getUser()
+
+          authUser = retry.data.user
+
+          if (!authUser) {
+            window.location.href = '/login'
+            return
+          }
         }
-
-        const currentUser = session.user
 
         if (!mounted) return
 
-        setUser(currentUser)
+        setUser(authUser)
 
         // -------------------------------------
         // VALIDAR PROFILE
@@ -118,7 +164,7 @@ export default function BrokerPage() {
         } = await supabase
           .from('users_profile')
           .select('user_type')
-          .eq('id', currentUser.id)
+          .eq('id', authUser.id)
           .maybeSingle()
 
         if (
@@ -131,7 +177,7 @@ export default function BrokerPage() {
         }
 
         // -------------------------------------
-        // CARREGAR WALLET
+        // WALLET
         // -------------------------------------
 
         const {
@@ -140,7 +186,7 @@ export default function BrokerPage() {
         } = await supabase
           .from('wallet_balance')
           .select('balance')
-          .eq('user_id', currentUser.id)
+          .eq('user_id', authUser.id)
           .maybeSingle()
 
         if (!walletError && wallet) {
@@ -194,10 +240,12 @@ export default function BrokerPage() {
         )
 
         setStatus(error.message)
+
         return
       }
 
       // atualizar saldo
+
       const { data: wallet } = await supabase
         .from('wallet_balance')
         .select('balance')
@@ -215,7 +263,9 @@ export default function BrokerPage() {
         error
       )
 
-      setStatus('Erro ao consumir créditos')
+      setStatus(
+        'Erro ao consumir créditos'
+      )
     }
   }
 
@@ -236,6 +286,7 @@ export default function BrokerPage() {
     }
 
     // reload completo
+
     window.location.href = '/login'
   }
 
@@ -260,7 +311,8 @@ export default function BrokerPage() {
       <h1>Broker Area</h1>
 
       <p>
-        <strong>Usuário:</strong> {user?.email}
+        <strong>Usuário:</strong>{' '}
+        {user?.email}
       </p>
 
       <p>
