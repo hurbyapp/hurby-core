@@ -1,14 +1,46 @@
--- PASSO 3 | Estrutura inicial de negócio | Esperado: base para leads e propriedades
+-- =========================================
+-- MÓDULO: BUSINESS FOUNDATION
+-- MIGRATION: 20260504000200_business.sql
+-- CONTEXTO:
+-- foundation inicial de negócio
+--
+-- OBJETIVO:
+-- criar estruturas mínimas operacionais
+-- relacionadas ao fluxo comercial.
+--
+-- ESCOPO ATUAL:
+-- - leads
+--
+-- IMPORTANTE:
+-- a tabela properties foi removida desta
+-- migration por ter sido promovida para:
+--
+-- CORE_PROPERTIES FOUNDATION
+--
+-- migration oficial:
+-- 20260506235139_core_properties_foundation.sql
+--
+-- MOTIVO:
+-- evitar:
+-- - duplicidade estrutural
+-- - conflito de migrations
+-- - divergência arquitetural
+-- - regressão de schema
+--
+-- FOUNDATION PRESERVADA:
+-- - auth
+-- - wallet
+-- - ledger
+-- - LGPD
+-- - RLS
+-- =========================================
 
-create table public.leads (
-  id uuid primary key default gen_random_uuid(),
-  created_at timestamptz default now(),
-  assigned_to_agent_id uuid,
-  lead_status text default 'new'
-);
+CREATE TABLE public.leads (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 
-create table public.properties (
-  id uuid primary key default gen_random_uuid(),
-  created_at timestamptz default now(),
-  owner_id uuid
+    created_at timestamptz DEFAULT now(),
+
+    assigned_to_agent_id uuid,
+
+    lead_status text DEFAULT 'new'
 );

@@ -1,148 +1,149 @@
 -- =========================================
+-- MÓDULO: FINANCE / RLS FOUNDATION
+-- MIGRATION: 20260505013435_coin_rls_full.sql
+--
+-- OBJETIVO:
+-- ativar RLS e políticas de proteção
+-- das estruturas financeiras e operacionais.
+--
+-- IMPORTANTE:
+-- o bloco antigo de public.properties
+-- foi removido desta migration.
+--
+-- MOTIVO:
+-- properties deixou de ser placeholder
+-- e passou a pertencer oficialmente ao:
+--
+-- CORE_PROPERTIES FOUNDATION
+--
+-- migration oficial:
+-- 20260506235139_core_properties_foundation.sql
+--
+-- FOUNDATION PRESERVADA:
+-- - wallet
+-- - wallet_ledger
+-- - finance
+-- - auth
+-- - LGPD
+-- =========================================
+
+-- =========================================
 -- ATIVAR RLS
 -- =========================================
 
-alter table public.wallet_ledger enable row level security;
-alter table public.wallet_balance enable row level security;
-alter table public.user_subscription enable row level security;
-alter table public.users_profile enable row level security;
-alter table public.leads enable row level security;
-alter table public.properties enable row level security;
+ALTER TABLE public.wallet_ledger ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE public.wallet_balance ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE public.user_subscription ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE public.users_profile ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 
 -- =========================================
 -- WALLET_LEDGER
 -- =========================================
 
-create policy "ledger_select_own"
-on public.wallet_ledger
-for select
-using (auth.uid() = user_id);
+CREATE POLICY "ledger_select_own"
+ON public.wallet_ledger
+FOR SELECT
+USING (auth.uid() = user_id);
 
-create policy "ledger_block_insert"
-on public.wallet_ledger
-for insert
-with check (false);
+CREATE POLICY "ledger_block_insert"
+ON public.wallet_ledger
+FOR INSERT
+WITH CHECK (false);
 
-create policy "ledger_block_update"
-on public.wallet_ledger
-for update
-using (false);
+CREATE POLICY "ledger_block_update"
+ON public.wallet_ledger
+FOR UPDATE
+USING (false);
 
-create policy "ledger_block_delete"
-on public.wallet_ledger
-for delete
-using (false);
+CREATE POLICY "ledger_block_delete"
+ON public.wallet_ledger
+FOR DELETE
+USING (false);
 
 -- =========================================
 -- WALLET_BALANCE
 -- =========================================
 
-create policy "balance_select_own"
-on public.wallet_balance
-for select
-using (auth.uid() = user_id);
+CREATE POLICY "balance_select_own"
+ON public.wallet_balance
+FOR SELECT
+USING (auth.uid() = user_id);
 
-create policy "balance_block_all"
-on public.wallet_balance
-for all
-using (false);
+CREATE POLICY "balance_block_all"
+ON public.wallet_balance
+FOR ALL
+USING (false);
 
 -- =========================================
 -- USER_SUBSCRIPTION
 -- =========================================
 
-create policy "subscription_select_own"
-on public.user_subscription
-for select
-using (auth.uid() = user_id);
+CREATE POLICY "subscription_select_own"
+ON public.user_subscription
+FOR SELECT
+USING (auth.uid() = user_id);
 
-create policy "subscription_block_all"
-on public.user_subscription
-for all
-using (false);
+CREATE POLICY "subscription_block_all"
+ON public.user_subscription
+FOR ALL
+USING (false);
 
 -- =========================================
 -- USERS_PROFILE
 -- =========================================
 
--- já existia, mas vamos garantir
+CREATE POLICY "profile_select_own"
+ON public.users_profile
+FOR SELECT
+USING (auth.uid() = id);
 
-create policy "profile_select_own"
-on public.users_profile
-for select
-using (auth.uid() = id);
+CREATE POLICY "profile_update_own"
+ON public.users_profile
+FOR UPDATE
+USING (auth.uid() = id);
 
-create policy "profile_update_own"
-on public.users_profile
-for update
-using (auth.uid() = id);
-
--- bloquear delete
-
-create policy "profile_block_delete"
-on public.users_profile
-for delete
-using (false);
+CREATE POLICY "profile_block_delete"
+ON public.users_profile
+FOR DELETE
+USING (false);
 
 -- =========================================
 -- LEADS
 -- =========================================
 
--- usuário vê apenas leads atribuídos a ele
+CREATE POLICY "leads_select_own"
+ON public.leads
+FOR SELECT
+USING (assigned_to_agent_id = auth.uid());
 
-create policy "leads_select_own"
-on public.leads
-for select
-using (assigned_to_agent_id = auth.uid());
+CREATE POLICY "leads_block_insert"
+ON public.leads
+FOR INSERT
+WITH CHECK (false);
 
--- bloquear escrita direta (vai via função depois)
+CREATE POLICY "leads_block_update"
+ON public.leads
+FOR UPDATE
+USING (false);
 
-create policy "leads_block_insert"
-on public.leads
-for insert
-with check (false);
-
-create policy "leads_block_update"
-on public.leads
-for update
-using (false);
-
-create policy "leads_block_delete"
-on public.leads
-for delete
-using (false);
+CREATE POLICY "leads_block_delete"
+ON public.leads
+FOR DELETE
+USING (false);
 
 -- =========================================
--- PROPERTIES
+-- OBSERVAÇÃO
 -- =========================================
 
--- usuário vê apenas seus imóveis
-
-create policy "properties_select_own"
-on public.properties
-for select
-using (owner_id = auth.uid());
-
--- bloquear escrita direta
-
-create policy "properties_block_insert"
-on public.properties
-for insert
-with check (false);
-
-create policy "properties_block_update"
-on public.properties
-for update
-using (false);
-
-create policy "properties_block_delete"
-on public.properties
-for delete
-using (false);
-
--- =========================================
--- OBSERVAÇÃO CRÍTICA
--- =========================================
-
--- Funções continuam funcionando normalmente
--- porque executam com privilégio do banco (security definer se necessário)
+-- CORE_PROPERTIES possui:
+-- - RLS próprio
+-- - policies próprias
+-- - ownership próprio
+--
+-- migration:
+-- 20260506235139_core_properties_foundation.sql

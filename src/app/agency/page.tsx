@@ -76,7 +76,7 @@ export default function AgencyPage() {
         } = await supabase
           .from('users_profile')
           .select('user_type')
-          .eq('id', authUser.id)
+          .eq('id', authUser!.id)
           .maybeSingle()
 
         if (profileError) {

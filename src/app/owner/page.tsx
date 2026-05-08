@@ -22,6 +22,9 @@ export default function OwnerPage() {
   const [loading, setLoading] =
     useState(true)
 
+  const [user, setUser] =
+    useState<any>(null)
+
   const [users, setUsers] = useState<any[]>(
     []
   )
@@ -83,7 +86,7 @@ export default function OwnerPage() {
         } = await supabase
           .from('users_profile')
           .select('user_type')
-          .eq('id', authUser.id)
+          .eq('id', authUser!.id)
           .maybeSingle()
 
         if (profileError) {
@@ -173,9 +176,6 @@ export default function OwnerPage() {
       mounted = false
     }
   }, [router])
-
-  const [user, setUser] =
-    useState<any>(null)
 
   // -------------------------------------
   // ADD CREDIT

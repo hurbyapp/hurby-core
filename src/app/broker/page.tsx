@@ -9,50 +9,6 @@ src/app/broker/page.tsx
 STATUS:
 BROKER_STABILIZED
 
-RESPONSABILIDADES:
-- validar auth
-- validar perfil broker
-- carregar wallet
-- consumir créditos
-- permitir logout
-- estabilizar runtime cloud
-
------------------------------------------
-
-ARQUITETURA
-
-IMPORTANTE:
-
-AUTH:
-- falha auth → redirect login
-
-NEGÓCIO:
-- profile/wallet/RPC NÃO derrubam auth
-- erros devem aparecer na tela
-- nunca mascarar erro com redirect
-
------------------------------------------
-
-CORREÇÕES IMPLEMENTADAS
-
-✔ auth isolado
-✔ profile isolado
-✔ wallet isolado
-✔ tratamento correto RLS
-✔ eliminação redirect indevido
-✔ debug cloud correto
-✔ compatibilidade Vercel SSR
-✔ debug completo RPC
-
------------------------------------------
-
-DEPENDÊNCIAS
-
-- middleware.ts
-- users_profile
-- wallet_balance
-- consume_coin()
-
 =========================================
 */
 
@@ -133,7 +89,7 @@ export default function BrokerPage() {
         } = await supabase
           .from('users_profile')
           .select('user_type')
-          .eq('id', authUser.id)
+          .eq('id', authUser!.id)
           .maybeSingle()
 
         if (profileError) {
@@ -155,12 +111,7 @@ export default function BrokerPage() {
           !profile ||
           profile.user_type !== 'broker'
         ) {
-          setStatus(
-            'Usuário sem acesso broker.'
-          )
-
-          setLoading(false)
-
+          window.location.href = '/login'
           return
         }
 
@@ -174,7 +125,7 @@ export default function BrokerPage() {
         } = await supabase
           .from('wallet_balance')
           .select('balance')
-          .eq('user_id', authUser.id)
+          .eq('user_id', authUser!.id)
           .maybeSingle()
 
         if (walletError) {

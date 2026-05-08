@@ -79,7 +79,7 @@ export default function StatementPage() {
         } = await supabase
           .from('users_profile')
           .select('user_type')
-          .eq('id', authUser.id)
+          .eq('id', authUser!.id)
           .maybeSingle()
 
         if (profileError) {
@@ -131,7 +131,7 @@ export default function StatementPage() {
         } = await supabase
           .from('wallet_ledger')
           .select('*')
-          .eq('user_id', authUser.id)
+          .eq('user_id', authUser!.id)
           .order('created_at', {
             ascending: false,
           })
