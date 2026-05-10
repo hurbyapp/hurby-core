@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /*
 =========================================
@@ -8,67 +8,43 @@ src/app/login/page.tsx
 
 STATUS:
 AUTH_CLOUD_STABILIZED
+ORGANIZATION_MEMBERSHIP_READY
 
 RESPONSABILIDADES:
 - login
 - signup
-- redirect por perfil
+- redirect por identidade base
+- redirect por membership organizacional
 - estabilização de sessão auth
 - integração com middleware SSR
 - compatibilidade Vercel Edge Runtime
 
------------------------------------------
+IMPORTANTE:
+Agency NÃO é user_type.
+Agency é organization + membership.
 
-CORREÇÕES CLOUD SSR
+user_type representa identidade base:
+- owner
+- broker
+- user
 
-[2026-05-07]
-
-Problemas identificados:
-- loop login -> login
-- sessão inconsistente no Vercel
-- middleware recebendo auth parcial
-- redirect antes da persistência completa
-- race condition SSR/cookies
-
------------------------------------------
-
-CAUSAS IDENTIFICADAS
-
-1. RPC executando cedo demais
-2. cookies SSR ainda não sincronizados
-3. redirect prematuro
-4. middleware edge validando antes do auth estabilizar
-
------------------------------------------
-
-CORREÇÕES IMPLEMENTADAS
-
-✔ remoção RPC crítica do login
-✔ remoção RPC crítica do signup
-✔ delay SSR aumentado
-✔ validação explícita de sessão
-✔ estabilização auth cloud
-✔ compatibilidade middleware SSR
-
------------------------------------------
-
-IMPORTANTE
+Acesso agency deve ser definido por:
+- organization_memberships
+- membership_status = active
+- membership_role compatível
 
 NÃO:
-- executar RPC logo após login
-- executar RPC logo após signup
-- fazer redirect imediato após auth
-- confiar apenas no signInWithPassword
+- restaurar user_type = agency
+- acoplar vínculo organizacional em users_profile
+- usar agency_id em users_profile
 
------------------------------------------
-
-DEPENDÊNCIAS
-
+DEPENDÊNCIAS:
 - middleware.ts
-- users_profile
 - auth.users
+- users_profile
+- organizations
+- organization_memberships
 - handle_new_user()
-
 =========================================
 */
 
@@ -93,31 +69,43 @@ export default function LoginPage() {
   const [loading, setLoading] =
     useState(false)
 
-  // -------------------------------------
-  // REDIRECT POR PERFIL
-  // -------------------------------------
-
-  const redirectByType = (
+  const redirectAfterLogin = async (
+    userId: string,
     userType: string
   ) => {
-    switch (userType) {
-      case 'owner':
-        window.location.href = '/owner'
-        break
-
-      case 'agency':
-        window.location.href = '/agency'
-        break
-
-      default:
-        window.location.href = '/broker'
-        break
+    if (userType === 'owner') {
+      window.location.href = '/owner'
+      return
     }
-  }
 
-  // -------------------------------------
-  // LOGIN
-  // -------------------------------------
+    const {
+      data: membership,
+      error: membershipError,
+    } = await supabase
+      .from('organization_memberships')
+      .select('id, membership_role, membership_status')
+      .eq('profile_id', userId)
+      .eq('membership_status', 'active')
+      .in('membership_role', [
+        'owner',
+        'manager',
+      ])
+      .maybeSingle()
+
+    if (membershipError) {
+      console.error(
+        'LOGIN MEMBERSHIP ERROR:',
+        membershipError
+      )
+    }
+
+    if (membership) {
+      window.location.href = '/agency'
+      return
+    }
+
+    window.location.href = '/broker'
+  }
 
   const handleLogin = async () => {
     if (loading) return
@@ -130,7 +118,6 @@ export default function LoginPage() {
         setStatus(
           'Preencha email e senha.'
         )
-
         return
       }
 
@@ -149,7 +136,6 @@ export default function LoginPage() {
         )
 
         setStatus(error.message)
-
         return
       }
 
@@ -159,21 +145,12 @@ export default function LoginPage() {
         setStatus(
           'Usuário não encontrado.'
         )
-
         return
       }
-
-      // -------------------------------------
-      // ESTABILIZAÇÃO SSR CLOUD
-      // -------------------------------------
 
       await new Promise((resolve) =>
         setTimeout(resolve, 1500)
       )
-
-      // -------------------------------------
-      // VALIDAÇÃO EXPLÍCITA DE SESSÃO
-      // -------------------------------------
 
       const {
         data: { session },
@@ -183,13 +160,8 @@ export default function LoginPage() {
         setStatus(
           'Sessão ainda não estabilizada. Tente novamente.'
         )
-
         return
       }
-
-      // -------------------------------------
-      // PROFILE
-      // -------------------------------------
 
       const {
         data: profile,
@@ -210,11 +182,10 @@ export default function LoginPage() {
       const userType =
         profile?.user_type || 'broker'
 
-      // -------------------------------------
-      // REDIRECT FINAL
-      // -------------------------------------
-
-      redirectByType(userType)
+      await redirectAfterLogin(
+        user.id,
+        userType
+      )
     } catch (error) {
       console.error(
         'LOGIN FAILURE:',
@@ -229,10 +200,6 @@ export default function LoginPage() {
     }
   }
 
-  // -------------------------------------
-  // SIGNUP
-  // -------------------------------------
-
   const handleSignup = async () => {
     if (loading) return
 
@@ -244,7 +211,6 @@ export default function LoginPage() {
         setStatus(
           'Você precisa aceitar os Termos de Uso e Política de Privacidade.'
         )
-
         return
       }
 
@@ -252,7 +218,6 @@ export default function LoginPage() {
         setStatus(
           'Preencha email e senha.'
         )
-
         return
       }
 
@@ -260,7 +225,6 @@ export default function LoginPage() {
         setStatus(
           'A senha deve possuir pelo menos 6 caracteres.'
         )
-
         return
       }
 
@@ -268,7 +232,6 @@ export default function LoginPage() {
         await supabase.auth.signUp({
           email,
           password,
-
           options: {
             data: {
               name,
@@ -284,7 +247,6 @@ export default function LoginPage() {
         )
 
         setStatus(error.message)
-
         return
       }
 
@@ -294,13 +256,8 @@ export default function LoginPage() {
         setStatus(
           'Erro ao criar usuário.'
         )
-
         return
       }
-
-      // -------------------------------------
-      // ESTABILIZAÇÃO TRIGGER CLOUD
-      // -------------------------------------
 
       await new Promise((resolve) =>
         setTimeout(resolve, 2000)
@@ -309,10 +266,6 @@ export default function LoginPage() {
       setStatus(
         'Conta criada. Entrando...'
       )
-
-      // -------------------------------------
-      // LOGIN EXPLÍCITO
-      // -------------------------------------
 
       const loginResult =
         await supabase.auth.signInWithPassword(
@@ -331,21 +284,12 @@ export default function LoginPage() {
         setStatus(
           'Conta criada. Faça login manualmente.'
         )
-
         return
       }
-
-      // -------------------------------------
-      // ESTABILIZAÇÃO SSR CLOUD
-      // -------------------------------------
 
       await new Promise((resolve) =>
         setTimeout(resolve, 1500)
       )
-
-      // -------------------------------------
-      // VALIDAÇÃO EXPLÍCITA DE SESSÃO
-      // -------------------------------------
 
       const {
         data: { session },
@@ -355,7 +299,6 @@ export default function LoginPage() {
         setStatus(
           'Sessão ainda não estabilizada.'
         )
-
         return
       }
 
@@ -373,10 +316,6 @@ export default function LoginPage() {
       setLoading(false)
     }
   }
-
-  // -------------------------------------
-  // PAGE
-  // -------------------------------------
 
   return (
     <div
@@ -431,9 +370,7 @@ export default function LoginPage() {
             />
 
             <span>
-              Li e concordo com os
-              Termos de Uso e Política
-              de Privacidade da HURBY.
+              Li e concordo com os Termos de Uso e Política de Privacidade da HURBY.
             </span>
           </label>
         </>
@@ -536,9 +473,7 @@ export default function LoginPage() {
           lineHeight: 1.5,
         }}
       >
-        Ao continuar, você concorda
-        com os Termos de Uso e Política
-        de Privacidade da HURBY.
+        Ao continuar, você concorda com os Termos de Uso e Política de Privacidade da HURBY.
       </p>
     </div>
   )

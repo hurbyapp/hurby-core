@@ -6,6 +6,7 @@ middleware.ts
 
 STATUS:
 SSR_CLOUD_PATCH
+OPERATIONS_FOUNDATION_ENABLED
 
 RESPONSABILIDADES:
 - proteger rotas privadas
@@ -15,6 +16,7 @@ RESPONSABILIDADES:
 - estabilizar Supabase SSR no Vercel
 - bloquear acesso sem login
 - evitar loop login -> login
+- proteger núcleos operacionais
 
 -----------------------------------------
 
@@ -55,6 +57,50 @@ ROTAS PROTEGIDAS:
 - /owner
 - /agency
 - /statement
+- /operations
+
+-----------------------------------------
+
+OPERATIONS FOUNDATION
+
+IMPORTANTE:
+
+/operations pertence aos núcleos
+operacionais privados do ecossistema.
+
+EXEMPLO:
+- CORE_PROPERTIES
+- CORE_PROPERTY_MANAGEMENT
+- futuros cores operacionais
+
+REGRAS:
+- acesso somente autenticado
+- nunca expor páginas operacionais publicamente
+- frontend protegido + backend protegido
+- RLS continua obrigatório
+
+-----------------------------------------
+
+MATCHER STRATEGY
+
+IMPORTANTE:
+
+matcher precisa proteger:
+- rota raiz
+- subrotas
+
+EXEMPLO:
+✔ /operations
+✔ /operations/properties
+
+O matcher do Next.js pode não aplicar
+proteção corretamente apenas com:
+'/operations/:path*'
+
+Por isso:
+sempre registrar:
+- rota raiz
+- rota wildcard
 
 -----------------------------------------
 
@@ -175,6 +221,7 @@ export async function middleware(request: NextRequest) {
     '/owner',
     '/agency',
     '/statement',
+    '/operations',
   ]
 
   const isProtectedRoute = protectedRoutes.some(
@@ -197,9 +244,19 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/broker',
     '/broker/:path*',
+
+    '/owner',
     '/owner/:path*',
+
+    '/agency',
     '/agency/:path*',
+
+    '/statement',
     '/statement/:path*',
+
+    '/operations',
+    '/operations/:path*',
   ],
 }

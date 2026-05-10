@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /*
 =========================================
@@ -7,22 +7,55 @@ LOCAL:
 src/app/agency/page.tsx
 
 STATUS:
-AGENCY_STABILIZED
+ORGANIZATION_MEMBERSHIP_FOUNDATION
 
+RESPONSABILIDADES:
+- validar autenticação
+- validar membership organizacional ativo
+- permitir acesso somente a papéis de gestão
+- preparar dashboard institucional futuro
+- manter agency fora de user_type
+
+IMPORTANTE:
+Agency NÃO é user_type.
+
+Agency é:
+- organization
+- contexto operacional
+- ambiente institucional
+
+O acesso depende de:
+- organization_memberships
+- membership_status = active
+- membership_role = owner ou manager
+
+NÃO:
+- restaurar profile.user_type = agency
+- usar agency_id em users_profile
+- acoplar organização na identidade base
+
+PREVISÃO:
+Esta página deverá evoluir para:
+- gestão da organização
+- gestão de membros
+- carteira institucional
+- homologação de corretores
+- visibilidade operacional
 =========================================
 */
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 
 export default function AgencyPage() {
-  const router = useRouter()
-
   const [loading, setLoading] =
     useState(true)
 
   const [user, setUser] =
+    useState<any>(null)
+
+  const [membership, setMembership] =
     useState<any>(null)
 
   const [status, setStatus] =
@@ -39,81 +72,54 @@ export default function AgencyPage() {
           setTimeout(resolve, 1000)
         )
 
-        // -------------------------------------
-        // AUTH
-        // -------------------------------------
-
         const {
-          data: { user: currentUser },
-          error: userError,
+          data: { user: authUser },
         } = await supabase.auth.getUser()
 
-        let authUser = currentUser
-
-        if (userError || !currentUser) {
-          await new Promise((resolve) =>
-            setTimeout(resolve, 1000)
-          )
-
-          const retry =
-            await supabase.auth.getUser()
-
-          authUser = retry.data.user
-
-          if (!authUser) {
-            window.location.href = '/login'
-            return
-          }
-        }
-
-        // -------------------------------------
-        // PROFILE
-        // -------------------------------------
-
-        const {
-          data: profile,
-          error: profileError,
-        } = await supabase
-          .from('users_profile')
-          .select('user_type')
-          .eq('id', authUser!.id)
-          .maybeSingle()
-
-        if (profileError) {
-          console.error(
-            'AGENCY PROFILE ERROR:',
-            profileError
-          )
-
-          setStatus(
-            'Erro ao carregar perfil.'
-          )
-
-          setLoading(false)
-
-          return
-        }
-
-        // -------------------------------------
-        // ROLE PROTECTION
-        // -------------------------------------
-
-        if (
-          !profile ||
-          profile.user_type !== 'agency'
-        ) {
+        if (!authUser) {
           window.location.href = '/login'
           return
         }
 
-        // -------------------------------------
-        // USER
-        // -------------------------------------
+        const {
+          data: activeMembership,
+          error: membershipError,
+        } = await supabase
+          .from('organization_memberships')
+          .select(`
+            *,
+            organizations (
+              id,
+              legal_name,
+              trade_name,
+              organization_type
+            )
+          `)
+          .eq('profile_id', authUser.id)
+          .eq('membership_status', 'active')
+          .in('membership_role', [
+            'owner',
+            'manager',
+          ])
+          .maybeSingle()
+
+        if (
+          membershipError ||
+          !activeMembership
+        ) {
+          console.error(
+            'AGENCY MEMBERSHIP ERROR:',
+            membershipError
+          )
+
+          window.location.href = '/broker'
+          return
+        }
 
         if (!mounted) return
 
         setUser(authUser)
-
+        setMembership(activeMembership)
         setLoading(false)
       } catch (error) {
         console.error(
@@ -134,11 +140,7 @@ export default function AgencyPage() {
     return () => {
       mounted = false
     }
-  }, [router])
-
-  // -------------------------------------
-  // LOGOUT
-  // -------------------------------------
+  }, [])
 
   const handleLogout = async () => {
     setStatus('Saindo...')
@@ -155,29 +157,66 @@ export default function AgencyPage() {
     window.location.href = '/login'
   }
 
-  // -------------------------------------
-  // LOADING
-  // -------------------------------------
-
   if (loading) {
     return (
-      <div style={{ padding: 20 }}>
+      <main style={{ padding: 20 }}>
         <p>Carregando...</p>
-      </div>
+      </main>
     )
   }
 
-  // -------------------------------------
-  // PAGE
-  // -------------------------------------
-
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Dashboard Agência</h1>
+    <main style={{ padding: 20 }}>
+      <header
+        style={{
+          display: 'flex',
+          gap: 16,
+          borderBottom: '1px solid #ddd',
+          paddingBottom: 12,
+          marginBottom: 24,
+        }}
+      >
+        <Link href="/agency">
+          Dashboard Agency
+        </Link>
+
+        <Link href="/broker">
+          Área Broker
+        </Link>
+
+        <Link href="/operations/properties">
+          Imóveis
+        </Link>
+
+        <Link href="/statement">
+          Extrato
+        </Link>
+      </header>
+
+      <h1>Dashboard Agency</h1>
 
       <p>
         <strong>Usuário:</strong>{' '}
         {user?.email}
+      </p>
+
+      <p>
+        <strong>Organização:</strong>{' '}
+        {membership?.organizations
+          ?.trade_name ||
+          membership?.organizations
+            ?.legal_name}
+      </p>
+
+      <p>
+        <strong>Tipo:</strong>{' '}
+        {membership?.organizations
+          ?.organization_type}
+      </p>
+
+      <p>
+        <strong>Papel:</strong>{' '}
+        {membership?.membership_role}
       </p>
 
       {status && (
@@ -191,6 +230,6 @@ export default function AgencyPage() {
       <button onClick={handleLogout}>
         Logout
       </button>
-    </div>
+    </main>
   )
 }

@@ -3,25 +3,26 @@
 -- MIGRATION: 20260505013435_coin_rls_full.sql
 --
 -- OBJETIVO:
--- ativar RLS e políticas de proteção
--- das estruturas financeiras e operacionais.
+-- Ativar RLS e políticas de proteção
+-- das estruturas financeiras e operacionais
+-- preservadas na foundation atual.
 --
 -- IMPORTANTE:
--- o bloco antigo de public.properties
--- foi removido desta migration.
+-- O bloco antigo de public.properties foi removido.
+-- O bloco antigo de public.leads também foi removido
+-- após realinhamento conceitual do Core Imobiliário.
 --
 -- MOTIVO:
--- properties deixou de ser placeholder
--- e passou a pertencer oficialmente ao:
---
--- CORE_PROPERTIES FOUNDATION
---
--- migration oficial:
--- 20260506235139_core_properties_foundation.sql
+-- - properties foi recriado em foundation própria
+-- - leads será refeito futuramente como CORE_LEADS_V2
+-- - evitar dependência de tabela legacy inexistente
+-- - evitar quebra no db reset
 --
 -- FOUNDATION PRESERVADA:
 -- - wallet
 -- - wallet_ledger
+-- - user_subscription
+-- - users_profile
 -- - finance
 -- - auth
 -- - LGPD
@@ -38,8 +39,6 @@ ALTER TABLE public.wallet_balance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_subscription ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE public.users_profile ENABLE ROW LEVEL SECURITY;
-
-ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 
 -- =========================================
 -- WALLET_LEDGER
@@ -113,37 +112,16 @@ FOR DELETE
 USING (false);
 
 -- =========================================
--- LEADS
--- =========================================
-
-CREATE POLICY "leads_select_own"
-ON public.leads
-FOR SELECT
-USING (assigned_to_agent_id = auth.uid());
-
-CREATE POLICY "leads_block_insert"
-ON public.leads
-FOR INSERT
-WITH CHECK (false);
-
-CREATE POLICY "leads_block_update"
-ON public.leads
-FOR UPDATE
-USING (false);
-
-CREATE POLICY "leads_block_delete"
-ON public.leads
-FOR DELETE
-USING (false);
-
--- =========================================
 -- OBSERVAÇÃO
 -- =========================================
-
--- CORE_PROPERTIES possui:
--- - RLS próprio
--- - policies próprias
--- - ownership próprio
 --
--- migration:
--- 20260506235139_core_properties_foundation.sql
+-- CORE_PROPERTIES / CORE_PORTFOLIO:
+-- possuem RLS próprios na migration:
+-- 20260509190000_core_real_estate_operational_foundation.sql
+--
+-- CORE_LEADS:
+-- será refeito futuramente como CORE_LEADS_V2.
+--
+-- Esta migration não deve criar nem proteger leads.
+--
+-- =========================================

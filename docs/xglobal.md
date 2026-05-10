@@ -1,7 +1,7 @@
 # HURBY — GLOBAL.md
 # FOUNDATION PROTOCOL
 # STATUS: AUTH_FINANCE_LGPD_STABLE
-# VERSION: v1.1.0-foundation-cloud-stable
+# VERSION: v1.1.1-foundation-cloud-build-stable
 
 -----------------------------------------------------------------------------
 
@@ -341,7 +341,7 @@ STATUS OFICIAL:
 AUTH_FINANCE_LGPD_STABLE
 
 BASELINE:
-v1.1.0-foundation-cloud-stable
+v1.1.1-foundation-cloud-build-stable
 
 -----------------------------------------------------------------------------
 
@@ -660,6 +660,7 @@ Planejado:
 - 20260506021141_auth_profile_trigger.sql
 - 20260507030004_fix_coin_functions_security_definer.sql
 - 20260507031629_fix_wallet_balance_rls.sql
+- 20260507043624_property_storage_foundation.sql
 
 -----------------------------------------------------------------------------
 
@@ -670,11 +671,118 @@ NÃO usar users_profile em seed.
 Motivo:
 auth.users é autoridade oficial.
 
+Estrutura oficial:
+
+- supabase/seed.sql
+
 Futuro:
 
 - seed_dev.sql
 - seed_staging.sql
 - seed_prod.sql
+
+-----------------------------------------------------------------------------
+
+# BUILD / DEPLOY PROTOCOL
+
+STATUS:
+MANDATORY
+
+Pipeline oficial:
+
+1. alterar código
+2. executar build local
+3. somente após build válido:
+   - commit
+   - push
+4. validar deployment Vercel
+5. validar status READY
+
+-----------------------------------------------------------------------------
+
+# BUILD LOCAL OBRIGATÓRIO
+
+ANTES de qualquer push:
+
+npm run build
+
+Motivo:
+
+- Vercel executa type checking strict
+- builds inválidos NÃO publicam
+- deploy quebrado pode permanecer invisível
+- Vercel mantém último deploy saudável
+
+-----------------------------------------------------------------------------
+
+# COMPORTAMENTO OFICIAL VERCEL
+
+IMPORTANTE:
+
+Quando um build falha:
+
+- o Vercel NÃO publica o novo deploy
+- o sistema continua servindo o último deploy válido
+- isso pode mascarar erros reais
+- pode aparentar cache incorreto
+
+-----------------------------------------------------------------------------
+
+# TYPESCRIPT STRICT ENFORCEMENT
+
+O projeto utiliza:
+
+- strict typing real
+- validação completa em build
+- nullable validation
+- import validation
+- hook validation
+
+Erros TypeScript são considerados:
+
+ERROS DE DEPLOY.
+
+-----------------------------------------------------------------------------
+
+# PROTOCOLO DE DIAGNÓSTICO
+
+Se produção não atualizar:
+
+1. validar GitHub
+2. validar build local
+3. validar Build Logs Vercel
+4. somente depois investigar:
+   - webhook
+   - cache
+   - branch
+   - deploy
+
+-----------------------------------------------------------------------------
+
+# LIÇÃO INSTITUCIONAL
+
+[2026-05-07]
+
+Foi identificado que:
+
+- múltiplos diagnósticos cloud/auth
+- SSR
+- cache
+- webhook
+- Vercel
+
+estavam mascarando um problema real de:
+
+TypeScript strict build failure.
+
+A falha impedia publicação do novo deploy.
+
+O Vercel permanecia servindo
+o último deploy saudável.
+
+A partir desta data:
+
+BUILD LOCAL passa a ser protocolo obrigatório institucional.
 
 -----------------------------------------------------------------------------
 
@@ -690,6 +798,8 @@ Toda nova feature deve:
 ✔ respeitar wallet_ledger
 ✔ respeitar middleware
 ✔ respeitar users_profile
+✔ executar npm run build antes de push
+✔ validar deployment READY no Vercel
 
 -----------------------------------------------------------------------------
 
@@ -741,6 +851,8 @@ Qualquer alteração deve ser auditada.
 ❌ bypass RLS em ledger
 ❌ hardcode econômico permanente
 ❌ quebrar baseline foundation
+❌ realizar push sem build local
+❌ assumir cache antes de validar build
 
 -----------------------------------------------------------------------------
 
@@ -765,7 +877,7 @@ BASELINE:
 FROZEN
 
 TAG:
-v1.1.0-foundation-cloud-stable
+v1.1.1-foundation-cloud-build-stable
 
 -----------------------------------------------------------------------------
 
@@ -784,6 +896,9 @@ FINANCIAL RPC:
 STABLE
 
 COOKIE SSR:
+STABLE
+
+BUILD PIPELINE:
 STABLE
 
 -----------------------------------------------------------------------------
@@ -819,6 +934,7 @@ Todo novo chat DEVE:
 3. Validar arquitetura antes de alterar
 4. NÃO sair criando estrutura sem auditoria
 5. Respeitar baseline congelada
+6. Validar build local antes de qualquer push
 
 -----------------------------------------------------------------------------
 
@@ -836,5 +952,6 @@ E passou para:
 - baseline versionada
 - estrutura escalável
 - foundation enterprise-oriented
+- pipeline operacional previsível
 
 -----------------------------------------------------------------------------

@@ -9,6 +9,28 @@ src/app/broker/page.tsx
 STATUS:
 BROKER_STABILIZED
 
+OBJETIVO:
+Área operacional inicial do corretor.
+
+IMPORTANTE:
+Esta página funciona como ponto de entrada
+para testes do ambiente broker.
+
+NÃO misturar aqui regras avançadas de:
+- marketplace
+- leads
+- contratos
+- gestão de imóveis
+- automações
+- inteligência comercial
+
+Os links abaixo são navegação operacional
+para validação dos cores já existentes.
+
+OBSERVAÇÃO:
+O botão de consumo de AXE permanece apenas
+como recurso de teste temporário da wallet.
+Não tratar como fluxo definitivo de produto.
 =========================================
 */
 
@@ -299,9 +321,77 @@ export default function BrokerPage() {
 
       <br />
 
-      <button onClick={handleConsume}>
-        Consumir 10 AXE
-      </button>
+      <section
+        style={{
+          border: '1px solid #ccc',
+          padding: 16,
+          marginBottom: 20,
+        }}
+      >
+        <h2>Operações</h2>
+
+        <p>
+          Acesso rápido aos módulos operacionais
+          disponíveis para teste.
+        </p>
+
+        <ul>
+          <li>
+            <a href="/operations/properties">
+              Core Imobiliário
+            </a>
+          </li>
+
+          <li>
+            <a href="/operations/properties/new">
+              Cadastrar novo imóvel
+            </a>
+          </li>
+
+          <li>
+            <a href="/operations/properties/list">
+              Listar imóveis
+            </a>
+          </li>
+
+          <li>
+            <a href="/statement">
+              Extrato AXE
+            </a>
+          </li>
+
+          <li>
+            <a href="/agency">
+              Área Agency
+            </a>
+          </li>
+
+          <li>
+            <a href="/owner">
+              Área Owner
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <section
+        style={{
+          border: '1px solid #ccc',
+          padding: 16,
+          marginBottom: 20,
+        }}
+      >
+        <h2>Wallet temporária</h2>
+
+        <p>
+          Recurso mantido apenas para teste da
+          camada financeira.
+        </p>
+
+        <button onClick={handleConsume}>
+          Consumir 10 AXE
+        </button>
+      </section>
 
       <p style={{ marginTop: 20 }}>
         {status}

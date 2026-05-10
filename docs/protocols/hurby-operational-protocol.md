@@ -680,3 +680,551 @@ A prioridade máxima é:
 - garantir estabilidade
 - garantir rastreabilidade
 - garantir continuidade saudável do projeto
+
+========================================
+# 24. PROTOCOLO DE GOVERNANÇA DE EXECUTORES IA
+========================================
+
+Toda IA executora operacional do ecossistema Hurby deve atuar sob governança arquitetural controlada.
+
+Inclui:
+
+- Codex
+- Cursor
+- agentes frontend
+- agentes de refatoração
+- agentes autônomos
+- copilotos de interface
+- assistentes de componentização
+
+----------------------------------------
+
+OBJETIVO
+
+Garantir:
+
+- preservação arquitetural
+- integridade estrutural
+- previsibilidade operacional
+- alinhamento com backend
+- alinhamento com banco
+- alinhamento institucional
+- redução de regressão invisível
+- controle sobre abstrações automáticas
+
+----------------------------------------
+
+REGRA CRÍTICA
+
+Nenhuma IA executora pode:
+
+- assumir arquitetura
+- redefinir estrutura
+- reorganizar entidades
+- simplificar domínio
+- abstrair sem validação
+- alterar semântica institucional
+- modificar fluxos críticos automaticamente
+
+----------------------------------------
+
+MODO OBRIGATÓRIO DE OPERAÇÃO
+
+Antes de qualquer implementação:
+
+A IA executora deve obrigatoriamente operar em:
+
+MODO LEITURA ESTRUTURAL
+
+Deve realizar:
+
+- varredura do projeto
+- leitura do banco
+- leitura dos schemas
+- leitura das entidades
+- leitura das relações
+- leitura dos globals
+- leitura dos protocolos
+- leitura da arquitetura existente
+- leitura dos fluxos operacionais
+
+Sem alterar estruturas automaticamente.
+
+----------------------------------------
+
+OBJETIVO DA LEITURA ESTRUTURAL
+
+A IA deve compreender:
+
+- como o backend funciona
+- como o banco conversa
+- como os módulos se relacionam
+- quais regras existem
+- quais limitações existem
+- quais decisões arquiteturais já foram tomadas
+- quais entidades NÃO podem colapsar
+- quais fluxos dependem de consistência estrutural
+
+----------------------------------------
+
+PROIBIDO
+
+É proibido:
+
+- refatorar automaticamente
+- reorganizar pastas sem autorização
+- criar abstrações sem alinhamento
+- modificar estrutura do banco
+- alterar services críticos
+- alterar semântica institucional
+- criar “simplificações inteligentes”
+- reescrever arquitetura existente
+- criar padrões paralelos
+
+----------------------------------------
+
+RESPONSABILIDADE DO CODEX/CURSOR
+
+A IA executora frontend deve:
+
+✔ operacionalizar visualmente
+✔ construir interface
+✔ conectar fluxos
+✔ respeitar arquitetura
+✔ respeitar backend
+✔ respeitar banco
+✔ respeitar semântica
+✔ respeitar protocolos institucionais
+
+A IA executora NÃO possui autoridade arquitetural.
+
+----------------------------------------
+
+COMUNICAÇÃO OBRIGATÓRIA
+
+Ao identificar:
+
+- inconsistência
+- limitação
+- oportunidade estrutural
+- necessidade de refatoração
+- risco operacional
+- gargalo arquitetural
+
+A IA deve:
+
+1. explicar o problema
+2. explicar impacto
+3. explicar motivação
+4. solicitar autorização
+5. aguardar decisão
+
+Nunca alterar estruturalmente por iniciativa própria.
+
+----------------------------------------
+
+FRONTEND OPERACIONAL
+
+Toda implementação frontend deve:
+
+- respeitar entidades reais
+- respeitar fluxos reais
+- respeitar ownership
+- respeitar regras backend
+- respeitar RLS
+- respeitar signed URLs
+- respeitar lifecycle institucional
+
+Frontend NÃO deve:
+
+- mascarar inconsistências arquiteturais
+- criar regras paralelas
+- duplicar lógica backend
+- inferir comportamentos inexistentes
+
+----------------------------------------
+
+REGRAS DE COMPONENTIZAÇÃO
+
+Antes de componentizar:
+
+A IA deve validar:
+
+- reutilização real
+- impacto arquitetural
+- previsibilidade futura
+- alinhamento institucional
+- risco de abstração prematura
+
+É proibido:
+
+- hipercomponentização precoce
+- abstrações genéricas excessivas
+- criação de estruturas “mágicas”
+- criação de padrões sem governança
+
+----------------------------------------
+
+OBJETIVO FINAL
+
+Garantir que:
+
+- frontend converse corretamente com backend
+- interface respeite arquitetura
+- IA opere sob controle
+- evolução visual NÃO destrua fundamentos estruturais
+
+----------------------------------------
+
+REGRA FINAL
+
+A IA executora NÃO deve agir como arquiteta soberana do sistema.
+
+Ela atua como:
+- executora controlada
+- operacionalizadora visual
+- implementadora guiada
+
+A arquitetura institucional sempre prevalece sobre decisões automáticas da IA.
+
+========================================
+# 25. PROTOCOLO DE MODELAGEM OPERACIONAL DE CORE
+========================================
+
+Nenhum CORE, módulo ou domínio operacional deve ser considerado concluído apenas por possuir funcionamento técnico básico.
+
+CRUD funcional NÃO caracteriza core finalizado.
+
+----------------------------------------
+
+OBJETIVO
+
+Garantir:
+
+- preparação operacional real
+- previsibilidade frontend
+- coerência estrutural
+- preparação para design system
+- redução de refatoração futura
+- menor dependência estrutural do Codex
+- modelagem consistente do domínio
+
+----------------------------------------
+
+REGRA CRÍTICA
+
+Após concluir:
+
+- estrutura
+- persistência
+- comunicação
+- integração
+- funcionamento básico
+
+A IA deve obrigatoriamente entrar em:
+
+MODO DE MODELAGEM OPERACIONAL DO CORE
+
+----------------------------------------
+
+OBJETIVO DA MODELAGEM
+
+A IA deve modelar:
+
+- comportamento operacional
+- exibição frontend
+- filtros
+- agrupamentos
+- ordenações
+- estados operacionais
+- jornadas
+- navegação
+- lifecycle
+- visibilidade de dados
+- relações operacionais
+- regras de exibição
+- estrutura visual prevista
+- KPIs
+- dashboards
+- cards
+- badges
+- status
+- experiências operacionais futuras
+
+----------------------------------------
+
+QUESTIONÁRIO OBRIGATÓRIO
+
+Ainda na fase inicial:
+
+A IA deve obrigatoriamente questionar:
+
+- como o core funcionará operacionalmente
+- quais informações devem aparecer
+- quais informações são prioritárias
+- quais filtros existirão
+- quais estados existirão
+- quais ações existirão
+- quais visões existirão
+- quais dashboards existirão
+- quais agrupamentos existirão
+- quais fluxos existirão
+
+Mesmo antes da implementação visual final.
+
+----------------------------------------
+
+OBJETIVO ESTRATÉGICO
+
+Preparar o core para:
+
+- frontend operacional
+- evolução futura
+- design system
+- componentização saudável
+- experiência real do usuário
+
+----------------------------------------
+
+IMPORTANTE
+
+A modelagem operacional deve ocorrer:
+
+ANTES da entrada massiva do Codex/Cursor na camada visual.
+
+----------------------------------------
+
+RESPONSABILIDADE DO CODEX
+
+Codex/Cursor devem preferencialmente atuar em:
+
+- design system
+- refinamento visual
+- UX
+- organização visual
+- comportamento frontend
+- componentização
+- refinamentos operacionais
+
+E NÃO:
+
+- redefinição estrutural
+- remodelagem de domínio
+- reorganização arquitetural
+- reconstrução semântica
+
+----------------------------------------
+
+PROIBIDO
+
+É proibido:
+
+- considerar CRUD como módulo concluído
+- encerrar core sem modelagem operacional
+- deixar decisões de domínio para o frontend visual
+- deixar o Codex redefinir estrutura operacional
+- empurrar modelagem para fases tardias
+
+----------------------------------------
+
+VALIDAÇÃO OBRIGATÓRIA
+
+Antes de concluir um core:
+
+A IA deve validar:
+
+✔ estrutura operacional
+✔ exibição prevista
+✔ filtros previstos
+✔ fluxos previstos
+✔ dashboards previstos
+✔ KPIs previstos
+✔ lifecycle previsto
+✔ integração futura
+✔ previsibilidade frontend
+✔ compatibilidade com design system futuro
+
+----------------------------------------
+
+REGRA FINAL
+
+Core funcional NÃO é core finalizado.
+
+Core finalizado é:
+
+- estruturado
+- integrado
+- consistente
+- modelado operacionalmente
+- preparado para evolução visual futura.
+
+========================================
+# 25. PROTOCOLO DE MODELAGEM OPERACIONAL DE CORE
+========================================
+
+Nenhum CORE, módulo ou domínio operacional deve ser considerado concluído apenas por possuir funcionamento técnico básico.
+
+CRUD funcional NÃO caracteriza core finalizado.
+
+----------------------------------------
+
+OBJETIVO
+
+Garantir:
+
+- preparação operacional real
+- previsibilidade frontend
+- coerência estrutural
+- preparação para design system
+- redução de refatoração futura
+- menor dependência estrutural do Codex
+- modelagem consistente do domínio
+
+----------------------------------------
+
+REGRA CRÍTICA
+
+Após concluir:
+
+- estrutura
+- persistência
+- comunicação
+- integração
+- funcionamento básico
+
+A IA deve obrigatoriamente entrar em:
+
+MODO DE MODELAGEM OPERACIONAL DO CORE
+
+----------------------------------------
+
+OBJETIVO DA MODELAGEM
+
+A IA deve modelar:
+
+- comportamento operacional
+- exibição frontend
+- filtros
+- agrupamentos
+- ordenações
+- estados operacionais
+- jornadas
+- navegação
+- lifecycle
+- visibilidade de dados
+- relações operacionais
+- regras de exibição
+- estrutura visual prevista
+- KPIs
+- dashboards
+- cards
+- badges
+- status
+- experiências operacionais futuras
+
+----------------------------------------
+
+QUESTIONÁRIO OBRIGATÓRIO
+
+Ainda na fase inicial:
+
+A IA deve obrigatoriamente questionar:
+
+- como o core funcionará operacionalmente
+- quais informações devem aparecer
+- quais informações são prioritárias
+- quais filtros existirão
+- quais estados existirão
+- quais ações existirão
+- quais visões existirão
+- quais dashboards existirão
+- quais agrupamentos existirão
+- quais fluxos existirão
+
+Mesmo antes da implementação visual final.
+
+----------------------------------------
+
+OBJETIVO ESTRATÉGICO
+
+Preparar o core para:
+
+- frontend operacional
+- evolução futura
+- design system
+- componentização saudável
+- experiência real do usuário
+
+----------------------------------------
+
+IMPORTANTE
+
+A modelagem operacional deve ocorrer:
+
+ANTES da entrada massiva do Codex/Cursor na camada visual.
+
+----------------------------------------
+
+RESPONSABILIDADE DO CODEX
+
+Codex/Cursor devem preferencialmente atuar em:
+
+- design system
+- refinamento visual
+- UX
+- organização visual
+- comportamento frontend
+- componentização
+- refinamentos operacionais
+
+E NÃO:
+
+- redefinição estrutural
+- remodelagem de domínio
+- reorganização arquitetural
+- reconstrução semântica
+
+----------------------------------------
+
+PROIBIDO
+
+É proibido:
+
+- considerar CRUD como módulo concluído
+- encerrar core sem modelagem operacional
+- deixar decisões de domínio para o frontend visual
+- deixar o Codex redefinir estrutura operacional
+- empurrar modelagem para fases tardias
+
+----------------------------------------
+
+VALIDAÇÃO OBRIGATÓRIA
+
+Antes de concluir um core:
+
+A IA deve validar:
+
+✔ estrutura operacional
+✔ exibição prevista
+✔ filtros previstos
+✔ fluxos previstos
+✔ dashboards previstos
+✔ KPIs previstos
+✔ lifecycle previsto
+✔ integração futura
+✔ previsibilidade frontend
+✔ compatibilidade com design system futuro
+
+----------------------------------------
+
+REGRA FINAL
+
+Core funcional NÃO é core finalizado.
+
+Core finalizado é:
+
+- estruturado
+- integrado
+- consistente
+- modelado operacionalmente
+- preparado para evolução visual futura.
