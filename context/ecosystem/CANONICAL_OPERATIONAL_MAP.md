@@ -1,4 +1,4 @@
-\# HURBY — CANONICAL OPERATIONAL MAP
+\# HURBY â€” CANONICAL OPERATIONAL MAP
 
 
 
@@ -10,15 +10,15 @@ STATUS
 
 
 
-EM CONSTRUÇÃO
+EM CONSTRUÃ‡ÃƒO
 
 
 
-Este documento será a principal referência:
+Este documento serÃ¡ a principal referÃªncia:
 
 \- operacional
 
-\- semântica
+\- semÃ¢ntica
 
 \- arquitetural
 
@@ -40,7 +40,7 @@ OBJETIVO
 
 Definir oficialmente:
 
-\- entidades canônicas
+\- entidades canÃ´nicas
 
 \- ownership
 
@@ -72,13 +72,13 @@ IMPORTANTE
 
 
 
-Este documento possui prioridade arquitetural máxima.
+Este documento possui prioridade arquitetural mÃ¡xima.
 
 
 
-Nenhuma expansão relevante deve ocorrer:
+Nenhuma expansÃ£o relevante deve ocorrer:
 
-\- sem alinhamento semântico
+\- sem alinhamento semÃ¢ntico
 
 \- sem alinhamento operacional
 
@@ -98,7 +98,7 @@ PRINCIPAIS EIXOS
 
 2\. CONTEXTO OPERACIONAL
 
-3\. ORGANIZAÇÕES
+3\. ORGANIZAÃ‡Ã•ES
 
 4\. MEMBERSHIPS
 
@@ -128,25 +128,25 @@ PRINCIPAIS EIXOS
 
 ========================================
 
-OBSERVAÇÃO
+OBSERVAÃ‡ÃƒO
 
 ========================================
 
 
 
-A modelagem do Hurby NÃO representa:
+A modelagem do Hurby NÃƒO representa:
 
-\- apenas entidades técnicas
+\- apenas entidades tÃ©cnicas
 
 
 
 Ela representa:
 
-\- relações comerciais reais
+\- relaÃ§Ãµes comerciais reais
 
 \- comportamento operacional real
 
-\- dinâmica real do mercado imobiliário
+\- dinÃ¢mica real do mercado imobiliÃ¡rio
 
 
 
@@ -170,7 +170,7 @@ O broker/corretor:
 
 \- desenvolve carteira
 
-\- capta imóveis
+\- capta imÃ³veis
 
 \- capta clientes
 
@@ -184,31 +184,31 @@ O broker pode:
 
 \- operar individualmente
 
-\- operar vinculado a uma agência
+\- operar vinculado a uma agÃªncia
 
 \- operar em contexto compartilhado
 
-\- possuir ativos próprios
+\- possuir ativos prÃ³prios
 
 \- compartilhar ativos selecionados
 
 
 
-O broker mantém:
+O broker mantÃ©m:
 
-\- identidade operacional própria
+\- identidade operacional prÃ³pria
 
-\- carteira própria
+\- carteira prÃ³pria
 
-\- histórico próprio
+\- histÃ³rico prÃ³prio
 
-\- relações próprias
+\- relaÃ§Ãµes prÃ³prias
 
 
 
 IMPORTANTE:
 
-A agência NÃO substitui o broker.
+A agÃªncia NÃƒO substitui o broker.
 
 
 
@@ -224,27 +224,27 @@ Camada organizacional/institucional.
 
 
 
-Responsável por:
+ResponsÃ¡vel por:
 
 \- organizar equipes
 
-\- supervisionar operação
+\- supervisionar operaÃ§Ã£o
 
 \- compartilhar estrutura
 
 \- compartilhar carteira institucional
 
-\- ampliar distribuição comercial
+\- ampliar distribuiÃ§Ã£o comercial
 
 
 
-A agency NÃO é:
+A agency NÃƒO Ã©:
 
-\- núcleo operacional principal
+\- nÃºcleo operacional principal
 
 \- substituta do broker
 
-\- proprietária universal dos ativos
+\- proprietÃ¡ria universal dos ativos
 
 
 
@@ -266,13 +266,13 @@ Dois contextos principais:
 
 \### PROPERTY\_PROVIDER
 
-Cliente que disponibiliza patrimônio.
+Cliente que disponibiliza patrimÃ´nio.
 
 
 
 Ex:
 
-\- proprietário
+\- proprietÃ¡rio
 
 \- locador
 
@@ -290,7 +290,7 @@ Ex:
 
 \- comprador
 
-\- locatário
+\- locatÃ¡rio
 
 \- interessado
 
@@ -308,23 +308,23 @@ Ex:
 
 Representa:
 
-\- o ativo imobiliário operacional
+\- o ativo imobiliÃ¡rio operacional
 
 
 
-NÃO representa:
+NÃƒO representa:
 
-\- ownership absoluto do imóvel físico
+\- ownership absoluto do imÃ³vel fÃ­sico
 
 
 
 O asset pode:
 
-\- existir em múltiplas operações
+\- existir em mÃºltiplas operaÃ§Ãµes
 
-\- existir em múltiplas carteiras
+\- existir em mÃºltiplas carteiras
 
-\- possuir múltiplos contexts comerciais
+\- possuir mÃºltiplos contexts comerciais
 
 
 
@@ -338,13 +338,13 @@ O asset pode:
 
 Representa:
 
-\- operação comercial/publicitária
+\- operaÃ§Ã£o comercial/publicitÃ¡ria
 
 
 
 O listing:
 
-\- possui estratégia
+\- possui estratÃ©gia
 
 \- possui contexto
 
@@ -352,13 +352,13 @@ O listing:
 
 \- possui visibilidade
 
-\- possui distribuição
+\- possui distribuiÃ§Ã£o
 
 
 
-O listing NÃO é:
+O listing NÃƒO Ã©:
 
-\- o imóvel físico
+\- o imÃ³vel fÃ­sico
 
 
 
@@ -374,9 +374,9 @@ Broker opera:
 
 \- individualmente
 
-\- com carteira própria
+\- com carteira prÃ³pria
 
-\- com ativos próprios
+\- com ativos prÃ³prios
 
 \- sem estrutura institucional
 
@@ -392,7 +392,7 @@ Broker opera:
 
 Broker vinculado operacionalmente:
 
-\- a agência/imobiliária
+\- a agÃªncia/imobiliÃ¡ria
 
 \- a carteira institucional
 
@@ -402,13 +402,13 @@ Broker vinculado operacionalmente:
 
 IMPORTANTE:
 
-o broker mantém:
+o broker mantÃ©m:
 
 \- individualidade operacional
 
-\- identidade própria
+\- identidade prÃ³pria
 
-\- ativos próprios permitidos
+\- ativos prÃ³prios permitidos
 
 
 
@@ -420,23 +420,23 @@ o broker mantém:
 
 
 
-Operação baseada em:
+OperaÃ§Ã£o baseada em:
 
 \- parceria
 
-\- colaboração
+\- colaboraÃ§Ã£o
 
 \- compartilhamento seletivo
 
 
 
-Relações:
+RelaÃ§Ãµes:
 
-\- explícitas
+\- explÃ­citas
 
 \- consensuais
 
-\- rastreáveis
+\- rastreÃ¡veis
 
 
 
@@ -452,7 +452,7 @@ Ativo:
 
 \- privado
 
-\- não compartilhável
+\- nÃ£o compartilhÃ¡vel
 
 \- fora da rede colaborativa
 
@@ -470,29 +470,29 @@ na carteira do broker.
 
 
 
-\## RELAÇÕES NÃO TRANSITIVAS
+\## RELAÃ‡Ã•ES NÃƒO TRANSITIVAS
 
 
 
 Se:
 
-A ↔ B
+A â†” B
 
 e
 
-B ↔ C
+B â†” C
 
 
 
-Isso NÃO implica:
+Isso NÃƒO implica:
 
-A ↔ C
+A â†” C
 
 
 
-Toda relação deve ser:
+Toda relaÃ§Ã£o deve ser:
 
-\- explícita
+\- explÃ­cita
 
 \- bilateral
 
@@ -504,23 +504,23 @@ Toda relação deve ser:
 
 
 
-\## O SISTEMA NÃO É CENTRADO NO IMÓVEL
+\## O SISTEMA NÃƒO Ã‰ CENTRADO NO IMÃ“VEL
 
 
 
-O centro operacional do Hurby é:
+O centro operacional do Hurby Ã©:
 
 \- relacionamento
 
 \- carteira
 
-\- colaboração
+\- colaboraÃ§Ã£o
 
-\- operação comercial
+\- operaÃ§Ã£o comercial
 
 
 
-O imóvel é:
+O imÃ³vel Ã©:
 
 \- ativo operacional contextual
 
@@ -530,17 +530,17 @@ O imóvel é:
 
 
 
-\## DUPLICIDADE OPERACIONAL É VÁLIDA
+\## DUPLICIDADE OPERACIONAL Ã‰ VÃLIDA
 
 
 
-O mesmo imóvel físico pode:
+O mesmo imÃ³vel fÃ­sico pode:
 
-\- existir em múltiplas carteiras
+\- existir em mÃºltiplas carteiras
 
-\- possuir múltiplos listings
+\- possuir mÃºltiplos listings
 
-\- possuir múltiplos operadores
+\- possuir mÃºltiplos operadores
 
 
 
@@ -576,13 +576,13 @@ Isso impacta:
 
 \- desligamento
 
-\- permanência
+\- permanÃªncia
 
 \- visibilidade
 
 \- compartilhamento
 
-\- governança futura
+\- governanÃ§a futura
 
 
 
@@ -596,13 +596,13 @@ Isso impacta:
 
 Memberships representam:
 
-\- vínculos operacionais contextuais
+\- vÃ­nculos operacionais contextuais
 
 
 
-Eles NÃO representam:
+Eles NÃƒO representam:
 
-\- identidade principal do usuário
+\- identidade principal do usuÃ¡rio
 
 
 
@@ -610,15 +610,15 @@ Eles NÃO representam:
 
 
 
-\## SEPARAÇÃO CANÔNICA
+\## SEPARAÃ‡ÃƒO CANÃ”NICA
 
 
 
 \### AUTH.USER
 
-Responsável:
+ResponsÃ¡vel:
 
-\- autenticação
+\- autenticaÃ§Ã£o
 
 \- credenciais
 
@@ -632,11 +632,11 @@ Responsável:
 
 \### USER\_PROFILE
 
-Responsável:
+ResponsÃ¡vel:
 
 \- identidade operacional base
 
-\- informações principais do operador
+\- informaÃ§Ãµes principais do operador
 
 
 
@@ -646,13 +646,13 @@ Responsável:
 
 \### MEMBERSHIP
 
-Responsável:
+ResponsÃ¡vel:
 
 \- contexto organizacional
 
-\- vínculo operacional
+\- vÃ­nculo operacional
 
-\- permissões contextuais
+\- permissÃµes contextuais
 
 \- escopo operacional
 
@@ -668,15 +668,15 @@ Responsável:
 
 O broker pode:
 
-\- não possuir membership
+\- nÃ£o possuir membership
 
 \- possuir membership institucional
 
-\- possuir múltiplos contexts futuros
+\- possuir mÃºltiplos contexts futuros
 
 
 
-A identidade do broker NÃO pode depender:
+A identidade do broker NÃƒO pode depender:
 
 \- exclusivamente da agency
 
@@ -694,13 +694,13 @@ A identidade do broker NÃO pode depender:
 
 Representa:
 
-\- vínculo operacional entre broker e agency
+\- vÃ­nculo operacional entre broker e agency
 
 
 
 Pode definir:
 
-\- permissões
+\- permissÃµes
 
 \- escopos
 
@@ -716,7 +716,7 @@ Pode definir:
 
 
 
-\## DESVINCULAÇÃO
+\## DESVINCULAÃ‡ÃƒO
 
 
 
@@ -724,7 +724,7 @@ Ao remover um membership:
 
 \- identidade do broker permanece
 
-\- histórico permanece
+\- histÃ³rico permanece
 
 \- carteira individual pode permanecer
 
@@ -732,11 +732,11 @@ Ao remover um membership:
 
 
 
-Membership NÃO pode:
+Membership NÃƒO pode:
 
 \- destruir identidade operacional
 
-\- destruir histórico operacional
+\- destruir histÃ³rico operacional
 
 
 
@@ -758,9 +758,9 @@ Portfolio representa:
 
 
 
-O portfolio NÃO representa:
+O portfolio NÃƒO representa:
 
-\- ownership jurídico do imóvel
+\- ownership jurÃ­dico do imÃ³vel
 
 
 
@@ -778,11 +778,11 @@ O portfolio NÃO representa:
 
 Carteira:
 
-\- própria do broker
+\- prÃ³pria do broker
 
 \- individual
 
-\- privada ou compartilhável
+\- privada ou compartilhÃ¡vel
 
 
 
@@ -796,7 +796,7 @@ Carteira:
 
 Carteira:
 
-\- vinculada à agency
+\- vinculada Ã  agency
 
 \- institucional
 
@@ -832,11 +832,11 @@ Carteira:
 
 O mesmo asset pode:
 
-\- participar de múltiplos contexts
+\- participar de mÃºltiplos contexts
 
-\- possuir múltiplos listings
+\- possuir mÃºltiplos listings
 
-\- existir em múltiplos portfolios
+\- existir em mÃºltiplos portfolios
 
 
 
@@ -848,7 +848,7 @@ O mesmo asset pode:
 
 
 
-Exclusividade é:
+Exclusividade Ã©:
 
 \- contexto operacional
 
@@ -858,9 +858,9 @@ Exclusividade é:
 
 
 
-Exclusividade NÃO significa:
+Exclusividade NÃƒO significa:
 
-\- ownership jurídico absoluto
+\- ownership jurÃ­dico absoluto
 
 
 
@@ -894,11 +894,11 @@ Visibility controla:
 
 Sharing representa:
 
-\- compartilhamento explícito
+\- compartilhamento explÃ­cito
 
 \- compartilhamento consensual
 
-\- compartilhamento rastreável
+\- compartilhamento rastreÃ¡vel
 
 
 
@@ -912,11 +912,11 @@ Sharing representa:
 
 Sharing:
 
-\- NÃO é automático
+\- NÃƒO Ã© automÃ¡tico
 
-\- NÃO é transitivo
+\- NÃƒO Ã© transitivo
 
-\- NÃO propaga em cascata
+\- NÃƒO propaga em cascata
 
 
 
@@ -936,7 +936,7 @@ Apenas operador original.
 
 \### INSTITUTIONAL
 
-Disponível no contexto organizacional.
+DisponÃ­vel no contexto organizacional.
 
 
 
@@ -948,13 +948,13 @@ Compartilhado explicitamente.
 
 \### PUBLIC
 
-Disponível publicamente.
+DisponÃ­vel publicamente.
 
 
 
 \### MARKETPLACE
 
-Distribuição de rede operacional.
+DistribuiÃ§Ã£o de rede operacional.
 
 
 
@@ -968,11 +968,11 @@ Distribuição de rede operacional.
 
 Assets/listings exclusivos:
 
-\- não aparecem na rede
+\- nÃ£o aparecem na rede
 
-\- não aparecem para parceiros
+\- nÃ£o aparecem para parceiros
 
-\- não entram no inventário compartilhado
+\- nÃ£o entram no inventÃ¡rio compartilhado
 
 
 
@@ -986,7 +986,7 @@ para o broker original.
 
 
 
-\## IMPORTÂNCIA
+\## IMPORTÃ‚NCIA
 
 
 
@@ -994,15 +994,15 @@ Origem operacional impacta:
 
 \- ownership contextual
 
-\- permanência
+\- permanÃªncia
 
 \- desligamento
 
-\- governança
+\- governanÃ§a
 
 \- visibilidade
 
-\- distribuição
+\- distribuiÃ§Ã£o
 
 \- compartilhamento
 
@@ -1018,7 +1018,7 @@ Origem operacional impacta:
 
 \### PROPERTY\_ORIGIN
 
-Origem do imóvel.
+Origem do imÃ³vel.
 
 
 
@@ -1076,23 +1076,376 @@ O sistema deve distinguir:
 
 
 
-Origins impactará:
+Origins impactarÃ¡:
 
 \- IA
 
-\- comissão
+\- comissÃ£o
 
-\- distribuição
+\- distribuiÃ§Ã£o
 
-\- permanência
+\- permanÃªncia
 
 \- analytics
 
-\- governança
+\- governanÃ§a
 
 \- desligamento
 
 \- ownership contextual
 
+-------------------------------------
 
+# ADENDO CANÔNICO — CORE_IDENTITY_REBUILD + CORE_CLIENTS_FOUNDATION
+
+Data: 2026-05-10
+
+Status: ADENDO CANÔNICO VALIDADO
+
+Este adendo atualiza o mapa operacional após a reconstrução da base de identidade e criação da foundation inicial de Core Clients.
+
+Este trecho prevalece sobre qualquer interpretação anterior que trate users_profile como corretor, cliente, owner, agência ou tipo fixo de usuário.
+
+-------------------------------------
+
+## 1. Identidade autenticada
+
+auth.users continua sendo a raiz técnica de autenticação.
+
+users_profile passa a ser a conta autenticada neutra.
+
+Contrato técnico obrigatório:
+
+auth.users.id = users_profile.id
+
+users_profile NÃO representa:
+
+- corretor
+- cliente
+- agência
+- imobiliária
+- proprietário
+- owner operacional
+- assinatura
+- plano comercial
+- tipo fixo de usuário
+
+users_profile representa apenas:
+
+- conta autenticada
+- identificação base
+- dados mínimos de conta
+- status cadastral
+- fluxo inicial de entrada
+
+Qualquer papel operacional deve nascer fora de users_profile.
+
+-------------------------------------
+
+## 2. Corretor / Broker
+
+Corretor deve ser representado por broker_profiles.
+
+broker_profiles é a camada profissional vinculada a uma conta neutra.
+
+Estruturas canônicas:
+
+- users_profile
+- broker_profiles
+- broker_verifications
+
+CRECI, validação profissional, visibilidade pública e status profissional pertencem ao broker_profile, não ao users_profile.
+
+É proibido recriar lógica baseada em:
+
+- user_type
+- account_tier
+- broker automático
+- PAY_PER_USE automático
+- users_profile como permissão profissional
+
+-------------------------------------
+
+## 3. Imobiliária / Agency
+
+Imobiliária deve ser representada por organizations.
+
+O vínculo entre pessoa autenticada e imobiliária deve ser representado por organization_memberships.
+
+Estruturas canônicas:
+
+- users_profile
+- organizations
+- organization_memberships
+
+Imobiliária não é users_profile.
+
+Responsável de imobiliária é:
+
+users_profile + organization_membership
+
+Acesso institucional deve passar por membership ativo e papel contextual.
+
+-------------------------------------
+
+## 4. Cliente
+
+Cliente deve ser representado por client_entities.
+
+Cliente não é users_profile.
+
+Cliente não é lead.
+
+Cliente é entidade relacional e contextual.
+
+Estruturas canônicas:
+
+- client_entities
+- client_contact_methods
+- client_relationships
+- client_relationship_roles
+
+A mesma pessoa pode atuar como:
+
+- usuário comum do marketplace
+- buscador de imóvel
+- fornecedor/proprietário de imóvel
+- comprador
+- locatário
+- cliente de corretor
+- cliente de imobiliária
+- contato de campanha
+- contato importado
+- futuro lead
+- parte de contrato
+
+A função da pessoa depende do relacionamento, não de um tipo fixo.
+
+-------------------------------------
+
+## 5. Relacionamento contextual
+
+client_relationships passa a ser a base de contexto relacional do cliente.
+
+Ela deve responder:
+
+- quem é o cliente?
+- com quem ele se relaciona?
+- quem é responsável por esse relacionamento?
+- veio de qual origem?
+- pertence ao marketplace?
+- pertence a um corretor?
+- pertence a uma imobiliária?
+- está vinculado a qual imóvel?
+- está vinculado a qual anúncio?
+- está em qual carteira?
+- poderá virar lead?
+- poderá virar contrato?
+
+Nenhum cliente deve ser tratado como registro solto sem contexto operacional.
+
+-------------------------------------
+
+## 6. Entry Flow / Fluxo de Entrada
+
+O HURBY não deve usar onboarding genérico depois do login como base principal de decisão.
+
+A intenção deve ser definida antes ou durante o cadastro.
+
+Fluxos previstos:
+
+- usuário comum do marketplace
+- quero anunciar meu imóvel
+- sou corretor
+- sou imobiliária
+- convite institucional
+- entrada profissional HURBY/Hurb
+
+Cada fluxo deve conduzir para formulário adequado.
+
+Login não deve perguntar repetidamente quem a pessoa é.
+
+Login deve rotear conforme contexto já existente.
+
+-------------------------------------
+
+## 7. Cadê Negócios x Hurby/Hurb
+
+O ecossistema possui dois ambientes integrados.
+
+Cadê Negócios:
+
+- marketplace público
+- busca de imóveis
+- favoritos
+- anúncios comuns
+- conta comum
+- navegação pública
+
+Hurby/Hurb:
+
+- sistema operacional profissional
+- corretor
+- imobiliária
+- carteira
+- imóveis
+- clientes
+- contratos futuros
+- funil futuro
+- gestão futura
+
+Domínios previstos:
+
+- cadênegócios.com.br
+- cadênegócios.com.br/hurb
+- hurb.com.br
+
+Regra:
+
+Login feito no marketplace não deve redirecionar automaticamente para /broker.
+
+Profissional logado no marketplace deve navegar como usuário comum, mas deve ver acesso claro ao ambiente profissional, como:
+
+- Hurby Pro
+- Painel Hurby
+- Ambiente Profissional
+
+-------------------------------------
+
+## 8. Score futuro
+
+Score não deve ser implementado agora.
+
+Score será core próprio futuro.
+
+Score não deve ser coluna simples em users_profile, broker_profiles ou client_entities.
+
+Score deve ser:
+
+- contextual
+- explicável
+- baseado em eventos
+- separado por entidade/contexto
+- juridicamente cuidadoso
+- sem rótulos discriminatórios
+
+Scores futuros possíveis:
+
+- conta
+- corretor
+- imobiliária
+- anúncio
+- imóvel
+- lead
+- cliente
+- relacionamento
+- comportamento
+- qualidade operacional
+
+-------------------------------------
+
+## 9. Trust / Safety / Denúncias / Banimento
+
+Trust/Safety será core próprio futuro.
+
+A foundation atual deve permitir que futuramente sejam denunciáveis:
+
+- users_profile
+- client_entity
+- broker_profile
+- organization
+- property_listing
+- property_asset
+- mensagem
+- atendimento
+- publicidade
+- conteúdo
+
+Denúncias futuras devem registrar, quando legalmente adequado:
+
+- IP
+- user agent
+- sessão
+- origem
+- timestamp
+- dispositivo/navegador
+- geolocalização aproximada quando permitida
+- entidade denunciada
+- denunciante
+- evidências
+- decisão humana
+- retenção para defesa jurídica
+
+-------------------------------------
+
+## 10. Reviews / Avaliações
+
+Avaliações serão core próprio futuro.
+
+Itens avaliáveis:
+
+- anúncio
+- atendimento
+- corretor
+- imóvel
+- imobiliária
+- experiência geral
+
+Avaliações devem alimentar futuramente:
+
+- qualidade
+- reputação
+- score
+- alertas
+- melhoria de anúncios
+- orientação comercial
+- qualificação profissional
+
+-------------------------------------
+
+## 11. Regra de continuidade
+
+A partir deste adendo, nenhuma nova modelagem deve voltar para:
+
+- users_profile.user_type
+- account_tier em users_profile
+- corretor automático em signup
+- cliente como usuário
+- lead como cliente
+- imobiliária como usuário
+- score como coluna simples
+
+Toda nova expansão deve respeitar:
+
+- Identity neutro
+- Broker Profile
+- Organizations/Memberships
+- Client Entities
+- Client Relationships
+- Origins
+- Visibility
+- Portfolio
+- Properties
+- LGPD
+- Ledger/Axé
+
+-------------------------------------
+
+## 12. Próximos cores prováveis
+
+Após o fechamento documental desta missão, os próximos cores estruturais prováveis são:
+
+- CORE_ORIGINS_FOUNDATION
+- CORE_VISIBILITY_FOUNDATION
+
+A escolha deve considerar dependência para:
+
+- Leads V2
+- Marketplace
+- Clients
+- Properties
+- Trust/Safety
+- Score futuro
+
+CORE_PROPERTIES_FORM_V1 permanece apenas como backlog futuro de melhoria de formulário.
 

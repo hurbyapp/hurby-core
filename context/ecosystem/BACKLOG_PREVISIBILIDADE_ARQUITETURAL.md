@@ -1,9 +1,9 @@
-﻿# HURBY — BACKLOG DE PREVISIBILIDADE ARQUITETURAL
+# HURBY — BACKLOG DE PREVISIBILIDADE ARQUITETURAL
 
 STATUS: REGISTRO OFICIAL DE PENDÊNCIAS FUTURAS  
 TIPO: BACKLOG TÉCNICO / CONCEITUAL  
 ESCOPO: DECISÕES IDENTIFICADAS DURANTE REVISÃO DO CORE OPERACIONAL  
-ÚLTIMA ATUALIZAÇÃO: 2026-05-09  
+ÚLTIMA ATUALIZAÇÃO: 2026-05-10  
 
 -------------------------------------
 
@@ -166,33 +166,55 @@ O frontend não deve chamar função financeira passando p_user_id diretamente.
 
 -------------------------------------
 
-# 6. LOGIN / SIGNUP
+# 6. LOGIN / SIGNUP / ENTRY FLOW
 
-STATUS: FUNCIONAL, MAS PRECISA EVOLUIR
+STATUS: RECONSTRUÍDO COMO FOUNDATION NEUTRA, COM EVOLUÇÃO FUTURA
 
-O login está correto ao tratar agency como organization + membership, e não como user_type.
+O login/signup deixou de depender de user_type.
 
-Porém, o signup ainda cria todo novo usuário como broker.
+Decisão consolidada:
 
-Decisão:
+- users_profile é conta autenticada neutra
+- corretor é broker_profile
+- imobiliária é organization + organization_membership
+- usuário comum do marketplace deve ter conta simples
+- login não deve perguntar toda vez quem a pessoa é
+- login deve rotear conforme contexto já existente
+- entrada profissional deve ocorrer por fluxo próprio
+- entrada comum do marketplace deve permanecer no ambiente comum
 
-- preservar por enquanto
-- futuramente criar onboarding operacional
+O signup profissional atual cria:
 
-O onboarding deverá permitir:
+- auth.users
+- users_profile neutro
+- broker_profile
 
-- sou corretor
-- sou imobiliária
-- sou proprietário
-- estou procurando imóvel
-- quero anunciar imóvel próprio
-- sou incorporadora
+O login profissional atual considera:
+
+- organization_membership owner/manager ativo
+- broker_profile existente
+- ausência de contexto profissional
+
+Pendências futuras:
+
+- criar login público do marketplace
+- criar entrada profissional /hurb
+- criar página institucional Hurby/Hurb
+- criar fluxo próprio para cadastro de imobiliária
+- criar fluxo próprio para usuário comum anunciante
+- criar conta comum do marketplace com favoritos/dados/anúncios
+- criar seletor de ambiente somente quando o usuário tiver múltiplos contextos
+- criar item de menu "Hurby Pro" ou "Painel Hurby" para profissional logado no marketplace
+
+Regra:
+
+Login feito no marketplace não deve redirecionar automaticamente para /broker.
+
+Login feito no ambiente profissional deve validar contexto profissional.
 
 Motivo:
 
-O HURBY terá usuários comuns, seekers, property providers, brokers, owners, agencies e incorporadoras.
-
-Nem todo usuário deve nascer como broker.
+A intenção deve ser definida antes ou durante o cadastro, e não por onboarding genérico depois do login.
 
 -------------------------------------
 
@@ -571,4 +593,337 @@ Antes de qualquer alteração:
 6. validar
 7. só então executar
 
+-------------------------------------
 
+# 18. CORE_IDENTITY_REBUILD + CORE_CLIENTS_FOUNDATION
+
+STATUS: FOUNDATION VALIDADA LOCALMENTE
+
+A base de identidade foi reconstruída para remover a semântica antiga baseada em user_type/account_tier.
+
+Decisão:
+
+- users_profile passa a representar apenas conta autenticada neutra
+- auth.users.id = users_profile.id deve ser preservado
+- corretor passa a ser representado por broker_profiles
+- validação profissional passa a ser representada por broker_verifications
+- cliente passa a ser representado por client_entities
+- vínculo contextual passa a ser representado por client_relationships
+
+Migrations envolvidas:
+
+- 20260504000000_base_clean.sql
+- 20260504000100_profiles.sql
+- 20260506021141_auth_profile_trigger.sql
+- 20260510120000_core_identity_clients_foundation.sql
+
+Arquivos de frontend impactados:
+
+- src/app/login/page.tsx
+- src/app/broker/page.tsx
+- src/app/page.tsx
+
+Validações realizadas:
+
+- supabase db reset
+- npm run build
+- login profissional
+- criação de broker_profile
+- acesso ao /broker
+- correção do erro de perfil causado pela remoção de user_type
+
+Regra:
+
+Não restaurar user_type, account_tier, PAY_PER_USE automático ou broker automático em users_profile.
+
+-------------------------------------
+
+# 19. CORE CLIENTS
+
+STATUS: FOUNDATION CRIADA, NÃO EXPANDIR FUNCIONALMENTE AGORA
+
+Core Clients foi criado como fundação relacional.
+
+Estruturas criadas:
+
+- client_entities
+- client_contact_methods
+- client_relationships
+- client_relationship_roles
+
+Decisão:
+
+Cliente não é usuário autenticado.
+
+Cliente também não é lead.
+
+Cliente é entidade relacional e contextual.
+
+A mesma pessoa pode ser:
+
+- usuário comum do marketplace
+- buscador de imóvel
+- proprietário/fornecedor de imóvel
+- comprador
+- locatário
+- cliente de corretor
+- cliente de imobiliária
+- contato vindo de campanha
+- contato importado
+- futuro lead
+- parte de contrato
+
+Pendências futuras:
+
+- integrar com Leads V2
+- integrar com Marketplace
+- integrar com Funil
+- integrar com Contratos
+- integrar com Trust/Safety
+- integrar com Score
+- integrar com Reviews
+- criar fluxo de dados órfãos
+- criar lifecycle de relacionamento
+- criar regras de exclusividade por origem
+
+Regra:
+
+Não transformar client_entities em tabela plana de contato.
+
+-------------------------------------
+
+# 20. CORE SCORE
+
+STATUS: FUTURO, NÃO IMPLEMENTAR AGORA
+
+Score será um core próprio.
+
+Não deve ser coluna simples em users_profile, broker_profiles ou client_entities.
+
+Diretrizes:
+
+- score deve ser contextual
+- score deve ser explicável
+- score deve ser baseado em eventos
+- score deve separar marketplace de reputação profissional
+- score deve evitar rótulos discriminatórios
+- score deve usar linguagem operacional
+
+Scores futuros possíveis:
+
+- score da conta
+- score do corretor
+- score da imobiliária
+- score do anúncio
+- score do imóvel
+- score do lead
+- score do cliente
+- score do relacionamento
+- score de comportamento
+- score de qualidade operacional
+
+Termos recomendados:
+
+- nível de verificação
+- intenção
+- maturidade da jornada
+- confiabilidade cadastral
+- reputação operacional
+- qualidade de atendimento
+
+Dependências futuras:
+
+- Core Events
+- Core Trust/Safety
+- Core Reviews
+- Core Leads V2
+- Core Marketplace
+- Core Clients maduro
+- Core Visibility
+
+Regra:
+
+Não implementar score antes de criar base de eventos e explicabilidade.
+
+-------------------------------------
+
+# 21. CORE TRUST / SAFETY / GOVERNANCE
+
+STATUS: FUTURO, OBRIGATÓRIO
+
+O HURBY deve possuir sistema futuro de prevenção a fraude, monitoria, denúncias, suspensão e banimento.
+
+O sistema deve permitir denúncias contra:
+
+- usuários
+- clientes
+- corretores
+- imobiliárias
+- anúncios
+- imóveis
+- mensagens
+- atendimentos
+- publicidades
+- páginas profissionais
+- conteúdos
+
+As denúncias devem prever:
+
+- motivo obrigatório
+- descrição
+- categoria
+- evidências
+- IP
+- user agent
+- dispositivo/navegador
+- sessão
+- origem
+- timestamp
+- geolocalização aproximada quando legalmente adequada e consentida
+- entidade denunciada
+- usuário denunciante
+- triagem automática
+- fila humana
+- decisão
+- retenção de evidências para defesa jurídica
+
+O sistema deve prever lifecycle de risco:
+
+- normal
+- em observação
+- alertado
+- restrito
+- suspenso
+- banido
+- expurgado
+- retido para defesa jurídica
+
+Regra:
+
+Profissionais sem CRECI não devem operar livremente como corretores.
+
+Eles só podem existir futuramente com modalidade restrita, rastreável e preferencialmente vinculada a corretor ou imobiliária verificada.
+
+-------------------------------------
+
+# 22. CORE REVIEWS / AVALIAÇÕES
+
+STATUS: FUTURO, NÃO IMPLEMENTAR AGORA
+
+Avaliações serão core próprio futuro.
+
+Avaliações devem ser contextuais.
+
+Itens avaliáveis futuramente:
+
+- anúncio
+- atendimento
+- corretor
+- imóvel
+- imobiliária
+- experiência geral
+
+Critérios possíveis:
+
+- qualidade das fotos
+- clareza das informações
+- qualidade do atendimento
+- aderência do imóvel ao anúncio
+- confiança percebida
+- experiência geral
+
+As avaliações devem alimentar:
+
+- score
+- reputação
+- qualidade dos anúncios
+- alertas operacionais
+- recomendações comerciais
+- qualificação profissional
+- Academy Broker futura
+- marketplace de prestadores futuro
+
+Regra:
+
+Avaliação não deve ser apenas exposição pública. Deve servir para elevar qualidade operacional do ecossistema.
+
+-------------------------------------
+
+# 23. ACESSO A DADOS SENSÍVEIS
+
+STATUS: FUTURO, DEPENDENTE DE VISIBILITY / TRUST / LEADS
+
+O acesso a dados sensíveis, como telefone e e-mail de lead/cliente, deve ser controlado futuramente por:
+
+- contexto
+- consentimento
+- nível de verificação
+- selos profissionais
+- termo de responsabilidade
+- origem do lead
+- relationship ownership
+- visibilidade
+- LGPD
+
+Decisão futura provável:
+
+- profissional sem verificação alta não acessa telefone diretamente
+- atendimento deve ocorrer pela plataforma/funil
+- profissional verificado e com selo adequado pode acessar telefone após aceite de responsabilidade
+
+Regra:
+
+Não expor dados sensíveis por padrão.
+
+-------------------------------------
+
+# 24. AXÉ / ASSINATURA COMO PRODUTO
+
+STATUS: FUTURO, REVISAR ECONOMIA
+
+A assinatura deve ser entendida comercialmente como assinatura, mas tecnicamente pode funcionar como produto/pacote operacional adquirido por período.
+
+Modelo conceitual:
+
+- Axé livre para compras avulsas
+- Axé reservado/bloqueado para manter pacote/assinatura ativo
+- pacote de 3, 6, 9 ou 12 meses
+- direitos de uso liberados enquanto pacote estiver ativo
+- reajustes afetam novas contratações/renovações
+- preço contratado deve ser preservado até o fim do ciclo
+
+Pendências futuras:
+
+- revisar activate_subscription
+- revisar user_subscription
+- revisar purchase_coin
+- revisar add_coin duplicado/sobrecarregado
+- criar modelo de products/purchases/entitlements
+- criar saldo reservado
+- separar compra avulsa de pacote recorrente
+
+Regra:
+
+Não tratar assinatura como mensalidade SaaS simples dentro de users_profile.
+
+-------------------------------------
+
+# 25. REFERÊNCIA DO PROTOCOLO OPERACIONAL
+
+STATUS: CORRIGIR REFERÊNCIAS DOCUMENTAIS
+
+Caminho oficial versionado:
+
+docs/protocols/hurby-operational-protocol.md
+
+Pendência:
+
+Corrigir documentos, handoffs, checklists e comandos que ainda citem:
+
+hurby-operational-protocol.md
+
+como se estivesse na raiz do projeto.
+
+Regra:
+
+O protocolo operacional não deve ser movido para a raiz apenas para compatibilizar comando antigo.

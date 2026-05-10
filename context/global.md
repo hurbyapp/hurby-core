@@ -1,492 +1,690 @@
-\# ATUALIZAÇÃO GLOBAL — CORE\_REAL\_ESTATE\_OPERATIONAL\_FOUNDATION
+# HURBY — GLOBAL PROJECT STATE
 
+Data: 2026-05-10
 
+Status geral: CORE_IDENTITY_REBUILD + CORE_CLIENTS_FOUNDATION validado localmente
 
-Data: 2026-05-09  
+Repositório oficial:
+https://github.com/hurbyapp/hurby-core.git
 
-Missão: CORE\_REAL\_ESTATE\_OPERATIONAL\_FOUNDATION  
+Ambiente atual:
+- DEV/local: ativo para desenvolvimento e reset controlado
+- STAGING: usado para testes de deploy e comportamento em ambiente virtual
+- PROD: ainda não usado para dados reais
 
-Status técnico: Validado localmente  
+Regra de ambiente:
+DEV/STAGING não possuem dados importantes ou consistentes neste momento. Quando a modelagem estrutural exigir, é permitido ajustar migrations, remover/refatorar migrations ruins, rodar reset local, sincronizar STAGING e revalidar, desde que PROD não seja afetado.
 
-Status de auditoria: Validado para auditoria externa  
+-------------------------------------
 
-Próxima missão recomendada: CORE\_PROPERTIES\_FORM\_V1
+## 1. Estado consolidado do ecossistema
 
+O HURBY está em fase de construção canônica das foundations operacionais.
 
+O projeto não deve ser tratado como:
 
-\-------------------------------------
+- ERP imobiliário tradicional
+- sistema centrado apenas em imóveis
+- sistema centrado apenas em imobiliárias
+- portal fechado de anúncios
 
+O HURBY deve ser tratado como:
 
+- ecossistema operacional imobiliário
+- rede comercial colaborativa
+- plataforma de relacionamento e distribuição
+- sistema operacional profissional para corretores e imobiliárias
+- infraestrutura integrada ao marketplace Cadê Negócios
 
-\## 1. Consolidação da fundação operacional imobiliária
+-------------------------------------
 
+## 2. Foundations já consolidadas
 
+Já foram criadas e validadas as seguintes bases:
 
-Foi concluída e validada a fundação operacional imobiliária do Hurby, substituindo a estrutura antiga e simples de properties/leads por uma arquitetura mais compatível com a visão de ecossistema operacional.
+- Auth foundation
+- SSR/middleware foundation
+- Ledger/Axé foundation
+- LGPD/compliance foundation
+- Organizations/Memberships foundation
+- Core Real Estate Operational Foundation
+- Core Identity Rebuild
+- Core Clients Foundation inicial
+- Broker Profile foundation
 
+-------------------------------------
 
+## 3. Core Real Estate Operational Foundation
 
-A nova fundação passa a tratar o imóvel não como cadastro isolado, mas como parte de um contexto operacional composto por:
+A fundação imobiliária operacional foi concluída e validada.
 
+O imóvel deixou de ser tratado como cadastro isolado e passou a fazer parte de um contexto operacional composto por:
 
+- portfolio
+- portfolio_item
+- operational_origin
+- property_asset
+- property_asset_location
+- property_asset_features
+- property_listing
+- property_listing_media
 
-\- portfolio
+A criação de imóvel operacional deve continuar ocorrendo pela RPC transacional:
 
-\- portfolio\_item
+- public.create_property_operational_bundle
 
-\- property\_asset
+Essa RPC cria, em uma única operação:
 
-\- property\_listing
+- portfolio individual, se não existir
+- operational_origin
+- property_asset
+- property_asset_location
+- property_asset_features
+- property_listing
+- portfolio_item
 
-\- operational\_origin
+A função usa auth.uid() como referência de segurança e evita criação parcial ou registros órfãos no fluxo principal.
 
-\- visibility\_scope
+O Core Properties foi validado em:
 
+- banco local
+- Supabase STAGING
+- Vercel
+- fluxo broker
+- cadastro de imóvel
+- listagem
+- detalhe
+- edição básica
 
+-------------------------------------
 
-A estrutura foi validada em banco, frontend e fluxo operacional broker.
+## 4. Core Properties Form V1
 
+CORE_PROPERTIES_FORM_V1 não deve ser executado agora.
 
+Status:
+BACKLOG FUTURO / NÃO EXECUTAR NESTE MOMENTO
 
-\-------------------------------------
+Natureza:
+Melhoria e ampliação do formulário de cadastro/edição de imóveis.
 
+Motivo:
+O formulário atual já cumpre o papel de validação da foundation imobiliária. Melhorar a experiência do formulário é útil, mas não é o próximo gargalo estrutural do ecossistema.
 
+Decisão:
 
-\## 2. Estruturas principais consolidadas
+- não abrir missão CORE_PROPERTIES_FORM_V1 agora
+- não refatorar formulário neste momento
+- não expandir campos de imóvel agora
+- não mexer na foundation validada sem necessidade real
+- não alterar RPC create_property_operational_bundle sem necessidade real
+- não alterar RLS, storage ou lifecycle de listing nesta etapa
 
+Executar futuramente, depois de amadurecer:
 
+- Core Clients
+- Core Origins
+- Core Visibility
+- Core Leads V2
+- Core Marketplace
+- lifecycle real de listing
+- regras de visibilidade e ownership
 
-Foram consolidadas as seguintes entidades:
+-------------------------------------
 
+## 5. Core Identity Rebuild
 
+Foi realizada a reconstrução da base de identidade.
 
-\- portfolios
+Decisão central:
 
-\- portfolio\_items
+users_profile não representa mais corretor, cliente, agência, proprietário ou plano comercial.
 
-\- operational\_origins
+users_profile agora representa apenas a conta autenticada neutra.
 
-\- property\_assets
+Contrato técnico preservado:
 
-\- property\_asset\_locations
+auth.users.id = users_profile.id
 
-\- property\_asset\_features
+Isso mantém compatibilidade com:
 
-\- property\_listings
+- Ledger/Axé
+- Wallet
+- LGPD
+- Audit
+- Organizations
+- Memberships
+- Portfolio
+- Properties
+- RPC create_property_operational_bundle
 
-\- property\_listing\_media
+Foram removidas da fundação ativa as semânticas antigas:
 
+- user_type
+- account_tier
+- broker automático
+- PAY_PER_USE automático em users_profile
 
+A trigger de criação de usuário agora cria apenas profile neutro.
 
-Também foram consolidados os catálogos base:
+Arquivos envolvidos:
 
+- supabase/migrations/20260504000000_base_clean.sql
+- supabase/migrations/20260504000100_profiles.sql
+- supabase/migrations/20260506021141_auth_profile_trigger.sql
+- src/app/page.tsx
 
+-------------------------------------
 
-\- property\_type
+## 6. Core Clients Foundation
 
-\- property\_business\_context
+Foi criada a fundação inicial do Core Clients.
 
-\- operational\_model
+Cliente no HURBY não é uma tabela simples nem um dado solto.
 
-\- listing\_status
+Cliente é uma entidade relacional e contextual.
 
-\- media\_type
+A mesma pessoa pode existir em múltiplos contextos:
 
-\- media\_provider
+- usuário comum do marketplace
+- pessoa buscando imóvel
+- proprietário/fornecedor de imóvel
+- comprador
+- locatário
+- cliente de corretor
+- cliente de imobiliária
+- contato vindo de campanha
+- contato importado
+- futuro lead
+- parte de contrato
 
+A foundation criada prevê:
 
+- client_entities
+- client_contact_methods
+- client_relationships
+- client_relationship_roles
 
-O storage bucket `property-media` foi criado para mídia vinculada a listings.
+Princípios:
 
+- não duplicar pessoa sem estratégia
+- não misturar cliente com usuário autenticado
+- não misturar cliente com lead
+- não prender cliente a um único corretor sem contexto
+- não criar dado sensível sem rastreabilidade
+- preservar LGPD desde a foundation
+- permitir relacionamento futuro com marketplace, leads, contratos, funil, imóveis e gestão
 
+Arquivo criado:
 
-\-------------------------------------
+- supabase/migrations/20260510120000_core_identity_clients_foundation.sql
 
+-------------------------------------
 
+## 7. Broker Profile Foundation
 
-\## 3. Decisão arquitetural central
+Foi criada a camada profissional do corretor.
 
+users_profile continua sendo conta neutra.
 
+broker_profiles representa o perfil profissional.
 
-A criação de imóvel operacional não deve ser feita pelo frontend com múltiplos inserts diretos em tabelas protegidas por RLS.
+Estruturas criadas:
 
+- broker_profiles
+- broker_verifications
 
+Conceito:
 
-Foi criada a RPC transacional:
+- corretor não é users_profile
+- corretor é uma camada profissional vinculada a uma conta neutra
+- CRECI, validação, visibilidade e status profissional pertencem ao broker_profile
+- profissionais sem CRECI não devem ter os mesmos privilégios de corretores verificados
 
+Status previstos:
 
+- professional_status
+- verification_status
+- public_visibility_status
 
-\- public.create\_property\_operational\_bundle
+A verificação profissional deve evoluir futuramente para:
 
+- validação de CRECI
+- revisão manual
+- selos progressivos
+- reputação operacional
+- restrições por risco
+- trust/safety
 
+-------------------------------------
 
-Essa função cria, em uma única operação:
+## 8. Login e roteamento profissional
 
+O login foi ajustado para não depender mais de user_type.
 
+O login profissional agora considera:
 
-\- portfolio individual, se não existir
+- organization_membership ativo como owner/manager
+- broker_profile existente
+- ausência de contexto profissional
 
-\- operational\_origin
+Regras atuais:
 
-\- property\_asset
+- usuário com membership institucional ativo pode ir para /agency
+- usuário com broker_profile pode ir para /broker
+- usuário sem contexto profissional não deve ser jogado automaticamente para /broker
+- users_profile não deve mais definir acesso profissional sozinho
 
-\- property\_asset\_location
+Arquivos alterados:
 
-\- property\_asset\_features
+- src/app/login/page.tsx
+- src/app/broker/page.tsx
 
-\- property\_listing
+Middleware:
 
-\- portfolio\_item
+- middleware.ts foi preservado
+- ele continua responsável apenas por autenticação/proteção de rotas
+- não deve carregar lógica de perfil profissional neste momento
 
+-------------------------------------
 
+## 9. Cadê Negócios e Hurby/Hurb
 
-A função usa `auth.uid()` como referência de segurança e evita criação parcial ou registros órfãos no fluxo principal.
+A arquitetura de navegação deve prever dois ambientes integrados:
 
+Cadê Negócios:
+- marketplace público
+- busca de imóveis
+- favoritos
+- anúncios comuns
+- conta comum de usuário
+- navegação pública
 
+Hurby/Hurb:
+- sistema operacional profissional
+- corretor
+- imobiliária
+- carteira
+- imóveis
+- clientes
+- contratos futuros
+- funil futuro
+- gestão futura
 
-\-------------------------------------
+Domínios previstos:
 
+- cadênegócios.com.br
+- cadênegócios.com.br/hurb
+- hurb.com.br
 
+Regra de login:
 
-\## 4. Validação realizada
+- login no marketplace não deve redirecionar automaticamente o profissional para o painel
+- o profissional logado no marketplace deve navegar como usuário comum
+- se for profissional, deve ver acesso claro no topo, como “Hurby Pro” ou “Painel Hurby”
+- usuário comum que tentar entrar no ambiente profissional deve ser roteado de volta para o ambiente comum ou receber orientação de ausência de acesso profissional
 
+-------------------------------------
 
+## 10. Entry Flow / Fluxo de Entrada
 
-A fundação foi validada por:
+O projeto não deve usar onboarding genérico depois do login como base de identidade.
 
+A intenção deve vir antes ou durante o cadastro.
 
+Portas de entrada previstas:
 
-\- supabase db reset
+- usuário comum do marketplace
+- quero anunciar meu imóvel
+- sou corretor
+- sou imobiliária
+- convite institucional
+- entrada profissional Hurby/Hurb
 
-\- npm run build
+Cada porta deve conduzir para formulário adequado.
 
-\- criação de usuário local
+Exemplos:
 
-\- login broker
+Usuário comum:
+- nome
+- telefone
+- e-mail
+- conta simples
+- favoritos
+- dados
+- anúncios próprios
 
-\- acesso ao broker dashboard
+Corretor:
+- nome
+- telefone
+- e-mail
+- CPF
+- CRECI
+- UF do CRECI
+- cidade/região de atuação
+- broker_profile
 
-\- cadastro de imóvel
+Imobiliária:
+- responsável autenticado
+- CNPJ
+- razão social
+- nome fantasia
+- dados institucionais
+- organization
+- organization_membership
 
-\- listagem de imóvel
+-------------------------------------
 
-\- detalhe do imóvel
+## 11. Ledger/Axé
 
-\- edição básica do imóvel
+Ledger/Axé está preservado e não deve ser refeito agora.
 
-\- consulta SQL de integridade
+A análise confirmou que as funções financeiras não dependem semanticamente de users_profile.
 
+O contrato lógico deve continuar:
 
+- wallet_ledger.user_id = auth.users.id
+- wallet_balance.user_id = auth.users.id
 
-A validação confirmou registros nas tabelas:
+Backlog financeiro futuro:
 
+- revisar add_coin duplicado/sobrecarregado
+- revisar activate_subscription
+- revisar user_subscription
+- revisar purchase_coin
+- revisar transfer_coin
+- revisar expire_coin
+- adaptar assinatura ao novo modelo de produto/pacote operacional
+- diferenciar Axé livre e Axé reservado/bloqueado
+- preservar preço contratado até fim de ciclo
+- reajustes somente em novas contratações/renovações
 
+A assinatura deve ser entendida comercialmente como assinatura, mas tecnicamente pode funcionar como produto/pacote adquirido por período, com Axés reservados para débitos de acesso.
 
-\- portfolios
+-------------------------------------
 
-\- operational\_origins
+## 12. LGPD / Compliance
 
-\- property\_assets
+LGPD foundation deve ser preservada.
 
-\- property\_asset\_locations
+register_consent e log_action usam auth.uid() e não dependem de users_profile.user_type.
 
-\- property\_asset\_features
+A fundação de clientes deve continuar respeitando:
 
-\- property\_listings
+- minimização de dados
+- finalidade legítima
+- rastreabilidade
+- consentimento
+- retenção adequada
+- controle de acesso
+- uso cuidadoso de dados sensíveis
 
-\- portfolio\_items
+client_contact_methods foi criada já preparando:
 
+- validação de contato
+- consent_status
+- controle futuro de acesso a telefone/e-mail
+- integração futura com visibilidade, leads e trust/safety
 
+-------------------------------------
 
-Também foi confirmado vínculo correto:
+## 13. Score futuro
 
+Score não deve ser implementado agora.
 
+Score será um core/sistema próprio futuro.
 
-property\_listing  
+A foundation atual precisa apenas estar preparada para ele.
 
-→ property\_asset  
+Diretrizes:
 
-→ portfolio\_item  
+- score não pode ser coluna simples em users_profile
+- score deve ser contextual
+- score de marketplace não pode se misturar com score profissional
+- score precisa ter lastro explicável
+- score deve evitar rótulos discriminatórios
+- score deve usar termos operacionais, como:
+  - nível de verificação
+  - intenção
+  - maturidade da jornada
+  - confiabilidade cadastral
+  - reputação operacional
+  - qualidade do atendimento
 
-→ portfolio  
+Scores futuros possíveis:
 
-→ operational\_origin
+- score da conta
+- score do corretor
+- score da imobiliária
+- score do anúncio
+- score do imóvel
+- score do lead
+- score do cliente
+- score da relação
+- score de comportamento
+- score de qualidade operacional
 
+-------------------------------------
 
+## 14. Trust, Safety, Denúncias, Banimento e Avaliações
 
-\-------------------------------------
+Não implementar agora.
 
+Registrar como core futuro obrigatório.
 
+O Hurby deve futuramente permitir denúncias em:
 
-\## 5. Arquivos principais alterados
+- usuários
+- clientes
+- corretores
+- imobiliárias
+- anúncios
+- imóveis
+- mensagens
+- atendimentos
+- publicidades
+- páginas profissionais
+- conteúdos
 
+As denúncias devem prever:
 
+- motivo obrigatório
+- descrição
+- categoria
+- evidências
+- IP
+- user agent
+- dispositivo/navegador
+- sessão
+- origem
+- timestamp
+- geolocalização aproximada quando legalmente adequada e consentida
+- entidade denunciada
+- usuário denunciante
+- análise automática
+- fila humana
+- decisão
+- retenção de evidências para defesa jurídica
 
-Arquivos de frontend/service:
+Avaliações futuras devem ser contextuais:
 
+- anúncio
+- atendimento
+- corretor
+- imóvel
+- imobiliária
+- experiência geral
 
+Avaliações e denúncias devem alimentar futuramente:
 
-\- src/lib/services/propertyService.ts
+- score
+- reputação
+- monitoria
+- alertas
+- prevenção de fraude
+- melhoria de anúncios
+- orientação comercial
+- qualificação profissional
 
-\- src/app/broker/page.tsx
+Cores futuros sugeridos:
 
-\- src/app/operations/properties/page.tsx
+- CORE_TRUST_SAFETY
+- CORE_REVIEWS
+- CORE_SCORE
 
-\- src/app/operations/properties/new/page.tsx
+-------------------------------------
 
-\- src/app/operations/properties/list/page.tsx
+## 15. Profissionais sem CRECI
 
-\- src/app/operations/properties/\[listingId]/page.tsx
+Profissionais sem CRECI não devem operar livremente como corretores.
 
-\- src/app/operations/properties/\[listingId]/edit/page.tsx
+Eles podem existir futuramente apenas em modalidade restrita e rastreável, preferencialmente vinculados a:
 
+- corretor verificado
+- imobiliária verificada
 
+Eles não devem ter:
 
-Migrations principais:
+- mesmos privilégios de corretor verificado
+- mesma visibilidade
+- mesmo acesso a dados sensíveis
+- selo profissional equivalente
+- capacidade plena de receber leads qualificados
 
+A plataforma deve priorizar:
 
+- segurança do consumidor
+- proteção jurídica do Hurby
+- valorização do corretor regularizado
+- prevenção contra golpes
+- rastreabilidade operacional
 
-\- 20260509190000\_core\_real\_estate\_operational\_foundation.sql
+-------------------------------------
 
-\- 20260509204500\_create\_property\_operational\_bundle\_rpc.sql
+## 16. Arquivos e migrations consolidados nesta etapa
 
+Migrations alteradas:
 
+- supabase/migrations/20260504000000_base_clean.sql
+- supabase/migrations/20260504000100_profiles.sql
+- supabase/migrations/20260506021141_auth_profile_trigger.sql
 
-Migrations antigas removidas do fluxo ativo:
+Migration criada:
 
+- supabase/migrations/20260510120000_core_identity_clients_foundation.sql
 
+Frontend alterado:
 
-\- 20260504000200\_business.sql
+- src/app/page.tsx
+- src/app/login/page.tsx
+- src/app/broker/page.tsx
 
-\- 20260505020905\_lead\_unlock.sql
+Preservados:
 
-\- 20260505022650\_lead\_status.sql
+- middleware.ts
+- wallet_ledger
+- wallet_balance
+- consent_logs
+- audit_logs
+- organizations
+- organization_memberships
+- portfolios
+- portfolio_items
+- operational_origins
+- property_assets
+- property_listings
+- create_property_operational_bundle
 
-\- 20260508001612\_core\_properties\_v2\_foundation.sql
+-------------------------------------
 
-\- 20260508002142\_core\_properties\_v2\_rls\_storage.sql
+## 17. Validações realizadas
 
+Validações confirmadas:
 
+- supabase db reset
+- npm run build
+- login profissional
+- criação de broker_profile
+- redirecionamento para /broker
+- broker page sem erro de profile
+- busca por user_type/account_tier/PAY_PER_USE limpa
+- git commit/push realizado
+- working tree clean
 
-Essas migrations pertenciam ao desenho anterior e não devem ser restauradas sem auditoria.
+-------------------------------------
 
+## 18. Pendências documentais obrigatórias
 
+Atualizar também:
 
-\-------------------------------------
+- context/ecosystem/CANONICAL_OPERATIONAL_MAP.md
+- context/ecosystem/BACKLOG_PREVISIBILIDADE_ARQUITETURAL.md
+- context/modules/core_clients/global_clients.md
+- context/modules/core_clients/protocol_clients.md
 
+Corrigir referências antigas de:
 
+hurby-operational-protocol.md
 
-\## 6. Decisões preservadas
+para:
 
+docs/protocols/hurby-operational-protocol.md
 
+em comandos, handoffs, checklists e documentação.
 
-Devem ser preservadas:
+-------------------------------------
 
+## 19. Regra de continuidade
 
+Esta missão deve parar após:
 
-\- separação entre property\_asset e property\_listing
+- auditoria senior
+- atualização documental
+- commit da documentação
+- handoff final
 
-\- criação via RPC transacional
+Não iniciar agora:
 
-\- portfolio como camada operacional contextual
+- Core Leads V2
+- Core Marketplace
+- Core Funnel
+- Core Contracts
+- Core Trust/Safety
+- Core Score
+- Core Reviews
+- Core Properties Form V1
+- Core Products/Economy
 
-\- portfolio\_item como vínculo entre carteira, asset, listing, origem e visibilidade
+-------------------------------------
 
-\- operational\_origin como base de rastreabilidade futura
+## 20. Próxima missão recomendada
 
-\- mídia vinculada ao listing, não diretamente ao asset
+Antes de novo core funcional, concluir documentação desta missão.
 
-\- broker page como ponto de entrada operacional temporário
+Depois da documentação e handoff, a próxima missão estrutural deve ser definida com base no mapa canônico.
 
-\- não misturar properties com leads, marketplace, contratos, wallet ou LGPD
+Recomendação provável:
 
+- CORE_ORIGINS_FOUNDATION
+ou
+- CORE_VISIBILITY_FOUNDATION
 
+A escolha deve considerar dependência para Leads, Marketplace, Clients e Properties.
 
-\-------------------------------------
+-------------------------------------
 
+## 21. Status final da missão atual
 
+CORE_IDENTITY_REBUILD + CORE_CLIENTS_FOUNDATION:
 
-\## 7. Pontos validados pela auditoria externa
+- Banco: aprovado
+- Build: aprovado
+- Login: aprovado
+- Broker profile: aprovado
+- Core Clients foundation: aprovado
+- Compatibilidade Ledger: preservada
+- Compatibilidade LGPD: preservada
+- Compatibilidade Properties: preservada
+- Status: validado localmente
 
-
-
-A auditoria externa validou a missão para continuidade, com atenção aos seguintes pontos:
-
-
-
-1\. Status `deleted`
-
-
-
-`Deleted` não deve ser tratado como status comum de negócio. Deve evoluir para fluxo de soft delete com `deleted\_at`, preservando histórico, asset, portfolio\_item e integridade futura.
-
-
-
-2\. Segurança da RPC
-
-
-
-A função `create\_property\_operational\_bundle` deve continuar sendo auditada quanto a validações de entrada, uso de `auth.uid()` e prevenção de registros órfãos.
-
-
-
-3\. Localização e características
-
-
-
-As tabelas `property\_asset\_locations` e `property\_asset\_features` foram criadas como foundation e não devem ter regras prematuras que bloqueiem a evolução do formulário completo.
-
-
-
-\-------------------------------------
-
-
-
-\## 8. Backlog obrigatório registrado
-
-
-
-Backlog técnico/conceitual:
-
-
-
-\- implementar soft delete real para anúncios
-
-\- remover `Deletado` como opção comum de select
-
-\- transformar status em ações controladas
-
-\- criar botões: Publicar, Pausar, Reativar, Encerrar, Excluir
-
-\- criar `deleted\_at` operacional quando aplicável
-
-\- criar lifecycle real de listing
-
-\- criar motivo obrigatório para encerramento
-
-\- adicionar Arrendamento em property\_business\_context
-
-\- traduzir labels técnicos no frontend
-
-\- trocar “Modelo operacional” por “Forma de operação”
-
-\- traduzir Transacional para “Apenas intermediação”
-
-\- traduzir Gerenciado para “Gerenciado pelo corretor/imobiliária”
-
-\- traduzir Híbrido para “Intermediação + administração”
-
-\- migrar dropdowns para cards/radios quando fizer sentido
-
-\- manter checkbox apenas para múltiplas características/canais
-
-\- expandir formulário de localização
-
-\- expandir formulário de características
-
-\- validar upload de mídia em fluxo completo
-
-\- criar auditoria para alterações sensíveis de asset
-
-\- avaliar RPC futura também para edição sensível
-
-
-
-\-------------------------------------
-
-
-
-\## 9. Próxima missão recomendada
-
-
-
-A próxima missão deve ser separada e nomeada como:
-
-
-
-CORE\_PROPERTIES\_FORM\_V1
-
-
-
-Objetivo:
-
-
-
-Evoluir o formulário de cadastro e edição de imóveis para uma experiência mais amigável, completa e orientada ao usuário, sem alterar marketplace, leads, contratos ou gestão de locação.
-
-
-
-Escopo recomendado:
-
-
-
-\- melhoria de UX do formulário
-
-\- etapas de preenchimento
-
-\- labels comerciais claros
-
-\- cards/radios no lugar de dropdowns técnicos
-
-\- inclusão de Arrendamento
-
-\- localização completa
-
-\- características completas
-
-\- status como ações controladas
-
-\- soft delete inicial
-
-
-
-\-------------------------------------
-
-
-
-\## 10. Regra de continuidade
-
-
-
-A missão CORE\_REAL\_ESTATE\_OPERATIONAL\_FOUNDATION deve ser considerada encerrada.
-
-
-
-Não continuar evoluindo formulário, marketplace, leads, contratos ou gestão de locação dentro desta mesma missão.
-
-
-
-Qualquer evolução deve iniciar novo ciclo, com escopo próprio, validação própria e handoff próprio.
-
-
-
-\-------------------------------------
-
-
-
-\## 11. Status final
-
-
-
-CORE\_REAL\_ESTATE\_OPERATIONAL\_FOUNDATION:
-
-
-
-\- Banco: aprovado
-
-\- Frontend: aprovado
-
-\- Build: aprovado
-
-\- Fluxo broker: aprovado
-
-\- Cadastro: aprovado
-
-\- Edição: aprovado
-
-\- Auditoria externa: validado para continuidade
-
-
-
-Status final: missão concluída.
-
+Missão em fase documental final.
