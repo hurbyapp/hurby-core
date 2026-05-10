@@ -7,7 +7,7 @@ LOCAL:
 src/app/broker/page.tsx
 
 STATUS:
-BROKER_STABILIZED
+BROKER_PROFILE_ROUTING_READY
 
 OBJETIVO:
 Área operacional inicial do corretor.
@@ -15,6 +15,16 @@ OBJETIVO:
 IMPORTANTE:
 Esta página funciona como ponto de entrada
 para testes do ambiente broker.
+
+NÃO usar:
+- users_profile.user_type
+- account_tier
+- broker automático em users_profile
+
+Acesso broker agora é definido por:
+- auth.users
+- users_profile neutro
+- broker_profiles
 
 NÃO misturar aqui regras avançadas de:
 - marketplace
@@ -35,16 +45,16 @@ Não tratar como fluxo definitivo de produto.
 */
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 
 export default function BrokerPage() {
-  const router = useRouter()
-
   const [loading, setLoading] =
     useState(true)
 
   const [user, setUser] =
+    useState<any>(null)
+
+  const [brokerProfile, setBrokerProfile] =
     useState<any>(null)
 
   const [balance, setBalance] =
@@ -79,8 +89,6 @@ export default function BrokerPage() {
 
         let authUser = currentUser
 
-        // retry hydration
-
         if (userError || !currentUser) {
           await new Promise((resolve) =>
             setTimeout(resolve, 1000)
@@ -102,40 +110,56 @@ export default function BrokerPage() {
         setUser(authUser)
 
         // -------------------------------------
-        // PROFILE
+        // BROKER PROFILE
         // -------------------------------------
 
         const {
-          data: profile,
-          error: profileError,
+          data: broker,
+          error: brokerError,
         } = await supabase
-          .from('users_profile')
-          .select('user_type')
-          .eq('id', authUser!.id)
+          .from('broker_profiles')
+          .select(
+            'id, professional_name, professional_status, verification_status, public_visibility_status'
+          )
+          .eq('profile_id', authUser!.id)
           .maybeSingle()
 
-        if (profileError) {
+        if (brokerError) {
           console.error(
-            'PROFILE ERROR:',
-            profileError
+            'BROKER PROFILE ERROR:',
+            brokerError
           )
 
           setStatus(
-            'Erro ao carregar perfil.'
+            'Erro ao carregar perfil profissional.'
           )
 
           setLoading(false)
+          return
+        }
 
+        if (!broker) {
+          setStatus(
+            'Esta conta não possui perfil profissional vinculado.'
+          )
+
+          setLoading(false)
           return
         }
 
         if (
-          !profile ||
-          profile.user_type !== 'broker'
+          broker.professional_status ===
+          'suspended'
         ) {
-          window.location.href = '/login'
+          setStatus(
+            'Perfil profissional suspenso.'
+          )
+
+          setLoading(false)
           return
         }
+
+        setBrokerProfile(broker)
 
         // -------------------------------------
         // WALLET
@@ -187,7 +211,7 @@ export default function BrokerPage() {
     return () => {
       mounted = false
     }
-  }, [router])
+  }, [])
 
   // -------------------------------------
   // CONSUME
@@ -226,10 +250,6 @@ export default function BrokerPage() {
 
         return
       }
-
-      // -------------------------------------
-      // ATUALIZAR WALLET
-      // -------------------------------------
 
       const {
         data: wallet,
@@ -313,6 +333,26 @@ export default function BrokerPage() {
         <strong>Usuário:</strong>{' '}
         {user?.email}
       </p>
+
+      {brokerProfile && (
+        <>
+          <p>
+            <strong>Perfil profissional:</strong>{' '}
+            {brokerProfile.professional_name ||
+              'Corretor'}
+          </p>
+
+          <p>
+            <strong>Status profissional:</strong>{' '}
+            {brokerProfile.professional_status}
+          </p>
+
+          <p>
+            <strong>Verificação:</strong>{' '}
+            {brokerProfile.verification_status}
+          </p>
+        </>
+      )}
 
       <p>
         <strong>Saldo (AXE):</strong>{' '}
