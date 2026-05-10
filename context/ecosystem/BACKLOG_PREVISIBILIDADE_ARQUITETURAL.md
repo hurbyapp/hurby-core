@@ -476,6 +476,83 @@ Dependências:
 - Core Partnerships
 - Core Visibility
 
+
+-------------------------------------
+
+# 17. CORE_PROPERTIES_FORM_V1
+
+STATUS: BACKLOG / NÃO EXECUTAR AGORA
+
+A melhoria do formulário de cadastro e edição de imóveis foi identificada como evolução útil, mas não deve ser executada neste momento.
+
+A fundação imobiliária operacional já foi validada em:
+
+- banco local
+- Supabase STAGING
+- Vercel
+- fluxo broker
+- cadastro de imóvel
+- listagem
+- detalhe
+- edição
+
+Decisão:
+
+- não abrir a missão CORE_PROPERTIES_FORM_V1 agora
+- não refatorar formulário neste momento
+- não expandir campos de imóvel agora
+- não mexer na foundation validada
+- não alterar RPC create_property_operational_bundle sem necessidade real
+- não alterar RLS, storage ou lifecycle de listing nesta etapa
+
+Motivo:
+
+A prioridade estratégica agora é continuar os cores estruturais do ecossistema.
+
+O formulário pode melhorar a experiência do corretor, mas não é o próximo gargalo arquitetural.
+
+Antes de melhorar a camada visual e operacional do formulário, o HURBY precisa consolidar os próximos núcleos estruturais, principalmente:
+
+- Core Clients
+- Core Origins
+- Core Visibility
+- Core Leads V2
+- Core Marketplace
+- Core Products/Economy
+
+Pendências futuras da missão CORE_PROPERTIES_FORM_V1:
+
+- melhorar UX do cadastro
+- criar fluxo em etapas
+- trocar labels técnicos por labels comerciais
+- adicionar Arrendamento em finalidade do anúncio
+- trocar "Modelo operacional" por "Forma de operação"
+- trocar "Transacional" por "Apenas intermediação"
+- trocar "Gerenciado" por "Gerenciado pelo corretor/imobiliária"
+- trocar "Híbrido" por "Intermediação + administração"
+- expandir localização
+- expandir características
+- validar upload de mídia
+- avaliar cards/radios no lugar de dropdowns
+- implementar status por botões de ação
+- iniciar soft delete controlado
+- criar lifecycle real de listing
+- exigir motivo de encerramento quando aplicável
+
+Dependências recomendadas antes de executar:
+
+- Core Clients mais maduro
+- Core Origins mais maduro
+- Core Visibility mais maduro
+- definição futura de lifecycle de listing
+- validação de impacto no marketplace
+- validação de impacto em leads
+- validação de impacto em gestão administrativa
+
+Regra:
+
+CORE_PROPERTIES_FORM_V1 só deve ser aberto quando a arquitetura estrutural estiver pronta para suportar a evolução do cadastro sem gerar retrabalho.
+
 -------------------------------------
 
 # REGRA FINAL
@@ -493,4 +570,5 @@ Antes de qualquer alteração:
 5. gerar proposta
 6. validar
 7. só então executar
+
 
