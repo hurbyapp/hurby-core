@@ -5,23 +5,27 @@ LOCAL:
 src/app/page.tsx
 
 OBJETIVO:
-Redirecionar acesso raiz para login oficial.
+Redirecionar o acesso raiz para o login oficial.
 
 IMPORTANTE:
-Toda lógica de autenticação foi centralizada em:
+Toda lógica de autenticação deve permanecer centralizada em:
 - /login
 - middleware.ts
 
-NÃO implementar auth duplicado aqui.
+NÃO implementar autenticação duplicada aqui.
 
 HISTÓRICO:
-Código antigo utilizava:
-- user_type = corretor
-- /dashboard
+A rota raiz não executa lógica de perfil, permissão ou contexto operacional.
+Ela apenas direciona para a entrada oficial.
 
-O sistema oficial atual utiliza:
-- broker
-- /broker
+O roteamento contextual deve acontecer nas camadas próprias:
+- login público
+- login profissional
+- marketplace/common account
+- broker profile
+- organization membership
+- painel profissional
+- ambiente público Cadê Negócios
 
 =========================================
 */
