@@ -1,1 +1,0 @@
-select * from property_listing_media;
