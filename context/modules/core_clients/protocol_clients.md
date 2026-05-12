@@ -581,3 +581,70 @@ Não permitido agora:
 - implementar contratos
 - ampliar formulário de imóveis
 - refatorar properties sem necessidade real
+
+
+-------------------------------------
+
+## 27. HURBY_CONTEXT_UPDATE_20260511_CORE_CLIENTS_PROTOCOL_EXTENSION
+
+Data: 2026-05-11  
+Status: REGRA OPERACIONAL COMPLEMENTAR
+
+### 27.1. Core Clients nao e Auth
+
+O Core Clients nao deve assumir responsabilidade primaria por login, permissao ou redirecionamento.
+
+Essas responsabilidades pertencem a:
+
+- Supabase Auth
+- users_profile
+- middleware
+- accessService
+- broker_profiles
+- organization_memberships
+- RPCs especificas
+
+### 27.2. Regra para proximas evolucoes
+
+Antes de ampliar Core Clients, validar se a entidade e:
+
+1. usuario autenticado do sistema
+2. cliente comercial/relacional
+3. lead
+4. fornecedor
+5. pessoa vinculada a relacionamento
+6. membro de organizacao
+7. profissional corretor
+8. owner/admin
+
+Se for usuario autenticado, nao empurrar para client_entities sem motivo.
+
+Se for cliente comercial ou relacionamento operacional, usar Core Clients.
+
+### 27.3. Regressao proibida
+
+Qualquer nova evolucao do Core Clients deve preservar:
+
+- broker_profiles
+- organization_memberships
+- acesso /broker
+- acesso /agency
+- acesso /owner temporario
+- /account para usuario comum
+- ledger
+- wallet_balance
+- RLS vigente
+
+### 27.4. Handoff do Core Clients
+
+Handoff de Core Clients deve sempre informar:
+
+- se alterou users_profile
+- se alterou memberships
+- se alterou broker_profiles
+- se alterou rotas
+- se alterou ledger/wallet
+- se impactou marketplace/account
+- se impactou Owner temporario
+
+-------------------------------------

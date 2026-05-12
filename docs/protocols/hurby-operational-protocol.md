@@ -1228,3 +1228,71 @@ Core finalizado é:
 - consistente
 - modelado operacionalmente
 - preparado para evolução visual futura.
+
+----------------------------------------
+
+## HURBY_CONTEXT_UPDATE_20260511_OPERATIONAL_RULE
+
+Status: REGRA OPERACIONAL ADICIONADA  
+Data: 2026-05-11
+
+### Reconhecimento obrigatorio de missao estrutural
+
+Antes de codar qualquer core, o executor deve fazer reconhecimento completo.
+
+Reconhecimento superficial e proibido.
+
+Nao basta analisar SQL.
+
+O executor deve verificar:
+
+- backend
+- frontend
+- services
+- pages TSX
+- middleware
+- hooks
+- rotas
+- RPCs
+- RLS
+- enums
+- build
+- regressao nos fluxos ja validados
+
+### Regra de auth e rotas
+
+Se a missao tocar login, cadastro, perfil, broker, agency, owner, marketplace/account ou memberships, validar a matriz de acesso antes do handoff.
+
+Matriz minima:
+
+- usuario comum em /account
+- broker em /broker
+- agency em /agency
+- agency em /broker
+- owner temporario em /owner
+- usuario comum bloqueado em rotas profissionais
+
+### Regra de handoff
+
+O handoff final deve registrar tambem os erros ocorridos durante a missao, nao apenas o estado bonito final.
+
+Deve incluir:
+
+- bugs encontrados
+- causa raiz
+- correcao aplicada
+- comandos que falharam
+- comportamento aceito temporariamente
+- backlog gerado
+
+### Regra de encerramento
+
+Antes de devolver ao Master:
+
+- limpar arquivos temporarios
+- registrar backlog
+- atualizar global/protocol quando aplicavel
+- validar que o fluxo principal continua funcionando
+- nao abrir nova refatoracao fora do escopo
+
+----------------------------------------

@@ -2,45 +2,17 @@
 
 /*
 =========================================
-HURBY — AGENCY AREA
+HURBY â€” AGENCY AREA
 LOCAL:
 src/app/agency/page.tsx
 
 STATUS:
-ORGANIZATION_MEMBERSHIP_FOUNDATION
+ORGANIZATION_MEMBERSHIP_GUARDED
 
-RESPONSABILIDADES:
-- validar autenticação
-- validar membership organizacional ativo
-- permitir acesso somente a papéis de gestão
-- preparar dashboard institucional futuro
-- manter agency fora de user_type
-
-IMPORTANTE:
-Agency NÃO é user_type.
-
-Agency é:
-- organization
-- contexto operacional
-- ambiente institucional
-
-O acesso depende de:
-- organization_memberships
-- membership_status = active
-- membership_role = owner ou manager
-
-NÃO:
-- restaurar profile.user_type = agency
-- usar agency_id em users_profile
-- acoplar organização na identidade base
-
-PREVISÃO:
-Esta página deverá evoluir para:
-- gestão da organização
-- gestão de membros
-- carteira institucional
-- homologação de corretores
-- visibilidade operacional
+REGRA:
+- agency_owner com membership ativo acessa /agency
+- broker tentando /agency volta para /broker
+- marketplace tentando /agency volta para /account
 =========================================
 */
 
@@ -49,17 +21,10 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
 export default function AgencyPage() {
-  const [loading, setLoading] =
-    useState(true)
-
-  const [user, setUser] =
-    useState<any>(null)
-
-  const [membership, setMembership] =
-    useState<any>(null)
-
-  const [status, setStatus] =
-    useState('')
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<any>(null)
+  const [membership, setMembership] = useState<any>(null)
+  const [status, setStatus] = useState('')
 
   useEffect(() => {
     let mounted = true
@@ -68,9 +33,7 @@ export default function AgencyPage() {
       try {
         setStatus('')
 
-        await new Promise((resolve) =>
-          setTimeout(resolve, 1000)
-        )
+        await new Promise((resolve) => setTimeout(resolve, 800))
 
         const {
           data: { user: authUser },
@@ -81,38 +44,67 @@ export default function AgencyPage() {
           return
         }
 
-        const {
-          data: activeMembership,
-          error: membershipError,
-        } = await supabase
-          .from('organization_memberships')
-          .select(`
-            *,
-            organizations (
-              id,
-              legal_name,
-              trade_name,
-              organization_type
-            )
-          `)
-          .eq('profile_id', authUser.id)
-          .eq('membership_status', 'active')
-          .in('membership_role', [
-            'owner',
-            'manager',
-          ])
+        const { data: profile } = await supabase
+          .from('users_profile')
+          .select('primary_entry_flow, account_status')
+          .eq('id', authUser.id)
           .maybeSingle()
 
-        if (
-          membershipError ||
-          !activeMembership
-        ) {
-          console.error(
-            'AGENCY MEMBERSHIP ERROR:',
-            membershipError
-          )
+        const { data: activeMembership, error: membershipError } =
+          await supabase
+            .from('organization_memberships')
+            .select(
+              `
+              *,
+              organizations (
+                id,
+                legal_name,
+                trade_name,
+                organization_type
+              )
+            `
+            )
+            .eq('profile_id', authUser.id)
+            .eq('membership_status', 'active')
+            .in('membership_role', ['owner', 'manager'])
+            .limit(1)
+            .maybeSingle()
 
-          window.location.href = '/broker'
+        if (membershipError) {
+          console.error('AGENCY MEMBERSHIP ERROR:', membershipError)
+        }
+
+        const isAgency =
+          profile?.primary_entry_flow === 'agency_owner' &&
+          profile?.account_status === 'active' &&
+          !!activeMembership
+
+        if (!isAgency) {
+          const { data: brokerProfile } = await supabase
+            .from('broker_profiles')
+            .select('id, professional_status')
+            .eq('profile_id', authUser.id)
+            .neq('professional_status', 'suspended')
+            .limit(1)
+            .maybeSingle()
+
+          if (
+            brokerProfile ||
+            profile?.primary_entry_flow === 'broker_professional'
+          ) {
+            window.location.href = '/broker'
+            return
+          }
+
+          if (
+            profile?.account_status === 'active' &&
+            profile?.primary_entry_flow === 'platform_owner'
+          ) {
+            window.location.href = '/owner'
+            return
+          }
+
+          window.location.href = '/account'
           return
         }
 
@@ -122,15 +114,8 @@ export default function AgencyPage() {
         setMembership(activeMembership)
         setLoading(false)
       } catch (error) {
-        console.error(
-          'AGENCY INIT ERROR:',
-          error
-        )
-
-        setStatus(
-          'Erro interno agency.'
-        )
-
+        console.error('AGENCY INIT ERROR:', error)
+        setStatus('Erro interno agency.')
         setLoading(false)
       }
     }
@@ -148,14 +133,33 @@ export default function AgencyPage() {
     try {
       await supabase.auth.signOut()
     } catch (error) {
-      console.error(
-        'AGENCY LOGOUT ERROR:',
-        error
-      )
+      console.error('AGENCY LOGOUT ERROR:', error)
     }
 
     window.location.href = '/login'
   }
+
+  const Nav = () => (
+    <nav
+      style={{
+        display: 'flex',
+        gap: 12,
+        borderBottom: '1px solid #ddd',
+        paddingBottom: 12,
+        marginBottom: 24,
+        flexWrap: 'wrap',
+      }}
+    >
+      <Link href="/broker">Broker</Link>
+      <Link href="/agency">Agency</Link>
+      <Link href="/account">Minha conta</Link>
+      <Link href="/account/profile">Editar cadastro</Link>
+      <Link href="/operations/properties">Imoveis</Link>
+      <Link href="/operations/properties/new">Cadastrar imovel</Link>
+      <Link href="/operations/properties/list">Listar imoveis</Link>
+      <Link href="/statement">Extrato AXE</Link>
+    </nav>
+  )
 
   if (loading) {
     return (
@@ -167,69 +171,34 @@ export default function AgencyPage() {
 
   return (
     <main style={{ padding: 20 }}>
-      <header
-        style={{
-          display: 'flex',
-          gap: 16,
-          borderBottom: '1px solid #ddd',
-          paddingBottom: 12,
-          marginBottom: 24,
-        }}
-      >
-        <Link href="/agency">
-          Dashboard Agency
-        </Link>
-
-        <Link href="/broker">
-          Área Broker
-        </Link>
-
-        <Link href="/operations/properties">
-          Imóveis
-        </Link>
-
-        <Link href="/statement">
-          Extrato
-        </Link>
-      </header>
+      <Nav />
 
       <h1>Dashboard Agency</h1>
 
       <p>
-        <strong>Usuário:</strong>{' '}
-        {user?.email}
+        <strong>Usuario:</strong> {user?.email}
       </p>
 
       <p>
-        <strong>Organização:</strong>{' '}
-        {membership?.organizations
-          ?.trade_name ||
-          membership?.organizations
-            ?.legal_name}
+        <strong>Organizacao:</strong>{' '}
+        {membership?.organizations?.trade_name ||
+          membership?.organizations?.legal_name}
       </p>
 
       <p>
-        <strong>Tipo:</strong>{' '}
-        {membership?.organizations
-          ?.organization_type}
+        <strong>Tipo:</strong> {membership?.organizations?.organization_type}
       </p>
 
       <p>
-        <strong>Papel:</strong>{' '}
-        {membership?.membership_role}
+        <strong>Papel:</strong> {membership?.membership_role}
       </p>
 
-      {status && (
-        <p style={{ color: '#666' }}>
-          {status}
-        </p>
-      )}
+      {status && <p style={{ color: '#666' }}>{status}</p>}
 
       <br />
 
-      <button onClick={handleLogout}>
-        Logout
-      </button>
+      <button onClick={handleLogout}>Logout</button>
     </main>
   )
 }
+

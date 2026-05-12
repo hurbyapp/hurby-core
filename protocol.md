@@ -259,3 +259,89 @@ Registrar obrigatoriamente:
 Essas dívidas NÃO podem ser esquecidas.
 
 -------------------------------------
+
+-------------------------------------
+
+## 20. HURBY_CONTEXT_UPDATE_20260511_OWNER_CLIENTS_PROTOCOL
+
+Status: REGRA OPERACIONAL CONSOLIDADA  
+Data: 2026-05-11  
+Escopo: missoes estruturais, autenticacao, acesso, rotas e RPCs criticas
+
+### 20.1. Reconhecimento completo antes de codar
+
+Toda missao estrutural deve obrigatoriamente iniciar com reconhecimento completo de backend e frontend.
+
+Nao basta ler apenas SQL ou migrations.
+
+O executor deve reconhecer, quando aplicavel:
+
+- migrations SQL
+- tabelas envolvidas
+- enums reais do banco
+- funcoes RPC
+- policies RLS
+- services TS/TSX
+- hooks
+- middleware
+- pages de login/cadastro
+- pages de dashboard
+- componentes ligados ao fluxo
+- rotas protegidas
+- fluxos de redirect
+- build local
+- regressao em fluxos ja validados
+
+### 20.2. Regra contra regressao por leitura superficial
+
+Se uma alteracao tocar autenticacao, roteamento, carteira, ledger, memberships, broker, agency, owner ou clients, o executor deve validar os arquivos relacionados antes de entregar.
+
+Arquivos minimos para reconhecimento em fluxo de acesso:
+
+- middleware.ts
+- src/app/login/page.tsx
+- src/lib/services/accessService.ts
+- src/app/account/page.tsx
+- src/app/broker/page.tsx
+- src/app/agency/page.tsx
+- src/app/owner/page.tsx
+- paginas de cadastro relacionadas
+
+### 20.3. Regra de validacao por matriz de acesso
+
+Toda mudanca em auth/rotas deve ser validada com matriz pratica:
+
+- usuario comum
+- broker
+- agency
+- owner temporario, quando existir
+- rotas /account, /broker, /agency, /owner, /operations e /statement
+
+A entrega nao pode ser considerada concluida apenas porque o build passou.
+
+### 20.4. Regra para RPCs financeiras
+
+RPC financeira nao pode assumir texto livre para enums.
+
+Antes de alterar RPC financeira, validar valores reais com pg_enum.
+
+Exemplo validado nesta fase:
+
+- coin_origin_type: BONUS
+- coin_credit_type: BONUS
+
+A distribuicao temporaria de AXE pelo Owner de validacao deve usar BONUS/BONUS no ledger, nunca ADMIN, pois ADMIN nao existe no enum atual.
+
+### 20.5. Handoff obrigatorio com falhas e riscos
+
+Todo handoff deve registrar:
+
+- o que foi corrigido
+- o que quebrou durante a missao
+- como foi diagnosticado
+- quais comandos falharam
+- quais comandos funcionaram
+- quais comportamentos ficaram aceitos temporariamente
+- quais pontos foram enviados ao backlog
+
+-------------------------------------

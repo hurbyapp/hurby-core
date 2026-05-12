@@ -4,105 +4,116 @@
 =========================================================
 HURBY
 CORE_REAL_ESTATE_OPERATIONAL_FOUNDATION
-PROPERTIES INDEX PAGE
+PROPERTY FOUNDATION PAGE
 LOCAL:
 src/app/operations/properties/page.tsx
-=========================================================
 
-FOUNDATION PAGE
+REGRA:
+Acesso permitido somente para contexto profissional:
+- broker_profile ativo
+- organization_membership owner/manager ativo
 
-Esta página pertence ao núcleo operacional de imóveis
-do ecossistema Hurby.
-
-NÃO:
-- misturar lógica financeira
-- misturar leads
-- misturar IA
-- misturar assinatura
-- misturar dashboards globais
-
-ARQUITETURA OFICIAL:
-- portfolio
-- portfolio_item
-- property_asset
-- property_listing
-- operational_origin
-- visibility_scope
-
-IMPORTANTE:
-listing ≠ asset
-
+Usuario comum do marketplace nao acessa este modulo.
 =========================================================
 */
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { requireProfessionalAccess } from '@/lib/services/accessService'
 import { supabase } from '@/lib/supabaseClient'
 
 export default function PropertiesHomePage() {
-  const [loading, setLoading] =
-    useState(true)
+  const [loading, setLoading] = useState(true)
+  const [status, setStatus] = useState('')
 
   useEffect(() => {
-    const validateAuth = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+    const validateAccess = async () => {
+      const result = await requireProfessionalAccess()
 
-      if (!user) {
-        window.location.href = '/login'
+      if (!result.allowed) {
         return
       }
 
       setLoading(false)
     }
 
-    validateAuth()
+    validateAccess()
   }, [])
+
+  const handleLogout = async () => {
+    setStatus('Saindo...')
+
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error('PROPERTIES LOGOUT ERROR:', error)
+    }
+
+    window.location.href = '/login'
+  }
 
   if (loading) {
     return (
       <main style={{ padding: 24 }}>
-        <p>Carregando...</p>
+        <p>Validando acesso profissional...</p>
       </main>
     )
   }
 
   return (
     <main style={{ padding: 24 }}>
-      <h1>Core Imobiliário Operacional</h1>
+      <nav
+        style={{
+          display: 'flex',
+          gap: 12,
+          borderBottom: '1px solid #ddd',
+          paddingBottom: 12,
+          marginBottom: 20,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Link href="/broker">Broker</Link>
+        <Link href="/agency">Agency</Link>
+        <Link href="/account">Minha conta</Link>
+        <Link href="/account/profile">Editar cadastro</Link>
+        <Link href="/operations/properties">Imoveis</Link>
+        <Link href="/operations/properties/new">Cadastrar imovel</Link>
+        <Link href="/operations/properties/list">Listar imoveis</Link>
+        <Link href="/statement">Extrato AXE</Link>
+      </nav>
+
+      <h1>Core Imobiliario Operacional</h1>
 
       <p>
-        Foundation operacional de imóveis do
-        ecossistema Hurby.
+        Foundation operacional de imoveis do ecossistema Hurby.
       </p>
 
       <p>
-        Este núcleo trabalha com carteira operacional,
-        origem, ativo, anúncio e vínculo de portfolio.
+        Este nucleo trabalha com carteira operacional, origem, ativo, anuncio
+        e vinculo de portfolio.
       </p>
 
       <ul>
         <li>
-          <a href="/operations/properties/new">
-            Cadastrar novo imóvel
-          </a>
+          <Link href="/operations/properties/new">Cadastrar novo imovel</Link>
         </li>
+
         <li>
-          <a href="/operations/properties/list">
-            Listar imóveis
-          </a>
+          <Link href="/operations/properties/list">Listar imoveis</Link>
         </li>
       </ul>
 
       <br />
 
-      <p>
-        Fluxo esperado:
-      </p>
+      <p>Fluxo esperado:</p>
 
-      <pre>
-        profile → portfolio → portfolio_item → asset/listing
-      </pre>
+      <pre>profile → portfolio → portfolio_item → asset/listing</pre>
+
+      {status && <p>{status}</p>}
+
+      <br />
+
+      <button onClick={handleLogout}>Logout</button>
     </main>
   )
 }

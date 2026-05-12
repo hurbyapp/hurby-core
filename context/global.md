@@ -688,3 +688,121 @@ CORE_IDENTITY_REBUILD + CORE_CLIENTS_FOUNDATION:
 - Status: validado localmente
 
 Missão em fase documental final.
+
+
+-------------------------------------
+
+## 22. HURBY_CONTEXT_UPDATE_20260511_OWNER_BROKER_AGENCY_VALIDATION
+
+Data: 2026-05-11  
+Status: CICLO TEMPORARIO OWNER/BROKER/AGENCY VALIDADO LOCALMENTE
+
+### 22.1. Estado validado
+
+Foi validado localmente o ciclo temporario de acesso envolvendo:
+
+- Owner temporario de validacao
+- Broker
+- Agency
+- Conta comum de marketplace
+- Distribuicao de AXE via Owner
+- Persistencia em wallet_ledger
+- Reflexo em wallet_balance
+
+### 22.2. Owner temporario
+
+O Owner temporario nao representa o Core Owner/Admin definitivo.
+
+Ele existe apenas para validar:
+
+- login Owner
+- acesso a /owner
+- listagem de usuarios
+- listagem de imoveis
+- distribuicao manual de AXE
+- leitura de saldos
+- comportamento basico de administracao temporaria
+
+Regra validada:
+
+- primary_entry_flow = platform_owner
+- account_status = active
+- registration_status = completed
+
+### 22.3. Causa raiz do problema de Owner
+
+O cadastro Owner estava nascendo como seeker porque o signUp nao enviava primary_entry_flow = platform_owner no metadata e o update posterior nao gravava esse campo.
+
+Com isso, o login caia no fluxo comum de marketplace/account.
+
+Correcao aplicada no cadastro Owner:
+
+- normalizacao de nome e e-mail
+- metadata de signUp com primary_entry_flow = platform_owner
+- upsert em users_profile com primary_entry_flow = platform_owner
+- validacao via RPC is_platform_owner antes de redirecionar para /owner
+
+### 22.4. Rotas e direcionamentos
+
+Fluxos principais validados:
+
+- Broker acessa /broker
+- Agency acessa /agency
+- Agency tambem pode acessar /broker
+- Usuario comum permanece em /account
+- Owner acessa /owner
+- Rotas profissionais continuam protegidas para usuario comum
+
+Ponto nao bloqueante registrado:
+
+- Owner tentando acessar /broker pode cair em /account neste ciclo temporario.
+- Nao corrigir agora se nao bloquear o fluxo principal.
+- Tratar futuramente quando o Core Owner/Admin definitivo existir.
+
+### 22.5. AXE Owner temporario
+
+A distribuicao de AXE pelo Owner voltou a funcionar.
+
+Causa raiz do erro:
+
+- RPC owner_add_axe usava origem ADMIN.
+- ADMIN nao existe no enum coin_origin_type.
+- Valores reais validados:
+  - coin_origin_type = BONUS
+  - coin_credit_type = BONUS
+
+Correcao validada:
+
+- owner_add_axe grava CREDIT / BONUS / BONUS no wallet_ledger
+- wallet_balance reflete o saldo
+- broker de teste recebeu saldo com sucesso
+- valores de teste no broker podem estar inflados por testes manuais no frontend
+
+### 22.6. Ponto de atencao: statement/extrato
+
+Foram percebidas logicas equivocadas no fluxo de extrato/statement.
+
+Decisao:
+
+- nao corrigir agora
+- manter fluxo atual funcional
+- registrar no backlog financeiro/ledger
+- corrigir em missao especifica posterior
+
+### 22.7. Estado final da missao
+
+Estado final validado:
+
+- cadastro Owner temporario corrigido
+- Owner reconhecido como platform_owner
+- painel Owner acessivel
+- broker acessivel
+- agency acessivel
+- usuario comum preservado
+- ledger preservado
+- owner_add_axe funcionando
+- wallet_balance refletindo credito
+- build/dev recuperado apos reset do npm run dev
+- pendencia de statement registrada para backlog
+
+-------------------------------------

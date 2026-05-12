@@ -7,43 +7,51 @@ CORE_REAL_ESTATE_OPERATIONAL_FOUNDATION
 PROPERTY LIST PAGE
 LOCAL:
 src/app/operations/properties/list/page.tsx
-=========================================================
 
-FLOW:
-PROPERTY LISTINGS
+OBJETIVO:
+Listar anuncios operacionais.
 
-Esta página lista listings operacionais.
-
-IMPORTANTE:
-listing ≠ asset
-
-O listing é a manifestação comercial do ativo.
-O asset é o ativo imobiliário operacional persistente.
-
+REGRA:
+- anuncios profissionais seguem lista operacional normal
+- anuncios MP podem aparecer no operacional somente para o proprio criador
+- anuncios MP de terceiros nao aparecem
+- tag visual: Cad. MP
 =========================================================
 */
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
-
 import { supabase } from '@/lib/supabaseClient'
+import { getPropertyListings } from '@/lib/services/propertyService'
 
-import {
-  getPropertyListings,
-} from '@/lib/services/propertyService'
+function isMarketplaceListing(listing: any) {
+  return listing?.metadata?.source === 'marketplace_user_listing'
+}
+
+function MarketplaceTag({ listing }: { listing: any }) {
+  if (!isMarketplaceListing(listing)) return null
+
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        border: '1px solid #999',
+        borderRadius: 999,
+        padding: '2px 8px',
+        fontSize: 12,
+        marginLeft: 8,
+      }}
+    >
+      Cad. MP
+    </span>
+  )
+}
 
 export default function PropertyListPage() {
-  const [loading, setLoading] =
-    useState(true)
-
-  const [listings, setListings] =
-    useState<any[]>([])
-
-  const [error, setError] =
-    useState('')
-
-  // -------------------------------------
-  // INIT
-  // -------------------------------------
+  const [loading, setLoading] = useState(true)
+  const [listings, setListings] = useState<any[]>([])
+  const [error, setError] = useState('')
+  const [status, setStatus] = useState('')
 
   useEffect(() => {
     const init = async () => {
@@ -56,8 +64,7 @@ export default function PropertyListPage() {
         return
       }
 
-      const response =
-        await getPropertyListings()
+      const response = await getPropertyListings()
 
       if (response.error) {
         setError(response.error.message)
@@ -65,17 +72,26 @@ export default function PropertyListPage() {
         return
       }
 
-      setListings(response.data || [])
+      const filtered = (response.data || []).filter((listing: any) => {
+        if (!isMarketplaceListing(listing)) {
+          return true
+        }
 
+        return listing.created_by_profile_id === user.id
+      })
+
+      setListings(filtered)
       setLoading(false)
     }
 
     init()
   }, [])
 
-  // -------------------------------------
-  // LOADING
-  // -------------------------------------
+  const handleLogout = async () => {
+    setStatus('Saindo...')
+    await supabase.auth.signOut()
+    window.location.href = '/login'
+  }
 
   if (loading) {
     return (
@@ -85,37 +101,40 @@ export default function PropertyListPage() {
     )
   }
 
-  // -------------------------------------
-  // PAGE
-  // -------------------------------------
-
   return (
     <main style={{ padding: 24 }}>
-      <p>
-        <a href="/operations/properties">
-          Voltar para Imóveis
-        </a>
+      <nav
+        style={{
+          display: 'flex',
+          gap: 12,
+          borderBottom: '1px solid #ddd',
+          paddingBottom: 12,
+          marginBottom: 20,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Link href="/broker">Broker</Link>
+        <Link href="/agency">Agency</Link>
+        <Link href="/account">Minha conta</Link>
+        <Link href="/account/profile">Editar cadastro</Link>
+        <Link href="/operations/properties">Imoveis</Link>
+        <Link href="/operations/properties/new">Cadastrar imovel</Link>
+        <Link href="/operations/properties/list">Listar imoveis</Link>
+        <Link href="/statement">Extrato AXE</Link>
+      </nav>
+
+      <h1>Lista de Imoveis</h1>
+
+      <p>Lista de anuncios operacionais vinculados ao Core Imobiliario.</p>
+
+      <p style={{ fontSize: 13, color: '#666' }}>
+        Cad. MP = cadastro criado pelo usuario comum no marketplace.
       </p>
 
-      <h1>Lista de Imóveis</h1>
-
-      <p>
-        Lista de anúncios operacionais vinculados
-        ao novo core imobiliário.
-      </p>
-
-      <br />
-
-      {error && (
-        <p style={{ color: 'red' }}>
-          {error}
-        </p>
-      )}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {listings.length === 0 && !error && (
-        <p>
-          Nenhum imóvel encontrado.
-        </p>
+        <p>Nenhum imovel encontrado.</p>
       )}
 
       {listings.map((listing) => (
@@ -127,69 +146,62 @@ export default function PropertyListPage() {
             marginBottom: 16,
           }}
         >
-          <h3>{listing.title}</h3>
+          <h3>
+            {listing.title}
+            <MarketplaceTag listing={listing} />
+          </h3>
+
+          <p>{listing.description || 'Sem descricao.'}</p>
 
           <p>
-            {listing.description}
+            <strong>Preco:</strong> {listing.price ?? '-'}
           </p>
 
           <p>
-            <strong>Preço:</strong>{' '}
-            {listing.price ?? '-'}
-          </p>
-
-          <p>
-            <strong>Status:</strong>{' '}
-            {
-              listing.listing_status
-                ?.label
-            }
+            <strong>Status:</strong> {listing.listing_status?.label || '-'}
           </p>
 
           <p>
             <strong>Contexto:</strong>{' '}
-            {
-              listing
-                .property_business_context
-                ?.label
-            }
+            {listing.property_business_context?.label || '-'}
           </p>
 
           <p>
-            <strong>Visibilidade:</strong>{' '}
-            {listing.visibility_scope}
+            <strong>Visibilidade:</strong> {listing.visibility_scope || '-'}
           </p>
 
           <p>
-            <strong>Asset:</strong>{' '}
-            {
-              listing.property_asset_id
-            }
+            <strong>Origem:</strong>{' '}
+            {isMarketplaceListing(listing)
+              ? 'Marketplace usuario comum'
+              : 'Operacional profissional'}
           </p>
 
           <p>
-            <a
-              href={`/operations/properties/${listing.id}`}
-            >
+            <strong>Asset:</strong> {listing.property_asset_id}
+          </p>
+
+          <p>
+            <Link href={`/operations/properties/${listing.id}`}>
               Abrir detalhe
-            </a>
+            </Link>
             {' | '}
-            <a
-              href={`/operations/properties/${listing.id}/edit`}
-            >
+            <Link href={`/operations/properties/${listing.id}/edit`}>
               Editar
-            </a>
+            </Link>
           </p>
         </div>
       ))}
 
+      {status && <p>{status}</p>}
+
       <br />
 
       <p>
-        <a href="/operations/properties/new">
-          Cadastrar novo imóvel
-        </a>
+        <Link href="/operations/properties/new">Cadastrar novo imovel</Link>
       </p>
+
+      <button onClick={handleLogout}>Logout</button>
     </main>
   )
 }

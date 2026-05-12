@@ -473,3 +473,79 @@ Core Clients Foundation:
 
 Status:
 FOUNDATION VALIDADA LOCALMENTE
+
+
+-------------------------------------
+
+## 22. HURBY_CONTEXT_UPDATE_20260511_CORE_CLIENTS_IDENTITY_DISTINCTION
+
+Data: 2026-05-11  
+Status: COMPLEMENTO CONCEITUAL VALIDADO
+
+### 22.1. Distincao obrigatoria
+
+O Core Clients nao deve ser confundido com a conta basica do usuario do site.
+
+Conta basica / identidade:
+
+- users_profile
+- auth.users
+- primary_entry_flow
+- account_status
+- registration_status
+- broker_profiles
+- organization_memberships
+
+Cliente relacional/comercial:
+
+- client_entities
+- client_relationships
+- client_contact_methods
+- client_relationship_roles
+
+### 22.2. Interpretacao correta
+
+No Hurby, "cliente" no Core Clients pode ser:
+
+- lead
+- interessado
+- comprador
+- locatario
+- proprietario
+- fornecedor
+- parceiro
+- contato de relacionamento
+- entidade vinculada a uma jornada comercial
+
+Usuario do site pode existir sem ainda ser cliente comercial.
+
+Cliente comercial pode existir como entidade relacional sem necessariamente ter login.
+
+### 22.3. Impacto da validacao Owner/Broker/Agency
+
+Durante a missao, foi validado que o Core Clients nao quebrou:
+
+- login broker
+- login agency
+- login owner temporario
+- acesso broker
+- acesso agency
+- acesso owner
+- ledger
+- wallet_balance
+- distribuicao AXE
+
+### 22.4. Blindagem
+
+Nao alterar o Core Clients para absorver responsabilidades de:
+
+- autorizacao profissional
+- membership institucional
+- permissao Owner/Admin
+- ledger
+- wallet
+- rotas de acesso
+
+Essas responsabilidades pertencem a outros cores/camadas.
+
+-------------------------------------

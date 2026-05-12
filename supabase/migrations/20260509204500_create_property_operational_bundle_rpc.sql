@@ -1,17 +1,17 @@
 -- =========================================
--- MÓDULO: CORE_REAL_ESTATE_OPERATIONAL_FOUNDATION
+-- MÃƒÆ’Ã¢â‚¬Å“DULO: CORE_REAL_ESTATE_OPERATIONAL_FOUNDATION
 -- MIGRATION: 20260509204500_create_property_operational_bundle_rpc.sql
 --
 -- OBJETIVO:
 -- Criar RPC transacional para cadastro operacional
--- de imóvel dentro do novo core imobiliário.
+-- de imÃƒÆ’Ã‚Â³vel dentro do novo core imobiliÃƒÆ’Ã‚Â¡rio.
 --
 -- MOTIVO:
--- O fluxo de criação não deve depender do frontend
--- fazendo múltiplos inserts em tabelas protegidas por RLS.
+-- O fluxo de criaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o deve depender do frontend
+-- fazendo mÃƒÆ’Ã‚Âºltiplos inserts em tabelas protegidas por RLS.
 --
--- A função usa auth.uid() e cria:
--- - portfolio individual, se não existir
+-- A funÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o usa auth.uid() e cria:
+-- - portfolio individual, se nÃƒÆ’Ã‚Â£o existir
 -- - operational_origin
 -- - property_asset
 -- - property_asset_location
@@ -19,7 +19,7 @@
 -- - property_listing
 -- - portfolio_item
 --
--- NÃO ALTERA:
+-- NÃƒÆ’Ã†â€™O ALTERA:
 -- - auth
 -- - ledger
 -- - wallet
@@ -65,9 +65,25 @@ BEGIN
     SELECT 1
     FROM public.users_profile up
     WHERE up.id = v_user_id
-      AND up.status = 'active'
+      AND up.account_status = 'active'
   ) THEN
     RAISE EXCEPTION 'ACTIVE_PROFILE_REQUIRED';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM public.broker_profiles bp
+    WHERE bp.profile_id = v_user_id
+      AND bp.professional_status = 'active'
+  )
+  AND NOT EXISTS (
+    SELECT 1
+    FROM public.organization_memberships om
+    WHERE om.profile_id = v_user_id
+      AND om.membership_status = 'active'
+      AND om.membership_role IN ('owner', 'manager')
+  ) THEN
+    RAISE EXCEPTION 'PROFESSIONAL_CONTEXT_REQUIRED';
   END IF;
 
   IF p_title IS NULL OR length(trim(p_title)) = 0 THEN
@@ -103,7 +119,7 @@ BEGIN
       NULL,
       NULL,
       'Carteira individual',
-      'Carteira operacional individual criada automaticamente para o usuário.',
+      'Carteira operacional individual criada automaticamente para o usuÃƒÆ’Ã‚Â¡rio.',
       v_user_id
     )
     RETURNING id INTO v_portfolio_id;
@@ -123,7 +139,7 @@ BEGIN
     v_user_id,
     NULL,
     NULL,
-    'Cadastro direto realizado pelo usuário dentro do núcleo operacional imobiliário.',
+    'Cadastro direto realizado pelo usuÃƒÆ’Ã‚Â¡rio dentro do nÃƒÆ’Ã‚Âºcleo operacional imobiliÃƒÆ’Ã‚Â¡rio.',
     jsonb_build_object('source', 'create_property_operational_bundle_rpc'),
     v_user_id
   )
@@ -270,4 +286,4 @@ COMMENT ON FUNCTION public.create_property_operational_bundle(
   text,
   text
 ) IS
-'Cria imóvel operacional completo dentro do Core Real Estate Foundation usando auth.uid() e transação do banco.';
+'Cria imÃƒÆ’Ã‚Â³vel operacional completo dentro do Core Real Estate Foundation usando auth.uid() e transaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do banco.';

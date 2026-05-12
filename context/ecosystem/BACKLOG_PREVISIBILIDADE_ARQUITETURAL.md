@@ -927,3 +927,115 @@ como se estivesse na raiz do projeto.
 Regra:
 
 O protocolo operacional não deve ser movido para a raiz apenas para compatibilizar comando antigo.
+
+
+-------------------------------------
+
+# HURBY_CONTEXT_UPDATE_20260511_BACKLOG_OWNER_CLIENTS_LEDGER
+
+Data: 2026-05-11  
+Status: BACKLOG TECNICO / CONCEITUAL REGISTRADO
+
+## 1. Refinar statement/extrato financeiro
+
+Durante a validacao do ciclo Owner/Broker/Agency, foram percebidas logicas equivocadas no fluxo de extrato/statement.
+
+Decisao atual:
+
+- nao corrigir agora
+- nao mexer no ledger validado
+- nao bloquear continuidade dos proximos cores
+- abrir missao futura especifica para statement/extrato
+
+Motivo:
+
+O fluxo principal esta funcionando:
+
+- owner_add_axe grava no wallet_ledger
+- wallet_balance reflete saldo
+- Owner distribui AXE
+- Broker recebe AXE
+
+Risco futuro:
+
+Extrato pode exibir informacoes inconsistentes, confusas ou incompletas se for usado como base financeira definitiva sem revisao.
+
+## 2. Core Owner/Admin definitivo
+
+O Owner atual e temporario.
+
+Nao transformar o Owner temporario em admin definitivo sem nova modelagem.
+
+O Core Owner/Admin futuro deve prever:
+
+- permissoes administrativas formais
+- papeis administrativos dedicados
+- auditoria completa
+- logs de acao
+- trilha financeira
+- governanca de acesso
+- bloqueio/suspensao/banimento
+- revisao de usuarios, anuncios, saldos e operacoes
+- seguranca juridica e LGPD
+
+## 3. Owner tentando acessar /broker
+
+Foi aceito como pendencia nao bloqueante que Owner tentando acessar /broker pode cair em /account.
+
+Nao corrigir agora se o fluxo principal estiver validado.
+
+Essa regra deve ser revista quando o Core Owner/Admin definitivo for desenhado.
+
+## 4. Blindagem da RPC owner_add_axe
+
+A RPC owner_add_axe foi corrigida para usar BONUS/BONUS.
+
+Risco futuro:
+
+Nao recriar owner_add_axe usando valores textuais inexistentes como ADMIN.
+
+Antes de qualquer ajuste no ledger, validar pg_enum.
+
+Valores reais nesta fase:
+
+- coin_origin_type: PURCHASE, BONUS, REWARD, TRANSFER_IN, TRANSFER_OUT, CONSUMPTION, REFUND, EXPIRATION
+- coin_credit_type: PAID, BONUS, REWARD, TRANSFER
+
+## 5. Separacao entre usuario do site e cliente comercial
+
+A nomenclatura deve ser observada em proximas missoes.
+
+Usuario do site:
+
+- users_profile
+- conta autenticada
+- marketplace user
+- broker
+- agency
+- owner temporario
+
+Cliente comercial/relacional:
+
+- client_entities
+- client_relationships
+- leads
+- fornecedores
+- contatos
+- interessados
+- relacoes comerciais
+
+Nao misturar novamente "usuario do site" com "cliente" no sentido comercial do Core Clients.
+
+## 6. Limpeza de arquivos temporarios
+
+Manter o repositorio limpo antes de commit.
+
+Arquivos temporarios conhecidos desta rodada:
+
+- context_update_input_owner_clients.txt
+- context_update_input_owner_clients_PARTE_*.txt
+- src/app/register/owner/page.backup.tsx
+
+Remover antes do commit se existirem.
+
+-------------------------------------

@@ -188,3 +188,41 @@ Nenhum novo core deve expandir:
 
 antes da consolidação canônica operacional.
 
+
+
+-------------------------------------
+
+## HURBY_CONTEXT_UPDATE_20260511_CANONICAL_ACCESS_STATE
+
+Status: ESTADO CANONICO TEMPORARIO VALIDADO  
+Data: 2026-05-11
+
+O ecossistema passa a reconhecer quatro contextos operacionais distintos nesta fase:
+
+1. Usuario comum do marketplace
+2. Broker profissional
+3. Agency / imobiliaria
+4. Owner temporario de validacao
+
+O Owner temporario existe apenas como ferramenta de validacao operacional antes do Core Owner/Admin definitivo.
+
+Regra de separacao:
+
+- users_profile representa identidade/base de conta
+- broker_profiles representa permissao/contexto profissional de corretor
+- organization_memberships representa vinculo institucional com agency
+- platform_owner representa apenas Owner temporario de validacao
+- client_entities e client_relationships representam clientes, leads, fornecedores e relacoes futuras, nao a conta basica do usuario do site
+
+Nenhum novo core deve assumir que primary_entry_flow sozinho e autorizacao definitiva.
+
+Permissao real deve continuar sendo derivada de:
+
+- contexto da conta
+- perfil profissional
+- membership ativa
+- RPC segura
+- RLS
+- validacao de backend
+
+-------------------------------------
