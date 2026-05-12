@@ -20,6 +20,13 @@ CRIA:
 REGRA:
 Usuario comum nao e broker.
 Usuario comum nao acessa modulo profissional.
+
+CORRECAO:
+[2026-05-12]
+- users_profile permanece neutro
+- cadastro passa a usar authUser.id da sessao real
+- troca update por upsert defensivo
+- evita erro por timing entre signup, login e RLS
 =========================================
 */
 
@@ -49,6 +56,8 @@ export default function RegisterCommonPage() {
       setLoading(true)
       setStatus('')
 
+      const normalizedName = name.trim()
+      const normalizedEmail = email.trim().toLowerCase()
       const cleanPhone = onlyDigits(phone)
       const cleanWhatsapp = onlyDigits(whatsapp)
 
@@ -57,7 +66,7 @@ export default function RegisterCommonPage() {
         return
       }
 
-      if (!name || !email || !password) {
+      if (!normalizedName || !normalizedEmail || !password) {
         setStatus('Preencha nome, email e senha.')
         return
       }
@@ -84,36 +93,29 @@ export default function RegisterCommonPage() {
           ? 'seeker'
           : 'marketplace_common'
 
-      const { data, error } = await supabase.auth.signUp({
-        email,
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: normalizedEmail,
         password,
         options: {
           data: {
-            display_name: name,
-            name,
+            display_name: normalizedName,
+            name: normalizedName,
             phone: cleanPhone || cleanWhatsapp || null,
             primary_entry_flow: primaryEntryFlow,
           },
         },
       })
 
-      if (error) {
-        console.error('COMMON SIGNUP ERROR:', error)
-        setStatus(error.message)
+      if (signUpError) {
+        console.error('COMMON SIGNUP ERROR:', signUpError)
+        setStatus(signUpError.message)
         return
       }
 
-      const user = data.user
-
-      if (!user) {
-        setStatus('Erro ao criar usuario.')
-        return
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      await new Promise((resolve) => setTimeout(resolve, 1500))
 
       const loginResult = await supabase.auth.signInWithPassword({
-        email,
+        email: normalizedEmail,
         password,
       })
 
@@ -123,22 +125,40 @@ export default function RegisterCommonPage() {
         return
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      const {
+        data: { user: authUser },
+        error: authUserError,
+      } = await supabase.auth.getUser()
+
+      if (authUserError || !authUser) {
+        console.error('COMMON GET USER ERROR:', authUserError)
+        setStatus('Conta criada, mas a sessão ainda não foi reconhecida. Faça login manualmente.')
+        return
+      }
 
       const now = new Date().toISOString()
 
       const { error: profileError } = await supabase
         .from('users_profile')
-        .update({
-          display_name: name,
-          email,
-          phone: cleanPhone || cleanWhatsapp || null,
-          registration_status: 'completed',
-          primary_entry_flow: primaryEntryFlow,
-          terms_version_accepted: '2026-05',
-          terms_accepted_at: now,
-        })
-        .eq('id', user.id)
+        .upsert(
+          {
+            id: authUser.id,
+            display_name: normalizedName,
+            email: normalizedEmail,
+            phone: cleanPhone || cleanWhatsapp || null,
+            registration_status: 'completed',
+            primary_entry_flow: primaryEntryFlow,
+            account_status: 'active',
+            terms_version_accepted: '2026-05',
+            terms_accepted_at: now,
+            updated_at: now,
+          },
+          {
+            onConflict: 'id',
+          }
+        )
 
       if (profileError) {
         console.error('COMMON PROFILE ERROR:', profileError)
@@ -149,13 +169,13 @@ export default function RegisterCommonPage() {
       const { data: clientEntity, error: clientError } = await supabase
         .from('client_entities')
         .insert({
-          linked_profile_id: user.id,
-          display_name: name,
+          linked_profile_id: authUser.id,
+          display_name: normalizedName,
           entity_type: 'individual',
           verification_level:
             cleanPhone || cleanWhatsapp ? 'contact_verified' : 'unverified',
           entity_status: 'active',
-          created_by_profile_id: user.id,
+          created_by_profile_id: authUser.id,
         })
         .select('id')
         .single()
@@ -170,11 +190,11 @@ export default function RegisterCommonPage() {
         {
           client_entity_id: clientEntity.id,
           contact_type: 'email',
-          contact_value: email,
+          contact_value: normalizedEmail,
           is_primary: true,
           verification_status: 'unverified',
           consent_status: 'granted',
-          created_by_profile_id: user.id,
+          created_by_profile_id: authUser.id,
         },
       ]
 
@@ -186,7 +206,7 @@ export default function RegisterCommonPage() {
           is_primary: !cleanWhatsapp,
           verification_status: 'unverified',
           consent_status: 'granted',
-          created_by_profile_id: user.id,
+          created_by_profile_id: authUser.id,
         })
       }
 
@@ -198,7 +218,7 @@ export default function RegisterCommonPage() {
           is_primary: true,
           verification_status: 'unverified',
           consent_status: 'granted',
-          created_by_profile_id: user.id,
+          created_by_profile_id: authUser.id,
         })
       }
 
@@ -218,7 +238,7 @@ export default function RegisterCommonPage() {
           client_entity_id: clientEntity.id,
           relationship_context: 'marketplace',
           relationship_status: 'active',
-          created_by_profile_id: user.id,
+          created_by_profile_id: authUser.id,
           notes: 'Cadastro comum criado pela porta marketplace.',
         })
         .select('id')
