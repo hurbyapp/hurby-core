@@ -22,6 +22,30 @@
 -- - papeis administrativos dedicados
 -- =========================================
 
+-- =========================================
+-- PRECHECK | USERS_PROFILE OWNER FIELDS
+-- OBJETIVO:
+-- garantir colunas mÃƒÆ’Ã‚Â­nimas necessÃƒÆ’Ã‚Â¡rias para
+-- validaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do Owner temporÃƒÆ’Ã‚Â¡rio no Staging.
+--
+-- MOTIVO:
+-- esta migration usa account_status,
+-- primary_entry_flow e registration_status.
+--
+-- REGRA:
+-- manter defensivo com IF NOT EXISTS para
+-- nÃƒÆ’Ã‚Â£o quebrar Staging, DEV reset ou novos ambientes.
+-- =========================================
+
+alter table public.users_profile
+add column if not exists primary_entry_flow text not null default 'seeker';
+
+alter table public.users_profile
+add column if not exists account_status text not null default 'active';
+
+alter table public.users_profile
+add column if not exists registration_status text not null default 'completed';
+
 create or replace function public.is_platform_owner()
 returns boolean
 language sql
@@ -36,6 +60,55 @@ as $$
       and up.primary_entry_flow = 'platform_owner'
   );
 $$;
+
+-- =========================================
+-- PRECHECK | USERS_PROFILE DISPLAY FIELDS
+-- OBJETIVO:
+-- garantir campos mínimos de exibição usados
+-- pelo painel Owner temporário.
+--
+-- MOTIVO:
+-- esta migration usa display_name e email em
+-- owner_validation_users().
+--
+-- REGRA:
+-- manter defensivo com IF NOT EXISTS.
+-- =========================================
+
+alter table public.users_profile
+add column if not exists display_name text;
+
+alter table public.users_profile
+add column if not exists email text;
+
+-- =========================================
+-- PRECHECK | WALLET BALANCE TABLE
+-- OBJETIVO:
+-- garantir tabela wallet_balance mÃ­nima
+-- para leitura do painel Owner temporÃ¡rio.
+--
+-- MOTIVO:
+-- esta migration usa wallet_balance antes
+-- de alguns ambientes Staging possuÃ­rem a
+-- tabela materializada/agregada criada.
+--
+-- REGRA:
+-- wallet_balance Ã© cache derivado do ledger.
+-- A fonte financeira oficial continua sendo
+-- wallet_ledger.
+-- =========================================
+
+create table if not exists public.wallet_balance (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  balance integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.wallet_balance
+add column if not exists balance integer not null default 0;
+
+alter table public.wallet_balance
+add column if not exists updated_at timestamptz not null default now();
 
 create or replace function public.owner_validation_users()
 returns table (
@@ -152,3 +225,4 @@ begin
   );
 end;
 $$;
+

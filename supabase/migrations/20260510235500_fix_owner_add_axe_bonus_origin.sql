@@ -1,4 +1,4 @@
-﻿/*
+/*
 =========================================
 HURBY - FIX OWNER ADD AXE BONUS ORIGIN
 LOCAL:
