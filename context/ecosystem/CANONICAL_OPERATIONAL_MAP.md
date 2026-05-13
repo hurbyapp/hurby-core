@@ -1449,3 +1449,21 @@ A escolha deve considerar dependência para:
 
 CORE_PROPERTIES_FORM_V1 permanece apenas como backlog futuro de melhoria de formulário.
 
+
+-------------------------------------
+
+## HURBY_CONTEXT_UPDATE_20260512_ACTIVE_SEQUENCE
+
+Sequência ativa ajustada:
+
+1. CORE_PROPERTIES_FORM_V1
+2. CORE_ORIGINS_FOUNDATION
+3. CORE_VISIBILITY_FOUNDATION
+4. CORE_PARTNERSHIPS_FOUNDATION
+5. CORE_LEADS_V2
+6. CORE_MARKETPLACE_FOUNDATION
+
+Observação:
+
+CORE_PROPERTIES_FORM_V1 foi autorizado antes de Origins/Visibility para resolver a camada operacional do cadastro profissional de imóvel já validado, sem alterar a foundation estrutural.
+

@@ -1031,3 +1031,53 @@ O Owner temporario, por ser dono/tester do portal, pode precisar navegar por are
 - fluxos operacionais
 
 Essa permissao deve ser tratada como regra temporaria de validacao e nao deve ser confundida com o futuro Core Owner/Admin definitivo.
+
+-------------------------------------
+
+## HURBY_CONTEXT_UPDATE_20260512_PROPERTIES_FORM_V1_AUTHORIZED
+
+Data: 2026-05-12
+Status: CORE_PROPERTIES_FORM_V1 AUTORIZADO COMO PRÓXIMA MISSÃO
+
+Após a estabilização da foundation Auth + Clients + Properties + AXE + Owner temporário, a evolução do formulário profissional de imóveis foi autorizada como próxima missão ativa.
+
+A decisão anterior de manter CORE_PROPERTIES_FORM_V1 em backlog foi revista.
+
+Motivo:
+
+O formulário profissional de imóvel já está funcional, mas ainda opera como camada mínima de validação da foundation. Evoluir sua experiência agora reduz atrito operacional, melhora a validação do Core Properties e prepara a interface para uso profissional antes da sequência CORE_ORIGINS_FOUNDATION e CORE_VISIBILITY_FOUNDATION.
+
+Escopo autorizado:
+
+- melhorar UX do cadastro profissional de imóvel
+- melhorar edição profissional de imóvel
+- trocar labels técnicos por labels comerciais
+- organizar fluxo em etapas, se fizer sentido
+- melhorar clareza de finalidade, tipo, valor, localização, características e descrição
+- preservar RPC create_property_operational_bundle
+- preservar tabelas e migrations já validadas
+- preservar fluxo broker, agency, owner e account
+- validar cadastro, listagem, detalhe e edição após alteração
+- rodar build antes de commit
+
+Escopo proibido:
+
+- não remodelar banco sem necessidade real
+- não alterar Core Properties foundation sem auditoria
+- não alterar ledger/AXE
+- não alterar auth/login/middleware
+- não iniciar marketplace
+- não iniciar leads
+- não iniciar origins
+- não iniciar visibility
+- não iniciar contratos
+- não transformar formulário em novo core de lifecycle completo
+
+Próximo core estrutural após esta missão:
+
+- CORE_ORIGINS_FOUNDATION
+
+Regra:
+
+CORE_PROPERTIES_FORM_V1 deve ser tratado como melhoria operacional controlada sobre a foundation existente, não como refatoração arquitetural ampla.
+
