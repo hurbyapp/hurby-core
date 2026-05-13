@@ -1445,3 +1445,180 @@ Revisar direcionamentos entre:
 - /account
 
 O Owner temporario pode precisar navegar por areas ampliadas para fiscalizacao de interface, design, usuarios, imoveis, saldos, extratos e fluxos. Essa regra deve ser definida como temporaria de validacao e nao como Core Owner/Admin definitivo.
+
+----------------------------------------
+
+## 27. PROTOCOLO DE COMMIT CONSERVADOR, DRIFT E MUDANÇAS CRÍTICAS
+
+Status: REGRA OPERACIONAL OBRIGATÓRIA
+Data: 2026-05-12
+
+### 27.1. Commit não é missão de implementação
+
+O executor responsável por commit/deploy deve atuar como auditor de integridade e fechamento.
+
+Durante uma missão de commit, é proibido criar correções estruturais por dedução.
+
+É proibido:
+
+- criar migration nova sem autorização explícita
+- recriar tabela por tentativa
+- alterar enum para "fazer funcionar"
+- alterar RPC sem entender a cadeia de migrations
+- alterar RLS/policies sem auditoria
+- restaurar migration arquivada sem autorização
+- remover migration antiga sem validar migrations posteriores
+- alterar services, TSX ou rotas sem reconhecer o frontend completo
+- corrigir arquitetura no escuro
+- aproveitar o commit para implementar nova funcionalidade
+
+Se houver erro, dúvida ou incompatibilidade estrutural, o executor deve parar e solicitar:
+
+- handoff da missão anterior
+- diff dos arquivos alterados
+- motivo da mudança
+- histórico de migrations
+- validações realizadas
+- impacto esperado
+- ambiente afetado
+
+A missão de commit deve se limitar a:
+
+- revisar arquivos alterados
+- remover lixo temporário já identificado
+- validar migrations esperadas
+- confirmar ausência de migrations erradas
+- validar build
+- validar banco quando aplicável
+- confirmar ausência de drift
+- commitar
+- fazer push
+- gerar retorno final
+
+Qualquer alteração estrutural durante commit transforma a tarefa em nova missão técnica e deve ser tratada separadamente.
+
+### 27.2. Mudanças críticas exigem documentação explícita
+
+Sempre que uma missão realizar mudança estrutural relevante, o executor deve documentar claramente:
+
+- o que mudou
+- por que mudou
+- qual estrutura antiga foi substituída
+- qual estrutura nova entrou no lugar
+- impacto em backend
+- impacto em frontend
+- impacto em migrations
+- impacto em DEV/STAGING/PROD
+- risco de drift arquitetural
+- validações realizadas
+- rollback possível
+- alerta para o próximo executor
+
+Isso vale para:
+
+- tabelas
+- colunas
+- enums
+- RPCs/funções
+- triggers
+- RLS/policies
+- migrations
+- contratos de dados
+- services
+- rotas
+- pages TSX
+- middleware
+- regras de acesso
+- fluxos de autenticação
+- estruturas financeiras
+- qualquer mudança que possa afetar ambiente local, DEV, STAGING ou PROD
+
+É proibido entregar handoff dizendo apenas "estrutura criada" quando houve mudança crítica.
+
+### 27.3. Não editar migrations antigas sem validar o estado final
+
+Se uma migration antiga contém lógica aparentemente errada, o executor não deve removê-la ou editá-la automaticamente.
+
+Antes de qualquer ação, deve validar:
+
+1. em qual migration o problema apareceu
+2. se existe migration posterior corrigindo o problema
+3. qual é o estado final aplicado no banco
+4. se o db reset local passa
+5. se o ambiente remoto recebeu a sequência correta
+6. se a função/tabela/RPC final está correta
+7. se a alteração pode quebrar replay das migrations
+
+Exemplo real:
+
+Uma migration antiga pode conter uma versão incorreta de uma RPC, mas uma migration posterior pode recriar a mesma RPC corretamente.
+
+Nesse caso, a decisão correta é validar o estado final da função no banco antes de mexer na cadeia de migrations.
+
+### 27.4. Regra contra drift de arquitetura
+
+Drift arquitetural ocorre quando local, DEV, STAGING, PROD, migrations, frontend ou documentação deixam de representar a mesma realidade.
+
+Para evitar drift, toda missão crítica deve registrar:
+
+- ambiente usado
+- project-ref do Supabase
+- migrations aplicadas
+- migrations removidas ou arquivadas
+- reset realizado ou não
+- db push realizado ou não
+- reload schema cache realizado ou não
+- Vercel validado ou não
+- funções/RPCs críticas testadas
+- rotas testadas
+- arquivos frontend impactados
+
+Se o executor não tiver essas informações, não deve commitar nem fazer deploy.
+
+### 27.5. Regra de validação final antes de commit
+
+Antes de qualquer commit estrutural, executar no mínimo:
+
+- git status
+- git diff --name-status
+- git diff --cached --name-status
+- npm run build
+- supabase db reset local, quando houver migration estrutural
+- validação da função/RPC crítica, quando aplicável
+- verificação de project-ref, quando houver Supabase remoto
+- validação manual do fluxo afetado
+
+Quando envolver Supabase remoto, validar obrigatoriamente:
+
+Get-Content "supabase\.temp\project-ref"
+
+E comparar com o ambiente alvo.
+
+### 27.6. Regra de handoff para commit/deploy
+
+Todo handoff para commit/deploy deve informar:
+
+1. arquivos alterados
+2. migrations criadas
+3. migrations removidas
+4. migrations que não devem entrar
+5. funções/RPCs críticas
+6. enums envolvidos
+7. validações obrigatórias
+8. comandos de limpeza
+9. comandos de build
+10. comandos de banco
+11. riscos conhecidos
+12. o que não pode ser alterado
+13. estado esperado após commit
+
+Sem essas informações, o executor de commit deve parar e pedir complementação.
+
+### 27.7. Regra final
+
+Commit não corrige arquitetura.
+
+Commit valida, fecha e preserva integridade.
+
+Se precisar corrigir arquitetura, abrir nova missão.
+
