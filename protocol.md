@@ -1,5 +1,5 @@
 # HURBY PROTOCOL
-Versão: 1.1  
+VersÃ£o: 1.1  
 Status: Ativo  
 
 -------------------------------------
@@ -8,194 +8,194 @@ Status: Ativo
 
 Este protocolo define COMO o projeto Hurby deve ser desenvolvido, garantindo:
 
-- consistência técnica  
-- segurança do sistema  
-- ausência de regressões  
+- consistÃªncia tÃ©cnica  
+- seguranÃ§a do sistema  
+- ausÃªncia de regressÃµes  
 - controle de qualidade  
-- continuidade entre execuções  
+- continuidade entre execuÃ§Ãµes  
 
-Este documento NÃO contém regras de negócio específicas nem estrutura de páginas.
-
--------------------------------------
-
-## 2. PRINCÍPIOS FUNDAMENTAIS
-
-1. Backend é a fonte da verdade  
-2. Frontend NÃO contém lógica crítica  
-3. Toda operação sensível deve ser validada no backend  
-4. Sistema deve evoluir sem quebrar o que já funciona  
-5. Nenhuma evolução com dívida técnica ativa  
-6. Segurança e rastreabilidade são obrigatórias (LGPD / Auditoria)  
+Este documento NÃƒO contÃ©m regras de negÃ³cio especÃ­ficas nem estrutura de pÃ¡ginas.
 
 -------------------------------------
 
-## 3. REGRAS INEGOCIÁVEIS
+## 2. PRINCÃPIOS FUNDAMENTAIS
 
-- NÃO alterar lógica financeira no frontend  
-- NÃO inserir diretamente em tabelas críticas (ex: credit_transactions)  
-- SEMPRE usar funções seguras para operações críticas (RPC)  
-- NÃO modificar estrutura existente sem validação  
-- NÃO prosseguir com erro ou inconsistência  
-- NÃO remover código existente sem autorização explícita  
-- NÃO causar regressão funcional ou estrutural  
-
-Se houver dúvida:  
-→ PARAR execução  
-→ validar antes de continuar  
+1. Backend Ã© a fonte da verdade  
+2. Frontend NÃƒO contÃ©m lÃ³gica crÃ­tica  
+3. Toda operaÃ§Ã£o sensÃ­vel deve ser validada no backend  
+4. Sistema deve evoluir sem quebrar o que jÃ¡ funciona  
+5. Nenhuma evoluÃ§Ã£o com dÃ­vida tÃ©cnica ativa  
+6. SeguranÃ§a e rastreabilidade sÃ£o obrigatÃ³rias (LGPD / Auditoria)  
 
 -------------------------------------
 
-## 4. FLUXO DE EXECUÇÃO PADRÃO
+## 3. REGRAS INEGOCIÃVEIS
+
+- NÃƒO alterar lÃ³gica financeira no frontend  
+- NÃƒO inserir diretamente em tabelas crÃ­ticas (ex: credit_transactions)  
+- SEMPRE usar funÃ§Ãµes seguras para operaÃ§Ãµes crÃ­ticas (RPC)  
+- NÃƒO modificar estrutura existente sem validaÃ§Ã£o  
+- NÃƒO prosseguir com erro ou inconsistÃªncia  
+- NÃƒO remover cÃ³digo existente sem autorizaÃ§Ã£o explÃ­cita  
+- NÃƒO causar regressÃ£o funcional ou estrutural  
+
+Se houver dÃºvida:  
+â†’ PARAR execuÃ§Ã£o  
+â†’ validar antes de continuar  
+
+-------------------------------------
+
+## 4. FLUXO DE EXECUÃ‡ÃƒO PADRÃƒO
 
 Toda tarefa deve seguir:
 
 1. Executor implementa  
-2. Executor gera RELATÓRIO DE ETAPA  
-3. Usuário valida  
+2. Executor gera RELATÃ“RIO DE ETAPA  
+3. UsuÃ¡rio valida  
 4. Auditoria externa (Gemini)  
-5. Correções (se necessário)  
-6. Atualização de CONTEXTO  
-7. Avança para próxima etapa  
+5. CorreÃ§Ãµes (se necessÃ¡rio)  
+6. AtualizaÃ§Ã£o de CONTEXTO  
+7. AvanÃ§a para prÃ³xima etapa  
 
-Nenhuma etapa é considerada concluída sem esse ciclo completo.
+Nenhuma etapa Ã© considerada concluÃ­da sem esse ciclo completo.
 
 -------------------------------------
 
-## 5. DEFINIÇÃO DE TAREFA CONCLUÍDA (DoD)
+## 5. DEFINIÃ‡ÃƒO DE TAREFA CONCLUÃDA (DoD)
 
-Uma tarefa só é considerada concluída quando:
+Uma tarefa sÃ³ Ã© considerada concluÃ­da quando:
 
-- Código está funcional  
-- Não há erros ou inconsistências  
-- Não há dívida técnica  
-- Contexto atualizado (quando aplicável)  
+- CÃ³digo estÃ¡ funcional  
+- NÃ£o hÃ¡ erros ou inconsistÃªncias  
+- NÃ£o hÃ¡ dÃ­vida tÃ©cnica  
+- Contexto atualizado (quando aplicÃ¡vel)  
 - Fluxo validado  
-- Auditoria concluída (quando necessário)  
-- Não há regressão  
+- Auditoria concluÃ­da (quando necessÃ¡rio)  
+- NÃ£o hÃ¡ regressÃ£o  
 
 -------------------------------------
 
-## 6. GESTÃO DE CONTEXTO
+## 6. GESTÃƒO DE CONTEXTO
 
-O sistema utiliza CONTEXTO como memória estruturada.
+O sistema utiliza CONTEXTO como memÃ³ria estruturada.
 
 ### Tipos de contexto:
 
-- Contexto Global → arquitetura e regras do sistema  
-- Contexto de Página → comportamento específico  
+- Contexto Global â†’ arquitetura e regras do sistema  
+- Contexto de PÃ¡gina â†’ comportamento especÃ­fico  
 
 ### Regras:
 
 - Contexto deve refletir o estado real do sistema  
-- Atualizar contexto após mudanças relevantes  
-- NÃO misturar contexto com protocolo  
+- Atualizar contexto apÃ³s mudanÃ§as relevantes  
+- NÃƒO misturar contexto com protocolo  
 
 -------------------------------------
 
 ## 7. USO DE HANDOFF
 
-Handoff é utilizado para:
+Handoff Ã© utilizado para:
 
-- transferência entre chats  
-- continuidade de execução  
+- transferÃªncia entre chats  
+- continuidade de execuÃ§Ã£o  
 
 Deve conter:
 
 - resumo do que foi feito  
 - estado atual real  
 - arquitetura atual  
-- decisões tomadas  
-- pendências técnicas  
-- próximos passos  
-- pontos de atenção  
+- decisÃµes tomadas  
+- pendÃªncias tÃ©cnicas  
+- prÃ³ximos passos  
+- pontos de atenÃ§Ã£o  
 
-Handoff NÃO é documentação do sistema.
+Handoff NÃƒO Ã© documentaÃ§Ã£o do sistema.
 
 -------------------------------------
 
-## 8. PADRÃO DE INTERAÇÃO COM EXECUTOR
+## 8. PADRÃƒO DE INTERAÃ‡ÃƒO COM EXECUTOR
 
 O executor deve:
 
-- sempre fornecer código COMPLETO (não fragmentado)  
-- evitar explicações desnecessárias  
-- priorizar clareza e execução direta  
-- respeitar estrutura já existente  
-- NÃO remover ou quebrar código sem validação  
-- incluir CHANGELOG no topo de todo código  
-- incluir OBSERVAÇÕES TÉCNICAS quando necessário  
+- sempre fornecer cÃ³digo COMPLETO (nÃ£o fragmentado)  
+- evitar explicaÃ§Ãµes desnecessÃ¡rias  
+- priorizar clareza e execuÃ§Ã£o direta  
+- respeitar estrutura jÃ¡ existente  
+- NÃƒO remover ou quebrar cÃ³digo sem validaÃ§Ã£o  
+- incluir CHANGELOG no topo de todo cÃ³digo  
+- incluir OBSERVAÃ‡Ã•ES TÃ‰CNICAS quando necessÃ¡rio  
 
 -------------------------------------
 
-## 9. PADRÃO DE EXECUÇÃO DE COMANDOS
+## 9. PADRÃƒO DE EXECUÃ‡ÃƒO DE COMANDOS
 
 Quando houver comandos:
 
 - fornecer em blocos separados  
 - um comando por bloco  
-- sem texto desnecessário entre blocos  
-- sequência pronta para execução  
-- sempre contextualizar o que será feito antes  
+- sem texto desnecessÃ¡rio entre blocos  
+- sequÃªncia pronta para execuÃ§Ã£o  
+- sempre contextualizar o que serÃ¡ feito antes  
 
 -------------------------------------
 
 ## 10. CONTROLE DE RISCO
 
-Antes de qualquer alteração:
+Antes de qualquer alteraÃ§Ã£o:
 
 - avaliar impacto  
-- identificar dependências  
+- identificar dependÃªncias  
 - verificar risco de quebra  
-- validar se existe regressão potencial  
+- validar se existe regressÃ£o potencial  
 
 Se houver risco:
 
-→ validar antes de executar  
+â†’ validar antes de executar  
 
 -------------------------------------
 
 ## 11. AMBIENTES
 
-- HURBY-DEV → ambiente de desenvolvimento  
-- HURBY-PROD → ambiente de produção  
+- HURBY-DEV â†’ ambiente de desenvolvimento  
+- HURBY-PROD â†’ ambiente de produÃ§Ã£o  
 
 Regras:
 
-- DEV é o único ambiente de alteração ativa  
-- PROD nunca é ambiente de teste  
-- PROD não deve sofrer alterações manuais  
-- toda alteração deve vir de migrations  
+- DEV Ã© o Ãºnico ambiente de alteraÃ§Ã£o ativa  
+- PROD nunca Ã© ambiente de teste  
+- PROD nÃ£o deve sofrer alteraÃ§Ãµes manuais  
+- toda alteraÃ§Ã£o deve vir de migrations  
 
 -------------------------------------
 
 ## 12. BANCO DE DADOS E MIGRATIONS
 
-- É PROIBIDO criar tabelas manualmente no painel  
-- Toda alteração deve ser via migration  
-- O banco deve ser reconstruível via CLI  
-- Estrutura deve ser idêntica entre DEV e PROD  
+- Ã‰ PROIBIDO criar tabelas manualmente no painel  
+- Toda alteraÃ§Ã£o deve ser via migration  
+- O banco deve ser reconstruÃ­vel via CLI  
+- Estrutura deve ser idÃªntica entre DEV e PROD  
 
 -------------------------------------
 
-## 13. SEGURANÇA E LGPD (OBRIGATÓRIO)
+## 13. SEGURANÃ‡A E LGPD (OBRIGATÃ“RIO)
 
-- Dados sensíveis NÃO ficam no schema público  
-- Separação obrigatória:
-  - public → dados operacionais
-  - private → dados sensíveis
-  - audit → logs
+- Dados sensÃ­veis NÃƒO ficam no schema pÃºblico  
+- SeparaÃ§Ã£o obrigatÃ³ria:
+  - public â†’ dados operacionais
+  - private â†’ dados sensÃ­veis
+  - audit â†’ logs
 
-- RLS obrigatório em tabelas sensíveis  
-- Nunca expor dados sensíveis diretamente ao frontend  
+- RLS obrigatÃ³rio em tabelas sensÃ­veis  
+- Nunca expor dados sensÃ­veis diretamente ao frontend  
 
 -------------------------------------
 
-## 14. AUTENTICAÇÃO E ACESSO
+## 14. AUTENTICAÃ‡ÃƒO E ACESSO
 
-- Middleware é a camada oficial de segurança  
-- Frontend NÃO é responsável por proteger rotas  
-- Controle por user_type é obrigatório  
-- Bloqueio deve ocorrer antes da renderização  
+- Middleware Ã© a camada oficial de seguranÃ§a  
+- Frontend NÃƒO Ã© responsÃ¡vel por proteger rotas  
+- Controle por user_type Ã© obrigatÃ³rio  
+- Bloqueio deve ocorrer antes da renderizaÃ§Ã£o  
 
 -------------------------------------
 
@@ -203,16 +203,16 @@ Regras:
 
 Deve ser utilizada quando:
 
-- conclusão de etapas críticas  
-- mudanças estruturais  
-- implementação de segurança  
-- dúvidas relevantes  
+- conclusÃ£o de etapas crÃ­ticas  
+- mudanÃ§as estruturais  
+- implementaÃ§Ã£o de seguranÃ§a  
+- dÃºvidas relevantes  
 
 Objetivo:
 
-- evitar dívida técnica  
-- validar direção  
-- garantir consistência  
+- evitar dÃ­vida tÃ©cnica  
+- validar direÃ§Ã£o  
+- garantir consistÃªncia  
 
 -------------------------------------
 
@@ -220,43 +220,43 @@ Objetivo:
 
 Sempre perguntar:
 
-→ Isso é PROTOCOLO?  
-→ Isso é CONTEXTO?  
-→ Isso é EXECUÇÃO?  
+â†’ Isso Ã© PROTOCOLO?  
+â†’ Isso Ã© CONTEXTO?  
+â†’ Isso Ã© EXECUÃ‡ÃƒO?  
 
 Nunca misturar responsabilidades.
 
 -------------------------------------
 
-## 17. VIOLAÇÃO DE PROTOCOLO
+## 17. VIOLAÃ‡ÃƒO DE PROTOCOLO
 
 Se qualquer regra for violada:
 
-- interromper execução  
+- interromper execuÃ§Ã£o  
 - corrigir imediatamente  
 - revalidar antes de continuar  
 
 -------------------------------------
 
-## 18. EVOLUÇÃO DO PROTOCOLO
+## 18. EVOLUÃ‡ÃƒO DO PROTOCOLO
 
-Este protocolo só deve ser alterado quando houver:
+Este protocolo sÃ³ deve ser alterado quando houver:
 
-- mudança de processo  
+- mudanÃ§a de processo  
 - melhoria estrutural  
 - necessidade comprovada  
 
 -------------------------------------
 
-## 19. DÍVIDAS TÉCNICAS PLANEJADAS
+## 19. DÃVIDAS TÃ‰CNICAS PLANEJADAS
 
 Registrar obrigatoriamente:
 
-- decisões adiadas (ex: estrutura de rotas /dashboard vs /broker/dashboard)
-- mudanças estruturais futuras
+- decisÃµes adiadas (ex: estrutura de rotas /dashboard vs /broker/dashboard)
+- mudanÃ§as estruturais futuras
 - riscos controlados
 
-Essas dívidas NÃO podem ser esquecidas.
+Essas dÃ­vidas NÃƒO podem ser esquecidas.
 
 -------------------------------------
 
@@ -345,3 +345,101 @@ Todo handoff deve registrar:
 - quais pontos foram enviados ao backlog
 
 -------------------------------------
+
+-------------------------------------
+
+## 21. HURBY_CONTEXT_UPDATE_20260512_ENVIRONMENT_AND_RELEASE_RULES
+
+Status: REGRA OBRIGATORIA ADICIONADA
+Data: 2026-05-12
+
+### 21.1. Alerta critico de ambiente
+
+Antes de qualquer comando remoto do Supabase CLI, verificar obrigatoriamente:
+
+Get-Content "supabase\.temp\project-ref"
+
+Comparar o resultado com o ambiente alvo.
+
+Ambientes conhecidos:
+
+LOCAL:
+- http://127.0.0.1:54321
+
+DEV Cloud:
+- wcmbhgjcnhmitetsetpu
+
+STAGING:
+- mowkpcwsylogpxsnjfhd
+
+E proibido executar comandos --linked sem essa verificacao.
+
+Comandos bloqueados sem checagem previa:
+
+- supabase db query --linked
+- supabase db push
+- supabase db reset --linked
+- reload schema cache remoto
+- validacoes remotas de banco
+
+Motivo:
+
+Foi identificado erro operacional em que o CLI estava linkado no DEV Cloud, enquanto o Vercel consumia o STAGING. Isso fez com que correcoes e validacoes fossem aplicadas no banco errado.
+
+### 21.2. Regra atual de identidade e acesso
+
+A arquitetura atual supersede a regra antiga baseada em user_type como controle principal.
+
+Regra atual:
+
+- users_profile e conta neutra
+- primary_entry_flow indica fluxo/intencao inicial
+- broker_profiles define acesso de corretor
+- organizations e organization_memberships definem acesso de imobiliaria
+- Owner atual e temporario de validacao
+- acesso profissional nao deve depender apenas de campo simples em users_profile
+
+Essa regra deve prevalecer em novas implementacoes.
+
+### 21.3. Reload schema cache obrigatorio
+
+Apos migration estrutural ou alteracao em tabela, coluna, view, RPC, funcao, enum, trigger ou RLS/policy consumida pela API REST, executar:
+
+select pg_notify('pgrst', 'reload schema');
+
+A etapa e obrigatoria antes de validar Vercel, Staging ou Producao.
+
+### 21.4. Checklist minimo de release
+
+Antes de considerar qualquer entrega concluida:
+
+1. git status
+2. revisar arquivos alterados
+3. npm run build
+4. supabase db reset local quando houver migration estrutural
+5. verificar Project Ref antes de qualquer comando --linked
+6. aplicar banco no ambiente cloud correto
+7. reload schema cache
+8. validar RPCs, funcoes e colunas criticas
+9. aguardar Vercel Ready
+10. testar fluxo real publicado
+
+### 21.5. Handoff de mudanca critica
+
+Toda mudanca critica deve registrar:
+
+- o que mudou
+- por que mudou
+- impacto
+- risco
+- rollback
+- validacao feita
+- alerta ao proximo executor
+
+### 21.6. Marco de estabilizacao
+
+Foi criada a tag:
+
+hurby-foundation-v1-auth-clients-properties-axe
+
+Essa tag marca a foundation estabilizada envolvendo Auth, Clients, Properties, AXE e Owner temporario.

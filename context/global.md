@@ -1,50 +1,50 @@
-# HURBY — GLOBAL PROJECT STATE
+# HURBY â€” GLOBAL PROJECT STATE
 
 Data: 2026-05-10
 
 Status geral: CORE_IDENTITY_REBUILD + CORE_CLIENTS_FOUNDATION validado localmente
 
-Repositório oficial:
+RepositÃ³rio oficial:
 https://github.com/hurbyapp/hurby-core.git
 
 Ambiente atual:
 - DEV/local: ativo para desenvolvimento e reset controlado
 - STAGING: usado para testes de deploy e comportamento em ambiente virtual
-- PROD: ainda não usado para dados reais
+- PROD: ainda nÃ£o usado para dados reais
 
 Regra de ambiente:
-DEV/STAGING não possuem dados importantes ou consistentes neste momento. Quando a modelagem estrutural exigir, é permitido ajustar migrations, remover/refatorar migrations ruins, rodar reset local, sincronizar STAGING e revalidar, desde que PROD não seja afetado.
+DEV/STAGING nÃ£o possuem dados importantes ou consistentes neste momento. Quando a modelagem estrutural exigir, Ã© permitido ajustar migrations, remover/refatorar migrations ruins, rodar reset local, sincronizar STAGING e revalidar, desde que PROD nÃ£o seja afetado.
 
 -------------------------------------
 
 ## 1. Estado consolidado do ecossistema
 
-O HURBY está em fase de construção canônica das foundations operacionais.
+O HURBY estÃ¡ em fase de construÃ§Ã£o canÃ´nica das foundations operacionais.
 
-O projeto não deve ser tratado como:
+O projeto nÃ£o deve ser tratado como:
 
-- ERP imobiliário tradicional
-- sistema centrado apenas em imóveis
-- sistema centrado apenas em imobiliárias
-- portal fechado de anúncios
+- ERP imobiliÃ¡rio tradicional
+- sistema centrado apenas em imÃ³veis
+- sistema centrado apenas em imobiliÃ¡rias
+- portal fechado de anÃºncios
 
 O HURBY deve ser tratado como:
 
-- ecossistema operacional imobiliário
+- ecossistema operacional imobiliÃ¡rio
 - rede comercial colaborativa
-- plataforma de relacionamento e distribuição
-- sistema operacional profissional para corretores e imobiliárias
-- infraestrutura integrada ao marketplace Cadê Negócios
+- plataforma de relacionamento e distribuiÃ§Ã£o
+- sistema operacional profissional para corretores e imobiliÃ¡rias
+- infraestrutura integrada ao marketplace CadÃª NegÃ³cios
 
 -------------------------------------
 
-## 2. Foundations já consolidadas
+## 2. Foundations jÃ¡ consolidadas
 
-Já foram criadas e validadas as seguintes bases:
+JÃ¡ foram criadas e validadas as seguintes bases:
 
 - Auth foundation
 - SSR/middleware foundation
-- Ledger/Axé foundation
+- Ledger/AxÃ© foundation
 - LGPD/compliance foundation
 - Organizations/Memberships foundation
 - Core Real Estate Operational Foundation
@@ -56,9 +56,9 @@ Já foram criadas e validadas as seguintes bases:
 
 ## 3. Core Real Estate Operational Foundation
 
-A fundação imobiliária operacional foi concluída e validada.
+A fundaÃ§Ã£o imobiliÃ¡ria operacional foi concluÃ­da e validada.
 
-O imóvel deixou de ser tratado como cadastro isolado e passou a fazer parte de um contexto operacional composto por:
+O imÃ³vel deixou de ser tratado como cadastro isolado e passou a fazer parte de um contexto operacional composto por:
 
 - portfolio
 - portfolio_item
@@ -69,13 +69,13 @@ O imóvel deixou de ser tratado como cadastro isolado e passou a fazer parte de 
 - property_listing
 - property_listing_media
 
-A criação de imóvel operacional deve continuar ocorrendo pela RPC transacional:
+A criaÃ§Ã£o de imÃ³vel operacional deve continuar ocorrendo pela RPC transacional:
 
 - public.create_property_operational_bundle
 
-Essa RPC cria, em uma única operação:
+Essa RPC cria, em uma Ãºnica operaÃ§Ã£o:
 
-- portfolio individual, se não existir
+- portfolio individual, se nÃ£o existir
 - operational_origin
 - property_asset
 - property_asset_location
@@ -83,7 +83,7 @@ Essa RPC cria, em uma única operação:
 - property_listing
 - portfolio_item
 
-A função usa auth.uid() como referência de segurança e evita criação parcial ou registros órfãos no fluxo principal.
+A funÃ§Ã£o usa auth.uid() como referÃªncia de seguranÃ§a e evita criaÃ§Ã£o parcial ou registros Ã³rfÃ£os no fluxo principal.
 
 O Core Properties foi validado em:
 
@@ -91,34 +91,34 @@ O Core Properties foi validado em:
 - Supabase STAGING
 - Vercel
 - fluxo broker
-- cadastro de imóvel
+- cadastro de imÃ³vel
 - listagem
 - detalhe
-- edição básica
+- ediÃ§Ã£o bÃ¡sica
 
 -------------------------------------
 
 ## 4. Core Properties Form V1
 
-CORE_PROPERTIES_FORM_V1 não deve ser executado agora.
+CORE_PROPERTIES_FORM_V1 nÃ£o deve ser executado agora.
 
 Status:
-BACKLOG FUTURO / NÃO EXECUTAR NESTE MOMENTO
+BACKLOG FUTURO / NÃƒO EXECUTAR NESTE MOMENTO
 
 Natureza:
-Melhoria e ampliação do formulário de cadastro/edição de imóveis.
+Melhoria e ampliaÃ§Ã£o do formulÃ¡rio de cadastro/ediÃ§Ã£o de imÃ³veis.
 
 Motivo:
-O formulário atual já cumpre o papel de validação da foundation imobiliária. Melhorar a experiência do formulário é útil, mas não é o próximo gargalo estrutural do ecossistema.
+O formulÃ¡rio atual jÃ¡ cumpre o papel de validaÃ§Ã£o da foundation imobiliÃ¡ria. Melhorar a experiÃªncia do formulÃ¡rio Ã© Ãºtil, mas nÃ£o Ã© o prÃ³ximo gargalo estrutural do ecossistema.
 
-Decisão:
+DecisÃ£o:
 
-- não abrir missão CORE_PROPERTIES_FORM_V1 agora
-- não refatorar formulário neste momento
-- não expandir campos de imóvel agora
-- não mexer na foundation validada sem necessidade real
-- não alterar RPC create_property_operational_bundle sem necessidade real
-- não alterar RLS, storage ou lifecycle de listing nesta etapa
+- nÃ£o abrir missÃ£o CORE_PROPERTIES_FORM_V1 agora
+- nÃ£o refatorar formulÃ¡rio neste momento
+- nÃ£o expandir campos de imÃ³vel agora
+- nÃ£o mexer na foundation validada sem necessidade real
+- nÃ£o alterar RPC create_property_operational_bundle sem necessidade real
+- nÃ£o alterar RLS, storage ou lifecycle de listing nesta etapa
 
 Executar futuramente, depois de amadurecer:
 
@@ -134,21 +134,21 @@ Executar futuramente, depois de amadurecer:
 
 ## 5. Core Identity Rebuild
 
-Foi realizada a reconstrução da base de identidade.
+Foi realizada a reconstruÃ§Ã£o da base de identidade.
 
-Decisão central:
+DecisÃ£o central:
 
-users_profile não representa mais corretor, cliente, agência, proprietário ou plano comercial.
+users_profile nÃ£o representa mais corretor, cliente, agÃªncia, proprietÃ¡rio ou plano comercial.
 
 users_profile agora representa apenas a conta autenticada neutra.
 
-Contrato técnico preservado:
+Contrato tÃ©cnico preservado:
 
 auth.users.id = users_profile.id
 
-Isso mantém compatibilidade com:
+Isso mantÃ©m compatibilidade com:
 
-- Ledger/Axé
+- Ledger/AxÃ©
 - Wallet
 - LGPD
 - Audit
@@ -158,14 +158,14 @@ Isso mantém compatibilidade com:
 - Properties
 - RPC create_property_operational_bundle
 
-Foram removidas da fundação ativa as semânticas antigas:
+Foram removidas da fundaÃ§Ã£o ativa as semÃ¢nticas antigas:
 
 - user_type
 - account_tier
-- broker automático
-- PAY_PER_USE automático em users_profile
+- broker automÃ¡tico
+- PAY_PER_USE automÃ¡tico em users_profile
 
-A trigger de criação de usuário agora cria apenas profile neutro.
+A trigger de criaÃ§Ã£o de usuÃ¡rio agora cria apenas profile neutro.
 
 Arquivos envolvidos:
 
@@ -178,42 +178,42 @@ Arquivos envolvidos:
 
 ## 6. Core Clients Foundation
 
-Foi criada a fundação inicial do Core Clients.
+Foi criada a fundaÃ§Ã£o inicial do Core Clients.
 
-Cliente no HURBY não é uma tabela simples nem um dado solto.
+Cliente no HURBY nÃ£o Ã© uma tabela simples nem um dado solto.
 
-Cliente é uma entidade relacional e contextual.
+Cliente Ã© uma entidade relacional e contextual.
 
-A mesma pessoa pode existir em múltiplos contextos:
+A mesma pessoa pode existir em mÃºltiplos contextos:
 
-- usuário comum do marketplace
-- pessoa buscando imóvel
-- proprietário/fornecedor de imóvel
+- usuÃ¡rio comum do marketplace
+- pessoa buscando imÃ³vel
+- proprietÃ¡rio/fornecedor de imÃ³vel
 - comprador
-- locatário
+- locatÃ¡rio
 - cliente de corretor
-- cliente de imobiliária
+- cliente de imobiliÃ¡ria
 - contato vindo de campanha
 - contato importado
 - futuro lead
 - parte de contrato
 
-A foundation criada prevê:
+A foundation criada prevÃª:
 
 - client_entities
 - client_contact_methods
 - client_relationships
 - client_relationship_roles
 
-Princípios:
+PrincÃ­pios:
 
-- não duplicar pessoa sem estratégia
-- não misturar cliente com usuário autenticado
-- não misturar cliente com lead
-- não prender cliente a um único corretor sem contexto
-- não criar dado sensível sem rastreabilidade
+- nÃ£o duplicar pessoa sem estratÃ©gia
+- nÃ£o misturar cliente com usuÃ¡rio autenticado
+- nÃ£o misturar cliente com lead
+- nÃ£o prender cliente a um Ãºnico corretor sem contexto
+- nÃ£o criar dado sensÃ­vel sem rastreabilidade
 - preservar LGPD desde a foundation
-- permitir relacionamento futuro com marketplace, leads, contratos, funil, imóveis e gestão
+- permitir relacionamento futuro com marketplace, leads, contratos, funil, imÃ³veis e gestÃ£o
 
 Arquivo criado:
 
@@ -236,10 +236,10 @@ Estruturas criadas:
 
 Conceito:
 
-- corretor não é users_profile
-- corretor é uma camada profissional vinculada a uma conta neutra
-- CRECI, validação, visibilidade e status profissional pertencem ao broker_profile
-- profissionais sem CRECI não devem ter os mesmos privilégios de corretores verificados
+- corretor nÃ£o Ã© users_profile
+- corretor Ã© uma camada profissional vinculada a uma conta neutra
+- CRECI, validaÃ§Ã£o, visibilidade e status profissional pertencem ao broker_profile
+- profissionais sem CRECI nÃ£o devem ter os mesmos privilÃ©gios de corretores verificados
 
 Status previstos:
 
@@ -247,33 +247,33 @@ Status previstos:
 - verification_status
 - public_visibility_status
 
-A verificação profissional deve evoluir futuramente para:
+A verificaÃ§Ã£o profissional deve evoluir futuramente para:
 
-- validação de CRECI
-- revisão manual
+- validaÃ§Ã£o de CRECI
+- revisÃ£o manual
 - selos progressivos
-- reputação operacional
-- restrições por risco
+- reputaÃ§Ã£o operacional
+- restriÃ§Ãµes por risco
 - trust/safety
 
 -------------------------------------
 
 ## 8. Login e roteamento profissional
 
-O login foi ajustado para não depender mais de user_type.
+O login foi ajustado para nÃ£o depender mais de user_type.
 
 O login profissional agora considera:
 
 - organization_membership ativo como owner/manager
 - broker_profile existente
-- ausência de contexto profissional
+- ausÃªncia de contexto profissional
 
 Regras atuais:
 
-- usuário com membership institucional ativo pode ir para /agency
-- usuário com broker_profile pode ir para /broker
-- usuário sem contexto profissional não deve ser jogado automaticamente para /broker
-- users_profile não deve mais definir acesso profissional sozinho
+- usuÃ¡rio com membership institucional ativo pode ir para /agency
+- usuÃ¡rio com broker_profile pode ir para /broker
+- usuÃ¡rio sem contexto profissional nÃ£o deve ser jogado automaticamente para /broker
+- users_profile nÃ£o deve mais definir acesso profissional sozinho
 
 Arquivos alterados:
 
@@ -283,76 +283,76 @@ Arquivos alterados:
 Middleware:
 
 - middleware.ts foi preservado
-- ele continua responsável apenas por autenticação/proteção de rotas
-- não deve carregar lógica de perfil profissional neste momento
+- ele continua responsÃ¡vel apenas por autenticaÃ§Ã£o/proteÃ§Ã£o de rotas
+- nÃ£o deve carregar lÃ³gica de perfil profissional neste momento
 
 -------------------------------------
 
-## 9. Cadê Negócios e Hurby/Hurb
+## 9. CadÃª NegÃ³cios e Hurby/Hurb
 
-A arquitetura de navegação deve prever dois ambientes integrados:
+A arquitetura de navegaÃ§Ã£o deve prever dois ambientes integrados:
 
-Cadê Negócios:
-- marketplace público
-- busca de imóveis
+CadÃª NegÃ³cios:
+- marketplace pÃºblico
+- busca de imÃ³veis
 - favoritos
-- anúncios comuns
-- conta comum de usuário
-- navegação pública
+- anÃºncios comuns
+- conta comum de usuÃ¡rio
+- navegaÃ§Ã£o pÃºblica
 
 Hurby/Hurb:
 - sistema operacional profissional
 - corretor
-- imobiliária
+- imobiliÃ¡ria
 - carteira
-- imóveis
+- imÃ³veis
 - clientes
 - contratos futuros
 - funil futuro
-- gestão futura
+- gestÃ£o futura
 
-Domínios previstos:
+DomÃ­nios previstos:
 
-- cadênegócios.com.br
-- cadênegócios.com.br/hurb
+- cadÃªnegÃ³cios.com.br
+- cadÃªnegÃ³cios.com.br/hurb
 - hurb.com.br
 
 Regra de login:
 
-- login no marketplace não deve redirecionar automaticamente o profissional para o painel
-- o profissional logado no marketplace deve navegar como usuário comum
-- se for profissional, deve ver acesso claro no topo, como “Hurby Pro” ou “Painel Hurby”
-- usuário comum que tentar entrar no ambiente profissional deve ser roteado de volta para o ambiente comum ou receber orientação de ausência de acesso profissional
+- login no marketplace nÃ£o deve redirecionar automaticamente o profissional para o painel
+- o profissional logado no marketplace deve navegar como usuÃ¡rio comum
+- se for profissional, deve ver acesso claro no topo, como â€œHurby Proâ€ ou â€œPainel Hurbyâ€
+- usuÃ¡rio comum que tentar entrar no ambiente profissional deve ser roteado de volta para o ambiente comum ou receber orientaÃ§Ã£o de ausÃªncia de acesso profissional
 
 -------------------------------------
 
 ## 10. Entry Flow / Fluxo de Entrada
 
-O projeto não deve usar onboarding genérico depois do login como base de identidade.
+O projeto nÃ£o deve usar onboarding genÃ©rico depois do login como base de identidade.
 
-A intenção deve vir antes ou durante o cadastro.
+A intenÃ§Ã£o deve vir antes ou durante o cadastro.
 
 Portas de entrada previstas:
 
-- usuário comum do marketplace
-- quero anunciar meu imóvel
+- usuÃ¡rio comum do marketplace
+- quero anunciar meu imÃ³vel
 - sou corretor
-- sou imobiliária
+- sou imobiliÃ¡ria
 - convite institucional
 - entrada profissional Hurby/Hurb
 
-Cada porta deve conduzir para formulário adequado.
+Cada porta deve conduzir para formulÃ¡rio adequado.
 
 Exemplos:
 
-Usuário comum:
+UsuÃ¡rio comum:
 - nome
 - telefone
 - e-mail
 - conta simples
 - favoritos
 - dados
-- anúncios próprios
+- anÃºncios prÃ³prios
 
 Corretor:
 - nome
@@ -361,13 +361,13 @@ Corretor:
 - CPF
 - CRECI
 - UF do CRECI
-- cidade/região de atuação
+- cidade/regiÃ£o de atuaÃ§Ã£o
 - broker_profile
 
-Imobiliária:
-- responsável autenticado
+ImobiliÃ¡ria:
+- responsÃ¡vel autenticado
 - CNPJ
-- razão social
+- razÃ£o social
 - nome fantasia
 - dados institucionais
 - organization
@@ -375,13 +375,13 @@ Imobiliária:
 
 -------------------------------------
 
-## 11. Ledger/Axé
+## 11. Ledger/AxÃ©
 
-Ledger/Axé está preservado e não deve ser refeito agora.
+Ledger/AxÃ© estÃ¡ preservado e nÃ£o deve ser refeito agora.
 
-A análise confirmou que as funções financeiras não dependem semanticamente de users_profile.
+A anÃ¡lise confirmou que as funÃ§Ãµes financeiras nÃ£o dependem semanticamente de users_profile.
 
-O contrato lógico deve continuar:
+O contrato lÃ³gico deve continuar:
 
 - wallet_ledger.user_id = auth.users.id
 - wallet_balance.user_id = auth.users.id
@@ -395,11 +395,11 @@ Backlog financeiro futuro:
 - revisar transfer_coin
 - revisar expire_coin
 - adaptar assinatura ao novo modelo de produto/pacote operacional
-- diferenciar Axé livre e Axé reservado/bloqueado
-- preservar preço contratado até fim de ciclo
-- reajustes somente em novas contratações/renovações
+- diferenciar AxÃ© livre e AxÃ© reservado/bloqueado
+- preservar preÃ§o contratado atÃ© fim de ciclo
+- reajustes somente em novas contrataÃ§Ãµes/renovaÃ§Ãµes
 
-A assinatura deve ser entendida comercialmente como assinatura, mas tecnicamente pode funcionar como produto/pacote adquirido por período, com Axés reservados para débitos de acesso.
+A assinatura deve ser entendida comercialmente como assinatura, mas tecnicamente pode funcionar como produto/pacote adquirido por perÃ­odo, com AxÃ©s reservados para dÃ©bitos de acesso.
 
 -------------------------------------
 
@@ -407,124 +407,124 @@ A assinatura deve ser entendida comercialmente como assinatura, mas tecnicamente
 
 LGPD foundation deve ser preservada.
 
-register_consent e log_action usam auth.uid() e não dependem de users_profile.user_type.
+register_consent e log_action usam auth.uid() e nÃ£o dependem de users_profile.user_type.
 
-A fundação de clientes deve continuar respeitando:
+A fundaÃ§Ã£o de clientes deve continuar respeitando:
 
-- minimização de dados
-- finalidade legítima
+- minimizaÃ§Ã£o de dados
+- finalidade legÃ­tima
 - rastreabilidade
 - consentimento
-- retenção adequada
+- retenÃ§Ã£o adequada
 - controle de acesso
-- uso cuidadoso de dados sensíveis
+- uso cuidadoso de dados sensÃ­veis
 
-client_contact_methods foi criada já preparando:
+client_contact_methods foi criada jÃ¡ preparando:
 
-- validação de contato
+- validaÃ§Ã£o de contato
 - consent_status
 - controle futuro de acesso a telefone/e-mail
-- integração futura com visibilidade, leads e trust/safety
+- integraÃ§Ã£o futura com visibilidade, leads e trust/safety
 
 -------------------------------------
 
 ## 13. Score futuro
 
-Score não deve ser implementado agora.
+Score nÃ£o deve ser implementado agora.
 
-Score será um core/sistema próprio futuro.
+Score serÃ¡ um core/sistema prÃ³prio futuro.
 
 A foundation atual precisa apenas estar preparada para ele.
 
 Diretrizes:
 
-- score não pode ser coluna simples em users_profile
+- score nÃ£o pode ser coluna simples em users_profile
 - score deve ser contextual
-- score de marketplace não pode se misturar com score profissional
-- score precisa ter lastro explicável
-- score deve evitar rótulos discriminatórios
+- score de marketplace nÃ£o pode se misturar com score profissional
+- score precisa ter lastro explicÃ¡vel
+- score deve evitar rÃ³tulos discriminatÃ³rios
 - score deve usar termos operacionais, como:
-  - nível de verificação
-  - intenção
+  - nÃ­vel de verificaÃ§Ã£o
+  - intenÃ§Ã£o
   - maturidade da jornada
   - confiabilidade cadastral
-  - reputação operacional
+  - reputaÃ§Ã£o operacional
   - qualidade do atendimento
 
-Scores futuros possíveis:
+Scores futuros possÃ­veis:
 
 - score da conta
 - score do corretor
-- score da imobiliária
-- score do anúncio
-- score do imóvel
+- score da imobiliÃ¡ria
+- score do anÃºncio
+- score do imÃ³vel
 - score do lead
 - score do cliente
-- score da relação
+- score da relaÃ§Ã£o
 - score de comportamento
 - score de qualidade operacional
 
 -------------------------------------
 
-## 14. Trust, Safety, Denúncias, Banimento e Avaliações
+## 14. Trust, Safety, DenÃºncias, Banimento e AvaliaÃ§Ãµes
 
-Não implementar agora.
+NÃ£o implementar agora.
 
-Registrar como core futuro obrigatório.
+Registrar como core futuro obrigatÃ³rio.
 
-O Hurby deve futuramente permitir denúncias em:
+O Hurby deve futuramente permitir denÃºncias em:
 
-- usuários
+- usuÃ¡rios
 - clientes
 - corretores
-- imobiliárias
-- anúncios
-- imóveis
+- imobiliÃ¡rias
+- anÃºncios
+- imÃ³veis
 - mensagens
 - atendimentos
 - publicidades
-- páginas profissionais
-- conteúdos
+- pÃ¡ginas profissionais
+- conteÃºdos
 
-As denúncias devem prever:
+As denÃºncias devem prever:
 
-- motivo obrigatório
-- descrição
+- motivo obrigatÃ³rio
+- descriÃ§Ã£o
 - categoria
-- evidências
+- evidÃªncias
 - IP
 - user agent
 - dispositivo/navegador
-- sessão
+- sessÃ£o
 - origem
 - timestamp
-- geolocalização aproximada quando legalmente adequada e consentida
+- geolocalizaÃ§Ã£o aproximada quando legalmente adequada e consentida
 - entidade denunciada
-- usuário denunciante
-- análise automática
+- usuÃ¡rio denunciante
+- anÃ¡lise automÃ¡tica
 - fila humana
-- decisão
-- retenção de evidências para defesa jurídica
+- decisÃ£o
+- retenÃ§Ã£o de evidÃªncias para defesa jurÃ­dica
 
-Avaliações futuras devem ser contextuais:
+AvaliaÃ§Ãµes futuras devem ser contextuais:
 
-- anúncio
+- anÃºncio
 - atendimento
 - corretor
-- imóvel
-- imobiliária
-- experiência geral
+- imÃ³vel
+- imobiliÃ¡ria
+- experiÃªncia geral
 
-Avaliações e denúncias devem alimentar futuramente:
+AvaliaÃ§Ãµes e denÃºncias devem alimentar futuramente:
 
 - score
-- reputação
+- reputaÃ§Ã£o
 - monitoria
 - alertas
-- prevenção de fraude
-- melhoria de anúncios
-- orientação comercial
-- qualificação profissional
+- prevenÃ§Ã£o de fraude
+- melhoria de anÃºncios
+- orientaÃ§Ã£o comercial
+- qualificaÃ§Ã£o profissional
 
 Cores futuros sugeridos:
 
@@ -536,27 +536,27 @@ Cores futuros sugeridos:
 
 ## 15. Profissionais sem CRECI
 
-Profissionais sem CRECI não devem operar livremente como corretores.
+Profissionais sem CRECI nÃ£o devem operar livremente como corretores.
 
-Eles podem existir futuramente apenas em modalidade restrita e rastreável, preferencialmente vinculados a:
+Eles podem existir futuramente apenas em modalidade restrita e rastreÃ¡vel, preferencialmente vinculados a:
 
 - corretor verificado
-- imobiliária verificada
+- imobiliÃ¡ria verificada
 
-Eles não devem ter:
+Eles nÃ£o devem ter:
 
-- mesmos privilégios de corretor verificado
+- mesmos privilÃ©gios de corretor verificado
 - mesma visibilidade
-- mesmo acesso a dados sensíveis
+- mesmo acesso a dados sensÃ­veis
 - selo profissional equivalente
 - capacidade plena de receber leads qualificados
 
 A plataforma deve priorizar:
 
-- segurança do consumidor
-- proteção jurídica do Hurby
-- valorização do corretor regularizado
-- prevenção contra golpes
+- seguranÃ§a do consumidor
+- proteÃ§Ã£o jurÃ­dica do Hurby
+- valorizaÃ§Ã£o do corretor regularizado
+- prevenÃ§Ã£o contra golpes
 - rastreabilidade operacional
 
 -------------------------------------
@@ -597,14 +597,14 @@ Preservados:
 
 -------------------------------------
 
-## 17. Validações realizadas
+## 17. ValidaÃ§Ãµes realizadas
 
-Validações confirmadas:
+ValidaÃ§Ãµes confirmadas:
 
 - supabase db reset
 - npm run build
 - login profissional
-- criação de broker_profile
+- criaÃ§Ã£o de broker_profile
 - redirecionamento para /broker
 - broker page sem erro de profile
 - busca por user_type/account_tier/PAY_PER_USE limpa
@@ -613,16 +613,16 @@ Validações confirmadas:
 
 -------------------------------------
 
-## 18. Pendências documentais obrigatórias
+## 18. PendÃªncias documentais obrigatÃ³rias
 
-Atualizar também:
+Atualizar tambÃ©m:
 
 - context/ecosystem/CANONICAL_OPERATIONAL_MAP.md
 - context/ecosystem/BACKLOG_PREVISIBILIDADE_ARQUITETURAL.md
 - context/modules/core_clients/global_clients.md
 - context/modules/core_clients/protocol_clients.md
 
-Corrigir referências antigas de:
+Corrigir referÃªncias antigas de:
 
 hurby-operational-protocol.md
 
@@ -630,20 +630,20 @@ para:
 
 docs/protocols/hurby-operational-protocol.md
 
-em comandos, handoffs, checklists e documentação.
+em comandos, handoffs, checklists e documentaÃ§Ã£o.
 
 -------------------------------------
 
 ## 19. Regra de continuidade
 
-Esta missão deve parar após:
+Esta missÃ£o deve parar apÃ³s:
 
 - auditoria senior
-- atualização documental
-- commit da documentação
+- atualizaÃ§Ã£o documental
+- commit da documentaÃ§Ã£o
 - handoff final
 
-Não iniciar agora:
+NÃ£o iniciar agora:
 
 - Core Leads V2
 - Core Marketplace
@@ -657,23 +657,23 @@ Não iniciar agora:
 
 -------------------------------------
 
-## 20. Próxima missão recomendada
+## 20. PrÃ³xima missÃ£o recomendada
 
-Antes de novo core funcional, concluir documentação desta missão.
+Antes de novo core funcional, concluir documentaÃ§Ã£o desta missÃ£o.
 
-Depois da documentação e handoff, a próxima missão estrutural deve ser definida com base no mapa canônico.
+Depois da documentaÃ§Ã£o e handoff, a prÃ³xima missÃ£o estrutural deve ser definida com base no mapa canÃ´nico.
 
-Recomendação provável:
+RecomendaÃ§Ã£o provÃ¡vel:
 
 - CORE_ORIGINS_FOUNDATION
 ou
 - CORE_VISIBILITY_FOUNDATION
 
-A escolha deve considerar dependência para Leads, Marketplace, Clients e Properties.
+A escolha deve considerar dependÃªncia para Leads, Marketplace, Clients e Properties.
 
 -------------------------------------
 
-## 21. Status final da missão atual
+## 21. Status final da missÃ£o atual
 
 CORE_IDENTITY_REBUILD + CORE_CLIENTS_FOUNDATION:
 
@@ -687,7 +687,7 @@ CORE_IDENTITY_REBUILD + CORE_CLIENTS_FOUNDATION:
 - Compatibilidade Properties: preservada
 - Status: validado localmente
 
-Missão em fase documental final.
+MissÃ£o em fase documental final.
 
 
 -------------------------------------
@@ -806,3 +806,228 @@ Estado final validado:
 - pendencia de statement registrada para backlog
 
 -------------------------------------
+
+-------------------------------------
+
+## 23. HURBY_CONTEXT_UPDATE_20260512_FOUNDATION_STABILIZATION_ENVIRONMENT_GUARD
+
+Data: 2026-05-12
+Status: MARCO DE ESTABILIZACAO CRIADO + ALERTA CRITICO DE AMBIENTE
+
+### 23.1. Marco de estabilizacao
+
+Foi criada e enviada ao GitHub a tag de estabilizacao:
+
+- hurby-foundation-v1-auth-clients-properties-axe
+
+Objetivo da tag:
+
+- marcar a base foundation validada
+- preservar historico do GitHub
+- criar ponto de retorno confiavel
+- separar fase experimental/refatorada da fase estruturada
+- servir como referencia para os proximos cores
+
+Escopo validado ate este marco:
+
+- Auth
+- users_profile neutro
+- Core Clients foundation
+- Broker foundation
+- Agency/Organizations/Memberships
+- Core Properties marketplace e operacional
+- AXE/Ledger preservado
+- Owner temporario de validacao
+- Usuario comum marketplace
+- Broker
+- Agency
+- Cadastro comum
+- Cadastro de anuncio simples
+- Regra de 1 anuncio gratuito
+- Staging reconstruido corretamente
+- Vercel validado
+- supabase/.temp removido do versionamento Git
+
+### 23.2. Causa raiz do erro de Staging/Vercel
+
+Foi identificado erro critico de ambiente.
+
+O Supabase CLI estava linkado no DEV Cloud:
+
+- wcmbhgjcnhmitetsetpu
+
+Enquanto o Vercel/Staging usava:
+
+- mowkpcwsylogpxsnjfhd
+
+Consequencia:
+
+- comandos supabase db query --linked
+- supabase db reset --linked
+- supabase db push
+- reload schema cache
+- validacoes de tabela
+- validacoes de trigger
+- validacoes de schema
+
+estavam sendo executados no banco errado.
+
+O Vercel continuava apontando para o Staging real, que ainda estava com schema antigo.
+
+Erro observado:
+
+- PGRST204
+- Could not find the 'account_status' column of 'users_profile' in the schema cache
+
+Diagnostico final:
+
+O problema nao era o frontend, nem o middleware, nem o cadastro comum.
+O problema era divergencia de ambiente remoto entre CLI e Vercel.
+
+### 23.3. Regra obrigatoria de verificacao de Project Ref
+
+Antes de qualquer comando remoto Supabase CLI, e obrigatorio verificar o Project Ref linkado.
+
+Comando obrigatorio:
+
+Get-Content "supabase\.temp\project-ref"
+
+Comparar sempre com o ambiente alvo.
+
+Referencias atuais:
+
+LOCAL:
+- http://127.0.0.1:54321
+
+DEV Cloud:
+- wcmbhgjcnhmitetsetpu
+
+STAGING:
+- mowkpcwsylogpxsnjfhd
+
+Regra:
+
+E proibido executar os comandos abaixo sem validar o Project Ref:
+
+- supabase db query --linked
+- supabase db push
+- supabase db reset --linked
+- supabase link
+- reload schema cache remoto
+- validacao remota de tabelas, RPCs, triggers ou policies
+
+Checklist antes de qualquer comando --linked:
+
+1. Verificar project-ref.
+2. Confirmar ambiente alvo: DEV Cloud, STAGING ou PROD.
+3. Comparar com as variaveis do Vercel quando a validacao envolver site publicado.
+4. Confirmar que o banco alvo e descartavel antes de reset remoto.
+5. So entao executar o comando.
+
+### 23.4. Regra obrigatoria de schema cache Supabase/PostgREST
+
+Apos qualquer migration ou alteracao estrutural de banco que envolva:
+
+- tabelas
+- colunas
+- views
+- RPCs
+- funcoes
+- enums
+- RLS/policies
+- triggers
+- assinaturas consumidas pelo frontend/API REST
+
+executar obrigatoriamente:
+
+select pg_notify('pgrst', 'reload schema');
+
+Motivo:
+
+O banco pode estar correto, mas a API REST do Supabase/PostgREST pode continuar com schema antigo em cache.
+
+Esse passo deve ser tratado como requisito de release, nao como correcao opcional.
+
+### 23.5. Regra de conclusao de core
+
+Nenhum core deve ser considerado concluido apenas por funcionar minimamente.
+
+Sequencia obrigatoria:
+
+1. Criar foundation do core.
+2. Validar funcionamento minimo.
+3. Modelar o core com visao final/estrutural madura.
+4. Validar fluxos reais.
+5. So entao considerar o core concluido.
+
+Objetivo:
+
+Evitar entregas genericas chamadas de "core pronto" quando a arquitetura ainda esta incompleta.
+
+### 23.6. Checklist obrigatorio de commit/deploy/release
+
+Antes de considerar qualquer entrega concluida:
+
+1. Executar git status.
+2. Revisar arquivos alterados.
+3. Executar npm run build.
+4. Executar supabase db reset local quando houver migration estrutural.
+5. Confirmar Project Ref antes de qualquer comando --linked.
+6. Se banco mudou, aplicar no ambiente cloud correto.
+7. Executar reload schema cache.
+8. Validar RPCs, funcoes, colunas e assinaturas criticas.
+9. Aguardar Vercel com status Ready.
+10. Testar fluxo real no ambiente publicado.
+11. So entao considerar concluido.
+
+### 23.7. Mudancas criticas devem constar no handoff
+
+Toda mudanca critica de arquitetura deve ser registrada no handoff com:
+
+- o que mudou
+- por que mudou
+- impacto
+- risco
+- rollback
+- validacao feita
+- alerta para o proximo executor
+
+Aplica-se a mudancas em:
+
+- tabelas
+- colunas
+- migrations
+- RPCs/funcoes
+- triggers
+- RLS/policies
+- enums
+- login
+- permissoes
+- rotas
+- services
+- contratos de dados
+- frontend dependente de banco
+- ambientes DEV/STAGING/PROD
+
+### 23.8. Backlog de rotas e Owner temporario
+
+Registrar para revisao posterior:
+
+- /owner
+- /agency
+- /broker
+- /statement
+- /operations
+- /account
+
+O Owner temporario, por ser dono/tester do portal, pode precisar navegar por areas ampliadas para fiscalizar:
+
+- interfaces
+- design
+- usuarios
+- imoveis
+- saldo
+- extratos
+- fluxos operacionais
+
+Essa permissao deve ser tratada como regra temporaria de validacao e nao deve ser confundida com o futuro Core Owner/Admin definitivo.
