@@ -1183,3 +1183,33 @@ Regra:
 
 CORE_PROPERTIES_FORM_V1 deve ser tratado como melhoria operacional controlada sobre a foundation existente, não como refatoração arquitetural ampla.
 
+
+-------------------------------------
+
+# HURBY_CONTEXT_UPDATE_20260513_CORE_CLIENTS_OWNER_TRACKING_BACKLOG
+
+Status: BACKLOG FUTURO / NÃO IMPLEMENTAR AGORA
+
+Durante a missão CORE_PROPERTIES_FORM_V1, ficou definido que o formulário profissional deve coletar e vincular o proprietário/fornecedor do imóvel usando a base do Core Clients, mas a experiência completa do proprietário será evoluída em missão futura.
+
+Itens a evoluir futuramente no Core Clients / Marketplace Account:
+
+- painel "Meu Imóvel" ou "Meus Imóveis" no ambiente básico do Marketplace/Cadê Negócios
+- exibição de imóveis em que o usuário é proprietário/fornecedor
+- identificação visual de "Cadastro profissional" quando o imóvel foi cadastrado por broker/agency
+- acompanhamento do status do anúncio pelo proprietário
+- acompanhamento de alterações relevantes, como valor, publicação, revisão e encerramento
+- acesso controlado ao anúncio e informações profissionais permitidas
+- direcionamento para página do profissional responsável quando o imóvel foi cadastrado por broker/agency
+- direcionamento para o Marketplace quando o imóvel foi cadastrado pelo próprio usuário comum
+- histórico congelado após concretização do negócio
+- vínculo entre client_entity, client_relationship, property_asset, property_listing e profissional responsável
+- cuidado LGPD para não expor dados privados, notas internas ou ficha avaliativa completa
+- integração futura com negociação, contratos, propostas e gestão administrativa de imóvel
+
+Regra:
+
+O proprietário/dono do imóvel acompanha o andamento pelo painel básico do Marketplace, usando o mesmo login do ecossistema Hurby.
+
+A ficha profissional completa continua sendo ferramenta interna do profissional/imobiliária.
+
