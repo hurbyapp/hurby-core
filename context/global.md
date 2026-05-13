@@ -1081,3 +1081,31 @@ Regra:
 
 CORE_PROPERTIES_FORM_V1 deve ser tratado como melhoria operacional controlada sobre a foundation existente, não como refatoração arquitetural ampla.
 
+
+-------------------------------------
+
+## HURBY_CONTEXT_UPDATE_20260513_COMMERCIAL_VISION_LAYER
+
+Status: CAMADA COMERCIAL OFICIAL
+
+A partir do CORE_PROPERTIES_FORM_V1, cada core relevante deve também considerar sua visão comercial.
+
+A documentação comercial oficial fica em:
+
+- context/commercial/GLOBAL_COMMERCIAL_VISION.md
+- context/commercial/core_properties_form_commercial_vision.md
+
+Regra:
+
+Cada core deve ser analisado também como produto, considerando:
+- dor de mercado que resolve
+- público pagador
+- versão gratuita
+- monetização avulsa
+- pacotes
+- assinatura
+- campanha promocional
+- argumento comercial
+- riscos jurídicos/LGPD
+- conexão com Axé e economia interna
+

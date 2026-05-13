@@ -1622,3 +1622,35 @@ Commit valida, fecha e preserva integridade.
 
 Se precisar corrigir arquitetura, abrir nova missão.
 
+
+----------------------------------------
+
+## 28. PROTOCOLO DE VISÃO COMERCIAL DOS CORES
+
+Status: REGRA OPERACIONAL OBRIGATÓRIA
+Data: 2026-05-13
+
+Cada core relevante do Hurby deve ser compreendido também como produto comercial.
+
+O executor não deve entregar apenas estrutura técnica. Deve registrar, quando aplicável:
+
+- que dor o core resolve
+- quem usa
+- quem paga
+- o que pode ser gratuito
+- o que pode ser vendido avulso
+- o que pode entrar em pacote
+- o que pode entrar em assinatura
+- como vender para corretor
+- como vender para imobiliária
+- como comunicar na página pública
+- como monetizar dentro da plataforma
+- quais riscos jurídicos/LGPD existem
+
+A documentação comercial deve ser registrada em:
+
+context/commercial/
+
+Essa regra não autoriza criar cobrança ou produto financeiro sem missão própria.
+Ela apenas obriga o executor a preservar a visão comercial para decisões futuras.
+
