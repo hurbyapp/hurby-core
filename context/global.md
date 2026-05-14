@@ -1133,3 +1133,26 @@ Cabecalhos de paginas TSX devem orientar o Codex:
 - deve manter UTF-8
 - nao pode alterar arquitetura, regras LGPD, service contracts, RPCs, nomes tecnicos ou regras de negocio sem missao especifica
 
+
+-------------------------------------
+
+## HURBY_CONTEXT_UPDATE_20260513_PROPERTY_LIFECYCLE_RETENTION
+
+Status: REGRA GLOBAL EM BACKLOG
+
+O ciclo de vida de imoveis/anuncios/fichas deve prever:
+- ativo
+- pausado
+- arquivo morto
+- retencao temporaria
+- exclusao definitiva ou anonimizacao
+
+Para DEV, o prazo de retencao podera ser de 6 horas para validar fluxo.
+Para produto real, prazo e regra devem ser definidos com consulta juridica/LGPD.
+
+Nao implementar exclusao definitiva automatica em producao sem:
+- regra juridica
+- bloqueios por disputa/proposta/contrato/pagamento/denuncia/auditoria
+- definicao de anonimizacao
+- permissao adequada Owner/Admin
+- trilha de auditoria

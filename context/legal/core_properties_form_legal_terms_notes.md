@@ -150,3 +150,32 @@ O juridico deve prever subtermos para:
 
 Este documento nao substitui termo juridico final.
 Ele orienta a construcao dos termos e subtermos oficiais do ecossistema Hurby.
+
+-------------------------------------
+
+## NOTA JURIDICA — RETENCAO, ARQUIVO MORTO E EXCLUSAO DEFINITIVA
+
+Status: NOTA PARA CONSULTA JURIDICA FUTURA
+Data: 2026-05-13
+
+O Hurby deve consultar juridico antes de definir prazo real de retencao e exclusao definitiva de registros imobiliarios.
+
+Pontos a validar:
+- por quanto tempo manter historico de anuncio, imovel, ficha, proposta, atendimento, mensagens, fotos e documentos
+- quando aplicar exclusao definitiva
+- quando aplicar anonimizacao
+- quando a retencao e permitida para cumprimento legal, regulatorio, contratual ou defesa juridica
+- como atender direito de exclusao do titular sem prejudicar obrigacoes legais ou evidencias necessarias
+- quais registros podem ser removidos pelo usuario
+- quais registros dependem de Owner/Admin
+- quais registros devem ser bloqueados por disputa, denuncia, proposta, contrato, pagamento ou auditoria
+
+Regra provisoria de desenvolvimento:
+- em DEV, usar retencao curta de 6 horas apenas para testar fluxo de arquivo morto
+- em producao, nao usar prazo de 6 horas sem validacao juridica
+- prazo real futuro pode ser muito maior, como 60 meses ou outro prazo definido pelo juridico
+
+O lifecycle correto deve ser:
+ativo -> pausado -> arquivo morto -> retencao -> exclusao definitiva ou anonimizacao.
+
+Esta nota nao substitui parecer juridico.

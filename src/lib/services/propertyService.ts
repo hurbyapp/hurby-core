@@ -440,3 +440,548 @@ export async function updatePropertyListing(
     .select()
     .single()
 }
+// =========================================================
+// PROFESSIONAL ASSESSMENTS + PROPERTY OWNER FLOW
+// Added after CORE_PROPERTIES_FORM_V1 separation.
+// Listing = public/commercial ad.
+// Assessment = internal/professional technical file.
+// Do not mix assessment fields into the listing form.
+// Codex may improve Portuguese/user communication in UI files,
+// but must not change service contracts without a specific mission.
+// =========================================================
+
+type JsonRecord = Record<string, any>
+
+export type ProfessionalAssessmentStatus =
+  | 'draft'
+  | 'submitted_for_review'
+  | 'needs_correction'
+  | 'approved'
+  | 'rejected'
+  | 'archived'
+
+export type ProfessionalAssessmentPurpose =
+  | 'general'
+  | 'sale'
+  | 'rental'
+  | 'rental_management'
+
+export type PropertyOwnerClientPayload = {
+  display_name?: string
+  legal_name?: string
+  document_cpf?: string
+  document_cnpj?: string
+  email?: string
+  phone?: string
+  whatsapp?: string
+  notes?: string
+}
+
+export type ProfessionalAssessmentPayload = {
+  property_asset_id: string
+  property_listing_id?: string | null
+  portfolio_item_id?: string | null
+
+  client_entity_id?: string | null
+  client_relationship_id?: string | null
+
+  assessment_status?: ProfessionalAssessmentStatus
+  assessment_purpose?: ProfessionalAssessmentPurpose
+
+  is_available_for_partnership?: boolean
+  is_exclusive?: boolean
+  hide_exact_address_for_partners?: boolean
+  owner_can_view_summary?: boolean
+
+  essential_snapshot?: JsonRecord
+  technical_assessment?: JsonRecord
+  commercial_assessment?: JsonRecord
+  owner_interview?: JsonRecord
+  documentation_assessment?: JsonRecord
+  financial_assessment?: JsonRecord
+
+  public_summary?: JsonRecord
+  owner_visibility_summary?: JsonRecord
+  partner_visibility_summary?: JsonRecord
+
+  private_notes?: JsonRecord
+
+  ai_review_status?: string
+  ai_review_notes?: JsonRecord
+  moderation_status?: string
+  moderation_notes?: JsonRecord
+
+  entitlement_status?: string
+  is_free_assessment?: boolean
+  monetization_metadata?: JsonRecord
+
+  metadata?: JsonRecord
+}
+
+function cleanAssessmentDocument(value?: string | null) {
+  if (!value) return null
+
+  const cleaned = value.replace(/\D/g, '')
+
+  return cleaned.length > 0 ? cleaned : null
+}
+
+function normalizeAssessmentText(value?: string | null) {
+  if (!value) return null
+
+  const trimmed = value.trim()
+
+  return trimmed.length > 0 ? trimmed : null
+}
+
+async function getCurrentServiceUserId() {
+  const response = await supabase.auth.getUser()
+
+  return response.data.user?.id || null
+}
+
+export async function findClientEntityByDocument(
+  payload: {
+    document_cpf?: string | null
+    document_cnpj?: string | null
+  }
+) {
+  const documentCpf = cleanAssessmentDocument(payload.document_cpf)
+  const documentCnpj = cleanAssessmentDocument(payload.document_cnpj)
+
+  if (!documentCpf && !documentCnpj) {
+    return {
+      data: null,
+      error: null,
+    }
+  }
+
+  let query = supabase
+    .from('client_entities')
+    .select('*')
+    .limit(1)
+
+  if (documentCpf) {
+    query = query.eq('document_cpf', documentCpf)
+  }
+
+  if (documentCnpj) {
+    query = query.eq('document_cnpj', documentCnpj)
+  }
+
+  return await query.maybeSingle()
+}
+
+export async function createOrReusePropertyOwnerClient(
+  payload: PropertyOwnerClientPayload
+): Promise<ServiceResponse> {
+  const currentUserId = await getCurrentServiceUserId()
+
+  const documentCpf = cleanAssessmentDocument(payload.document_cpf)
+  const documentCnpj = cleanAssessmentDocument(payload.document_cnpj)
+
+  const existing = await findClientEntityByDocument({
+    document_cpf: documentCpf,
+    document_cnpj: documentCnpj,
+  })
+
+  if (existing.error) {
+    return existing
+  }
+
+  if (existing.data) {
+    return {
+      data: existing.data,
+      error: null,
+    }
+  }
+
+  const legalName =
+    normalizeAssessmentText(payload.legal_name) ||
+    normalizeAssessmentText(payload.display_name)
+
+  const displayName =
+    normalizeAssessmentText(payload.display_name) ||
+    legalName
+
+  if (!displayName && !legalName) {
+    return {
+      data: null,
+      error: {
+        message: 'Informe o nome do proprietario.',
+      },
+    }
+  }
+
+  return await supabase
+    .from('client_entities')
+    .insert({
+      display_name: displayName,
+      legal_name: legalName,
+      document_cpf: documentCpf,
+      document_cnpj: documentCnpj,
+      entity_type: documentCnpj ? 'company' : 'individual',
+      created_by_profile_id: currentUserId,
+    })
+    .select()
+    .single()
+}
+
+export async function createClientContactMethod(
+  payload: {
+    client_entity_id: string
+    contact_type: 'email' | 'phone' | 'whatsapp'
+    contact_value?: string | null
+    is_primary?: boolean
+  }
+) {
+  const currentUserId = await getCurrentServiceUserId()
+
+  const contactValue = normalizeAssessmentText(payload.contact_value)
+
+  if (!contactValue) {
+    return {
+      data: null,
+      error: null,
+    }
+  }
+
+  const existing = await supabase
+    .from('client_contact_methods')
+    .select('*')
+    .eq('client_entity_id', payload.client_entity_id)
+    .eq('contact_type', payload.contact_type)
+    .eq('contact_value', contactValue)
+    .maybeSingle()
+
+  if (existing.error) {
+    return existing
+  }
+
+  if (existing.data) {
+    return {
+      data: existing.data,
+      error: null,
+    }
+  }
+
+  return await supabase
+    .from('client_contact_methods')
+    .insert({
+      client_entity_id: payload.client_entity_id,
+      contact_type: payload.contact_type,
+      contact_value: contactValue,
+      is_primary: payload.is_primary || false,
+      created_by_profile_id: currentUserId,
+    })
+    .select()
+    .single()
+}
+
+export async function createPropertyProviderRelationship(
+  payload: {
+    client_entity_id: string
+    property_asset_id: string
+    property_listing_id?: string | null
+    portfolio_id?: string | null
+    operational_origin_id?: string | null
+    notes?: string | null
+  }
+): Promise<ServiceResponse> {
+  const currentUserId = await getCurrentServiceUserId()
+
+  if (!currentUserId) {
+    return {
+      data: null,
+      error: {
+        message: 'Usuario nao autenticado.',
+      },
+    }
+  }
+
+  const existing = await supabase
+    .from('client_relationships')
+    .select('*')
+    .eq('client_entity_id', payload.client_entity_id)
+    .eq('property_asset_id', payload.property_asset_id)
+    .eq('relationship_context', 'property_provider')
+    .maybeSingle()
+
+  if (existing.error) {
+    return existing
+  }
+
+  if (existing.data) {
+    return {
+      data: existing.data,
+      error: null,
+    }
+  }
+
+  const relationship = await supabase
+    .from('client_relationships')
+    .insert({
+      client_entity_id: payload.client_entity_id,
+      relationship_context: 'property_provider',
+      relationship_status: 'active',
+      owner_profile_id: currentUserId,
+      source_profile_id: currentUserId,
+      portfolio_id: payload.portfolio_id || null,
+      property_asset_id: payload.property_asset_id,
+      property_listing_id: payload.property_listing_id || null,
+      operational_origin_id: payload.operational_origin_id || null,
+      created_by_profile_id: currentUserId,
+      notes: payload.notes || null,
+    })
+    .select()
+    .single()
+
+  if (relationship.error || !relationship.data) {
+    return relationship
+  }
+
+  await supabase
+    .from('client_relationship_roles')
+    .insert({
+      client_relationship_id: relationship.data.id,
+      role_type: 'property_provider',
+      role_status: 'active',
+    })
+
+  return relationship
+}
+
+export async function createOrReusePropertyOwnerFlow(
+  payload: PropertyOwnerClientPayload & {
+    property_asset_id: string
+    property_listing_id?: string | null
+    portfolio_id?: string | null
+    operational_origin_id?: string | null
+  }
+): Promise<ServiceResponse<{
+  client_entity: any
+  client_relationship: any
+}>> {
+  const client = await createOrReusePropertyOwnerClient(payload)
+
+  if (client.error || !client.data) {
+    return {
+      data: null,
+      error: client.error,
+    }
+  }
+
+  await createClientContactMethod({
+    client_entity_id: client.data.id,
+    contact_type: 'email',
+    contact_value: payload.email,
+    is_primary: true,
+  })
+
+  await createClientContactMethod({
+    client_entity_id: client.data.id,
+    contact_type: 'phone',
+    contact_value: payload.phone,
+    is_primary: !payload.email,
+  })
+
+  await createClientContactMethod({
+    client_entity_id: client.data.id,
+    contact_type: 'whatsapp',
+    contact_value: payload.whatsapp,
+    is_primary: !payload.email && !payload.phone,
+  })
+
+  const relationship = await createPropertyProviderRelationship({
+    client_entity_id: client.data.id,
+    property_asset_id: payload.property_asset_id,
+    property_listing_id: payload.property_listing_id || null,
+    portfolio_id: payload.portfolio_id || null,
+    operational_origin_id: payload.operational_origin_id || null,
+    notes: payload.notes || null,
+  })
+
+  if (relationship.error || !relationship.data) {
+    return {
+      data: null,
+      error: relationship.error,
+    }
+  }
+
+  return {
+    data: {
+      client_entity: client.data,
+      client_relationship: relationship.data,
+    },
+    error: null,
+  }
+}
+
+export async function getProfessionalAssessmentByListingId(
+  listingId: string
+) {
+  return await supabase
+    .from('property_professional_assessments')
+    .select('*')
+    .eq('property_listing_id', listingId)
+    .eq('is_current', true)
+    .is('archived_at', null)
+    .maybeSingle()
+}
+
+export async function getProfessionalAssessmentByAssetId(
+  assetId: string
+) {
+  return await supabase
+    .from('property_professional_assessments')
+    .select('*')
+    .eq('property_asset_id', assetId)
+    .eq('is_current', true)
+    .is('archived_at', null)
+    .maybeSingle()
+}
+
+export async function createProfessionalAssessment(
+  payload: ProfessionalAssessmentPayload
+) {
+  const currentUserId = await getCurrentServiceUserId()
+
+  if (!currentUserId) {
+    return {
+      data: null,
+      error: {
+        message: 'Usuario nao autenticado.',
+      },
+    }
+  }
+
+  return await supabase
+    .from('property_professional_assessments')
+    .insert({
+      property_asset_id: payload.property_asset_id,
+      property_listing_id: payload.property_listing_id || null,
+      portfolio_item_id: payload.portfolio_item_id || null,
+      client_entity_id: payload.client_entity_id || null,
+      client_relationship_id: payload.client_relationship_id || null,
+
+      created_by_profile_id: currentUserId,
+      responsible_profile_id: currentUserId,
+
+      assessment_status: payload.assessment_status || 'draft',
+      assessment_purpose: payload.assessment_purpose || 'general',
+
+      is_available_for_partnership:
+        payload.is_available_for_partnership || false,
+
+      is_exclusive:
+        payload.is_exclusive ?? true,
+
+      hide_exact_address_for_partners:
+        payload.hide_exact_address_for_partners ?? true,
+
+      owner_can_view_summary:
+        payload.owner_can_view_summary ?? true,
+
+      essential_snapshot: payload.essential_snapshot || {},
+      technical_assessment: payload.technical_assessment || {},
+      commercial_assessment: payload.commercial_assessment || {},
+      owner_interview: payload.owner_interview || {},
+      documentation_assessment: payload.documentation_assessment || {},
+      financial_assessment: payload.financial_assessment || {},
+
+      public_summary: payload.public_summary || {},
+      owner_visibility_summary: payload.owner_visibility_summary || {},
+      partner_visibility_summary: payload.partner_visibility_summary || {},
+
+      private_notes: payload.private_notes || {},
+
+      ai_review_status: payload.ai_review_status || 'not_requested',
+      ai_review_notes: payload.ai_review_notes || {},
+
+      moderation_status: payload.moderation_status || 'not_reviewed',
+      moderation_notes: payload.moderation_notes || {},
+
+      entitlement_status: payload.entitlement_status || 'not_required',
+      is_free_assessment: payload.is_free_assessment || false,
+      monetization_metadata: payload.monetization_metadata || {},
+
+      metadata: payload.metadata || {},
+    })
+    .select()
+    .single()
+}
+
+export async function updateProfessionalAssessment(
+  assessmentId: string,
+  payload: Partial<ProfessionalAssessmentPayload>
+) {
+  return await supabase
+    .from('property_professional_assessments')
+    .update({
+      client_entity_id: payload.client_entity_id,
+      client_relationship_id: payload.client_relationship_id,
+
+      assessment_status: payload.assessment_status,
+      assessment_purpose: payload.assessment_purpose,
+
+      is_available_for_partnership: payload.is_available_for_partnership,
+      is_exclusive: payload.is_exclusive,
+      hide_exact_address_for_partners: payload.hide_exact_address_for_partners,
+      owner_can_view_summary: payload.owner_can_view_summary,
+
+      essential_snapshot: payload.essential_snapshot,
+      technical_assessment: payload.technical_assessment,
+      commercial_assessment: payload.commercial_assessment,
+      owner_interview: payload.owner_interview,
+      documentation_assessment: payload.documentation_assessment,
+      financial_assessment: payload.financial_assessment,
+
+      public_summary: payload.public_summary,
+      owner_visibility_summary: payload.owner_visibility_summary,
+      partner_visibility_summary: payload.partner_visibility_summary,
+
+      private_notes: payload.private_notes,
+
+      ai_review_status: payload.ai_review_status,
+      ai_review_notes: payload.ai_review_notes,
+
+      moderation_status: payload.moderation_status,
+      moderation_notes: payload.moderation_notes,
+
+      entitlement_status: payload.entitlement_status,
+      is_free_assessment: payload.is_free_assessment,
+      monetization_metadata: payload.monetization_metadata,
+
+      metadata: payload.metadata,
+
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', assessmentId)
+    .select()
+    .single()
+}
+
+export async function saveProfessionalAssessmentForListing(
+  payload: ProfessionalAssessmentPayload
+) {
+  if (!payload.property_listing_id) {
+    return await createProfessionalAssessment(payload)
+  }
+
+  const existing = await getProfessionalAssessmentByListingId(
+    payload.property_listing_id
+  )
+
+  if (existing.error) {
+    return existing
+  }
+
+  if (existing.data) {
+    return await updateProfessionalAssessment(
+      existing.data.id,
+      payload
+    )
+  }
+
+  return await createProfessionalAssessment(payload)
+}

@@ -1276,3 +1276,60 @@ Pendencias registradas para evolucao posterior:
    - gerar resumo controlado para proprietario/parceiros
    - sem expor notas privadas
 
+
+-------------------------------------
+
+## BACKLOG — LIFECYCLE / ARQUIVO MORTO / RETENCAO DE IMOVEIS
+
+Status: BACKLOG TECNICO, PRODUTO E JURIDICO
+Data: 2026-05-13
+
+O ciclo de vida de imoveis/anuncios/fichas deve seguir modelo profissional:
+
+1. Ativo
+2. Pausado
+3. Arquivo morto
+4. Retencao temporaria
+5. Exclusao definitiva ou anonimizacao
+
+Decisao de produto:
+- corretor/imobiliaria nao deve excluir definitivamente como acao comum
+- acao comum deve ser Pausar ou Arquivar
+- exclusao definitiva deve ser restrita a Owner/Admin, ambiente DEV ou regra futura validada juridicamente
+- arquivo morto deve ter lista propria com opcoes:
+  - Restaurar
+  - Excluir definitivamente
+  - Definir prazo de retencao
+  - Contador regressivo
+
+Regra DEV:
+- usar prazo de retencao de 6 horas para validar comportamento operacional
+- objetivo: testar arquivo morto, contador regressivo, restauracao e exclusao definitiva
+- no produto real, o prazo deve ser redefinido com base juridica
+
+Backlog tecnico futuro:
+- criar tabela ou estrutura propria de lifecycle/archive
+- criar pagina /operations/properties/archive
+- criar RPCs:
+  - archive_property_listing
+  - restore_property_listing
+  - permanently_delete_property_listing_dev
+- criar contador regressivo no frontend
+- avaliar job automatico futuro via pg_cron, Edge Function agendada ou processo Owner/Admin
+- nao implementar exclusao automatica sem validacao juridica e operacional
+
+Criterios futuros que devem bloquear exclusao definitiva:
+- disputa/reclamacao aberta
+- proposta pendente
+- contrato ativo ou historico contratual relevante
+- pagamento, comissao, repasse ou pendencia financeira
+- denuncia aberta
+- atendimento aberto
+- auditoria interna
+- necessidade de defesa juridica
+- obrigacao legal, fiscal, regulatoria ou contratual
+- solicitacao de titular LGPD ainda nao tratada
+- dado que deve ser anonimizado em vez de excluido
+
+Observacao:
+Esses criterios ainda precisam ser desenhados com mais profundidade antes de virar regra final.
