@@ -985,3 +985,247 @@ export async function saveProfessionalAssessmentForListing(
 
   return await createProfessionalAssessment(payload)
 }
+
+// =========================================================
+// PROPERTY BASIC FORM HELPERS
+// Added for CORE_PROPERTIES_FORM_V1 public/basic listing form.
+// These helpers support optional fields after the RPC creates
+// property_asset, property_asset_location and property_asset_features.
+// Do not use these helpers to bypass the creation RPC.
+// =========================================================
+
+export type PropertyAssetLocationPayload = {
+  zip_code?: string | null
+  zipcode?: string | null
+  state?: string | null
+  city?: string | null
+  neighborhood?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  hide_public_number?: boolean | null
+}
+
+export type PropertyAssetFeaturesPayload = {
+  bedrooms?: number | null
+  suites?: number | null
+  bathrooms?: number | null
+  garage_spaces?: number | null
+  private_area?: number | null
+  total_area?: number | null
+  built_year?: number | null
+  floor_number?: number | null
+  total_floors?: number | null
+  has_elevator?: boolean | null
+  is_furnished?: boolean | null
+  furnished?: boolean | null
+  has_private_pool?: boolean | null
+  sun_position?: string | null
+}
+
+export type PropertyAssetCommercialDetailsPayload = {
+  property_standard?: string | null
+  condominium_name?: string | null
+  building_name?: string | null
+  is_gated_community?: boolean | null
+  has_condominium_pool?: boolean | null
+  accepts_financing?: boolean | null
+  metadata?: Record<string, any>
+}
+
+function normalizeOptionalText(value?: string | null) {
+  if (value === undefined) return undefined
+  if (value === null) return null
+
+  const trimmed = value.trim()
+
+  return trimmed.length > 0 ? trimmed : null
+}
+
+function normalizeOptionalNumber(value?: number | null) {
+  if (value === undefined) return undefined
+  if (value === null) return null
+
+  return Number.isNaN(value) ? null : value
+}
+
+function addDefinedValue(
+  target: Record<string, any>,
+  key: string,
+  value: any
+) {
+  if (value !== undefined) {
+    target[key] = value
+  }
+}
+
+export async function updatePropertyAssetCommercialDetails(
+  assetId: string,
+  payload: PropertyAssetCommercialDetailsPayload
+) {
+  const current = await supabase
+    .from('property_assets')
+    .select('metadata')
+    .eq('id', assetId)
+    .maybeSingle()
+
+  if (current.error) {
+    return current
+  }
+
+  const updatePayload: Record<string, any> = {}
+
+  addDefinedValue(
+    updatePayload,
+    'property_standard',
+    normalizeOptionalText(payload.property_standard)
+  )
+
+  addDefinedValue(
+    updatePayload,
+    'condominium_name',
+    normalizeOptionalText(payload.condominium_name)
+  )
+
+  addDefinedValue(
+    updatePayload,
+    'building_name',
+    normalizeOptionalText(payload.building_name)
+  )
+
+  addDefinedValue(
+    updatePayload,
+    'is_gated_community',
+    payload.is_gated_community
+  )
+
+  addDefinedValue(
+    updatePayload,
+    'has_condominium_pool',
+    payload.has_condominium_pool
+  )
+
+  addDefinedValue(
+    updatePayload,
+    'accepts_financing',
+    payload.accepts_financing
+  )
+
+  if (payload.metadata !== undefined) {
+    updatePayload.metadata = {
+      ...(current.data?.metadata || {}),
+      ...(payload.metadata || {}),
+    }
+  }
+
+  if (Object.keys(updatePayload).length === 0) {
+    return {
+      data: current.data,
+      error: null,
+    }
+  }
+
+  return await supabase
+    .from('property_assets')
+    .update(updatePayload)
+    .eq('id', assetId)
+    .select()
+    .single()
+}
+
+export async function upsertPropertyAssetLocationByAssetId(
+  assetId: string,
+  payload: PropertyAssetLocationPayload
+) {
+  const existing = await supabase
+    .from('property_asset_locations')
+    .select('id')
+    .eq('property_asset_id', assetId)
+    .maybeSingle()
+
+  if (existing.error) {
+    return existing
+  }
+
+  const updatePayload: Record<string, any> = {
+    property_asset_id: assetId,
+  }
+
+  const normalizedZip =
+    normalizeOptionalText(payload.zip_code) ??
+    normalizeOptionalText(payload.zipcode)
+
+  addDefinedValue(updatePayload, 'zip_code', normalizedZip)
+  addDefinedValue(updatePayload, 'zipcode', normalizedZip)
+  addDefinedValue(updatePayload, 'state', normalizeOptionalText(payload.state))
+  addDefinedValue(updatePayload, 'city', normalizeOptionalText(payload.city))
+  addDefinedValue(updatePayload, 'neighborhood', normalizeOptionalText(payload.neighborhood))
+  addDefinedValue(updatePayload, 'street', normalizeOptionalText(payload.street))
+  addDefinedValue(updatePayload, 'number', normalizeOptionalText(payload.number))
+  addDefinedValue(updatePayload, 'complement', normalizeOptionalText(payload.complement))
+  addDefinedValue(updatePayload, 'hide_public_number', payload.hide_public_number)
+
+  if (existing.data?.id) {
+    return await supabase
+      .from('property_asset_locations')
+      .update(updatePayload)
+      .eq('id', existing.data.id)
+      .select()
+      .single()
+  }
+
+  return await supabase
+    .from('property_asset_locations')
+    .insert(updatePayload)
+    .select()
+    .single()
+}
+
+export async function upsertPropertyAssetFeaturesByAssetId(
+  assetId: string,
+  payload: PropertyAssetFeaturesPayload
+) {
+  const existing = await supabase
+    .from('property_asset_features')
+    .select('id')
+    .eq('property_asset_id', assetId)
+    .maybeSingle()
+
+  if (existing.error) {
+    return existing
+  }
+
+  const updatePayload: Record<string, any> = {
+    property_asset_id: assetId,
+  }
+
+  addDefinedValue(updatePayload, 'bedrooms', normalizeOptionalNumber(payload.bedrooms))
+  addDefinedValue(updatePayload, 'suites', normalizeOptionalNumber(payload.suites))
+  addDefinedValue(updatePayload, 'bathrooms', normalizeOptionalNumber(payload.bathrooms))
+  addDefinedValue(updatePayload, 'garage_spaces', normalizeOptionalNumber(payload.garage_spaces))
+  addDefinedValue(updatePayload, 'private_area', normalizeOptionalNumber(payload.private_area))
+  addDefinedValue(updatePayload, 'total_area', normalizeOptionalNumber(payload.total_area))
+  addDefinedValue(updatePayload, 'built_year', normalizeOptionalNumber(payload.built_year))
+  addDefinedValue(updatePayload, 'floor_number', normalizeOptionalNumber(payload.floor_number))
+  addDefinedValue(updatePayload, 'total_floors', normalizeOptionalNumber(payload.total_floors))
+  addDefinedValue(updatePayload, 'has_elevator', payload.has_elevator)
+  addDefinedValue(updatePayload, 'is_furnished', payload.is_furnished)
+  addDefinedValue(updatePayload, 'furnished', payload.furnished)
+  addDefinedValue(updatePayload, 'has_private_pool', payload.has_private_pool)
+  addDefinedValue(updatePayload, 'sun_position', normalizeOptionalText(payload.sun_position))
+
+  if (existing.data?.id) {
+    return await supabase
+      .from('property_asset_features')
+      .update(updatePayload)
+      .eq('id', existing.data.id)
+      .select()
+      .single()
+  }
+
+  return await supabase
+    .from('property_asset_features')
+    .insert(updatePayload)
+    .select()
+    .single()
+}
