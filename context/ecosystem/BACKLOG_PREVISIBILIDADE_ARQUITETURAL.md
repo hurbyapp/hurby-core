@@ -1213,3 +1213,66 @@ O proprietário/dono do imóvel acompanha o andamento pelo painel básico do Mar
 
 A ficha profissional completa continua sendo ferramenta interna do profissional/imobiliária.
 
+
+-------------------------------------
+
+## BACKLOG — CORE_PROPERTIES_FORM_V1 / FLUXOS FUTUROS
+
+Status: BACKLOG TECNICO E CONCEITUAL
+Data: 2026-05-13
+
+Pendencias registradas para evolucao posterior:
+
+1. Criar fluxo de ficha profissional avulsa antes do anuncio.
+   - permitir ficha vinculada a property_asset preliminar sem property_listing
+   - permitir avaliacao de imovel antes de virar anuncio publico/comercial
+
+2. Criar rota dedicada para ficha profissional vinculada ao anuncio:
+   - /operations/properties/[listingId]/assessment
+
+3. Criar estrutura futura de midias tecnicas da ficha:
+   - property_assessment_media
+   - bucket/visibilidade privada
+   - sem indexacao publica
+   - sem exposicao para marketplace/parceiros
+
+4. Separar fotos publicas e fotos tecnicas:
+   - property_listing_media = fotos publicas/comerciais do anuncio
+   - property_assessment_media = fotos tecnicas/privadas da ficha
+
+5. Criar regra de limite de fotos:
+   - ate 22 fotos no anuncio como limite base
+   - acima de 22 fotos, cobrar por Axe/pacote/assinatura
+
+6. Criar fluxo de chave/token para migracao do Marketplace para ambiente profissional:
+   - usuario comum autoriza profissional
+   - profissional puxa anuncio para gestao profissional
+   - token deve ser seguro, dificil de adivinhar, auditavel e expiravel
+
+7. Criar governanca de revisao da ficha:
+   - corretor vinculado envia para revisao
+   - agency/admin pode aprovar, rejeitar, arquivar ou marcar como precisa de revisao
+   - usar linguagem "precisa de revisao", nao "precisa de correcao"
+   - criar mensagens temporarias/transitorias de revisao futuramente
+
+8. Criar regras de vinculacao/troca de ficha:
+   - ficha vinculada ao anuncio nao deve ser trocada livremente
+   - corretor independente pode trocar com alerta e log
+   - corretor vinculado deve depender de agency/admin
+   - toda troca deve gerar auditoria futura
+
+9. Criar painel Meu Imovel para proprietario acompanhar:
+   - anuncio
+   - status
+   - evolucao
+   - proposta/interessados
+   - resumo autorizado
+   - historico futuro
+
+10. Criar camada de IA/moderacao:
+   - revisar descricao publica
+   - sugerir melhoria de texto
+   - detectar conteudo indevido
+   - gerar resumo controlado para proprietario/parceiros
+   - sem expor notas privadas
+

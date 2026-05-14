@@ -1109,3 +1109,27 @@ Cada core deve ser analisado também como produto, considerando:
 - riscos jurídicos/LGPD
 - conexão com Axé e economia interna
 
+
+-------------------------------------
+
+## HURBY_CONTEXT_UPDATE_20260513_PROPERTIES_FORM_SEPARATION_AND_LEGAL_LAYER
+
+Status: REGRA GLOBAL DE ARQUITETURA E PRODUTO
+
+A partir do CORE_PROPERTIES_FORM_V1, anuncio e ficha profissional devem ser tratados como fluxos separados.
+
+Regra:
+- anuncio e peca publica/comercial
+- ficha profissional e documento tecnico interno/adicional
+- checkup e tela interna de consolidacao
+- fotos publicas e fotos tecnicas devem ter estruturas e visibilidades diferentes
+- ficha profissional exige tratamento juridico/LGPD especifico
+- todo core que manipular dados sensiveis deve gerar documentacao juridica de apoio
+
+Tambem fica definido que comandos PowerShell para reescrever paginas grandes devem preferir Base64 UTF-8 ou edicao direta em VS Code, evitando mojibake/acentuacao quebrada.
+
+Cabecalhos de paginas TSX devem orientar o Codex:
+- pode corrigir portugues, acentuacao e comunicacao
+- deve manter UTF-8
+- nao pode alterar arquitetura, regras LGPD, service contracts, RPCs, nomes tecnicos ou regras de negocio sem missao especifica
+
