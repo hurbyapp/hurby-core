@@ -8,7 +8,7 @@ src/lib/services/propertyService.ts
 =========================================================
 
 OBJETIVO:
-Centralizar as operações oficiais do núcleo imobiliário
+Centralizar as operaÃ§Ãµes oficiais do nÃºcleo imobiliÃ¡rio
 operacional do HURBY.
 
 Esta service layer trabalha com:
@@ -19,15 +19,15 @@ Esta service layer trabalha com:
 - Property Media
 
 IMPORTANTE:
-Não acessar Supabase diretamente nas páginas para operações
-de imóveis quando houver fluxo operacional composto.
+NÃ£o acessar Supabase diretamente nas pÃ¡ginas para operaÃ§Ãµes
+de imÃ³veis quando houver fluxo operacional composto.
 
-Toda criação operacional de imóvel deve passar por esta
+Toda criaÃ§Ã£o operacional de imÃ³vel deve passar por esta
 service layer para evitar retorno ao modelo antigo:
 
-user -> imóvel
+user -> imÃ³vel
 
-O modelo correto é:
+O modelo correto Ã©:
 
 profile
 -> portfolio
@@ -37,30 +37,30 @@ profile
 
 ---------------------------------------------------------
 
-NÃO MISTURAR AQUI:
+NÃƒO MISTURAR AQUI:
 - leads
 - financeiro
 - IA
 - assinatura
 - marketplace
 - contratos
-- gestão de locação
+- gestÃ£o de locaÃ§Ã£o
 
 ---------------------------------------------------------
 
 CONCEITOS:
 
 PROPERTY ASSET
-= ativo imobiliário operacional
+= ativo imobiliÃ¡rio operacional
 
 PROPERTY LISTING
-= manifestação comercial/publicitária do ativo
+= manifestaÃ§Ã£o comercial/publicitÃ¡ria do ativo
 
 PORTFOLIO
 = carteira operacional contextual
 
 PORTFOLIO ITEM
-= vínculo entre carteira, ativo, listing, origem,
+= vÃ­nculo entre carteira, ativo, listing, origem,
 responsabilidade e visibilidade
 
 OPERATIONAL ORIGIN
@@ -68,30 +68,30 @@ OPERATIONAL ORIGIN
 
 ---------------------------------------------------------
 
-MÍDIA:
-Mídias pertencem ao PROPERTY LISTING.
-Não pertencem diretamente ao PROPERTY ASSET.
+MÃDIA:
+MÃ­dias pertencem ao PROPERTY LISTING.
+NÃ£o pertencem diretamente ao PROPERTY ASSET.
 
 Motivo:
-- anúncio pode morrer
-- mídia pode morrer
+- anÃºncio pode morrer
+- mÃ­dia pode morrer
 - asset permanece
-- histórico permanece
-- gestão futura permanece
+- histÃ³rico permanece
+- gestÃ£o futura permanece
 
 ---------------------------------------------------------
 
-OBSERVAÇÃO TÉCNICA:
-A criação completa usa RPC transacional no banco.
+OBSERVAÃ‡ÃƒO TÃ‰CNICA:
+A criaÃ§Ã£o completa usa RPC transacional no banco.
 
-A edição básica desta etapa permite atualizar:
+A ediÃ§Ã£o bÃ¡sica desta etapa permite atualizar:
 - campos do listing
 - tipo do asset
 - modelo operacional do asset
 
 Futuro:
-edições sensíveis de asset devem passar por regras
-mais fortes de auditoria e histórico operacional.
+ediÃ§Ãµes sensÃ­veis de asset devem passar por regras
+mais fortes de auditoria e histÃ³rico operacional.
 
 =========================================================
 */
@@ -851,6 +851,24 @@ export async function createProfessionalAssessment(
       data: null,
       error: {
         message: 'Usuario nao autenticado.',
+      },
+    }
+  }
+
+  if (!payload.client_entity_id) {
+    return {
+      data: null,
+      error: {
+        message: 'Documento Profissional do Imovel exige proprietario vinculado ao Core Clients.',
+      },
+    }
+  }
+
+  if (!payload.client_relationship_id) {
+    return {
+      data: null,
+      error: {
+        message: 'Documento Profissional do Imovel exige relacionamento cliente-imovel vinculado.',
       },
     }
   }
