@@ -2,7 +2,7 @@
 
 /*
 =========================================================
-HURBY â€” CORE_PROPERTIES_FORM_V1
+HURBY — CORE_PROPERTIES_FORM_V1
 ARQUIVO:
 src/app/operations/properties/[listingId]/assessment/page.tsx
 
@@ -340,7 +340,14 @@ export default function PropertyAssessmentPage() {
       }
 
       setAssessment(response.data)
-      setStatus('Ficha salva. Redirecionando para o checkup...')
+
+      if (!assessment) {
+        setStatus('Proprietario identificado no Core Clients. Documento Profissional liberado para preenchimento.')
+        setSaving(false)
+        return
+      }
+
+      setStatus('Documento Profissional salvo. Redirecionando para o checkup...')
 
       setTimeout(() => {
         window.location.href = `/operations/properties/${listingId}`
