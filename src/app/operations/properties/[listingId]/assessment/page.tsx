@@ -2,7 +2,7 @@
 
 /*
 =========================================================
-HURBY — CORE_PROPERTIES_FORM_V1
+HURBY â€” CORE_PROPERTIES_FORM_V1
 ARQUIVO:
 src/app/operations/properties/[listingId]/assessment/page.tsx
 
@@ -448,9 +448,44 @@ export default function PropertyAssessmentPage() {
         </>
       )}
 
-      <hr />
+      {!assessment && (
+        <>
+          <hr />
 
-      <h2>2. Controle da ficha</h2>
+          <div style={{ border: '1px solid #ddd', padding: 16, marginBottom: 20 }}>
+            <h2>Antes de liberar o documento</h2>
+
+            <p>
+              O proprietario precisa estar identificado no Core Clients.
+              Pessoa, cliente ou proprietario nao pode ser duplicado em outras tabelas.
+            </p>
+
+            <p>
+              Ao clicar no botao abaixo, o sistema vai buscar ou criar o cliente
+              pelo CPF/CNPJ e vincular este imovel ao relacionamento correto.
+            </p>
+
+            <p>
+              Depois disso, o Documento Profissional do Imovel sera liberado.
+            </p>
+          </div>
+
+          <button onClick={handleSave} disabled={saving}>
+            {saving ? 'Vinculando...' : 'Identificar proprietario e liberar documento'}
+          </button>
+
+          <br /><br />
+
+          {status && <p>{status}</p>}
+        </>
+      )}
+
+      {assessment && (
+        <>
+
+          <hr />
+
+          <h2>2. Controle da ficha</h2>
 
       <label>
         Status da ficha
@@ -565,7 +600,9 @@ export default function PropertyAssessmentPage() {
 
       <br /><br />
 
-      {status && <p>{status}</p>}
+          {status && <p>{status}</p>}
+        </>
+      )}
     </main>
   )
 }
