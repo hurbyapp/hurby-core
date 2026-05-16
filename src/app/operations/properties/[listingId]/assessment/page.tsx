@@ -218,6 +218,17 @@ export default function PropertyAssessmentPage() {
   const [financialRecommendationV1, setFinancialRecommendationV1] = useState('to_confirm')
   const [documentationNotesV1, setDocumentationNotesV1] = useState('')
   const [financialNotesV1, setFinancialNotesV1] = useState('')
+
+  const [summaryReadinessStatus, setSummaryReadinessStatus] = useState('draft')
+  const [publicExposureLevel, setPublicExposureLevel] = useState('limited')
+  const [ownerSummaryVisibility, setOwnerSummaryVisibility] = useState('internal_only')
+  const [partnerSummaryVisibility, setPartnerSummaryVisibility] = useState('restricted')
+  const [summaryLegalSensitivity, setSummaryLegalSensitivity] = useState('medium')
+  const [publicListingSummaryV1, setPublicListingSummaryV1] = useState('')
+  const [ownerFacingSummaryV1, setOwnerFacingSummaryV1] = useState('')
+  const [partnerFacingSummaryV1, setPartnerFacingSummaryV1] = useState('')
+  const [internalExecutiveSummaryV1, setInternalExecutiveSummaryV1] = useState('')
+  const [controlledRiskDisclaimerV1, setControlledRiskDisclaimerV1] = useState('')
   const [commercialSubtype, setCommercialSubtype] = useState('commercial_store')
   const [commercialCurrentUse, setCommercialCurrentUse] = useState('not_verified')
   const [commercialBestUse, setCommercialBestUse] = useState('not_evaluated')
@@ -452,6 +463,18 @@ export default function PropertyAssessmentPage() {
         setFinancialRecommendationV1(documentationFinancialV1.financial_recommendation || 'to_confirm')
         setDocumentationNotesV1(documentationFinancialV1.documentation_notes || '')
         setFinancialNotesV1(documentationFinancialV1.financial_notes || '')
+
+        const controlledSummariesV1 = assessmentData.metadata?.controlled_summaries_v1 || {}
+        setSummaryReadinessStatus(controlledSummariesV1.summary_readiness_status || 'draft')
+        setPublicExposureLevel(controlledSummariesV1.public_exposure_level || 'limited')
+        setOwnerSummaryVisibility(controlledSummariesV1.owner_summary_visibility || 'internal_only')
+        setPartnerSummaryVisibility(controlledSummariesV1.partner_summary_visibility || 'restricted')
+        setSummaryLegalSensitivity(controlledSummariesV1.summary_legal_sensitivity || 'medium')
+        setPublicListingSummaryV1(controlledSummariesV1.public_listing_summary || '')
+        setOwnerFacingSummaryV1(controlledSummariesV1.owner_facing_summary || '')
+        setPartnerFacingSummaryV1(controlledSummariesV1.partner_facing_summary || '')
+        setInternalExecutiveSummaryV1(controlledSummariesV1.internal_executive_summary || '')
+        setControlledRiskDisclaimerV1(controlledSummariesV1.controlled_risk_disclaimer || '')
         const commercialModule = assessmentData.metadata?.commercial_module_v1 || {}
         setCommercialSubtype(commercialModule.commercial_subtype || 'commercial_store')
         setCommercialCurrentUse(commercialModule.current_use || 'not_verified')
@@ -766,6 +789,17 @@ export default function PropertyAssessmentPage() {
             financial_recommendation: financialRecommendationV1,
             documentation_notes: documentationNotesV1,
             financial_notes: financialNotesV1,
+          },          controlled_summaries_v1: {
+            summary_readiness_status: summaryReadinessStatus,
+            public_exposure_level: publicExposureLevel,
+            owner_summary_visibility: ownerSummaryVisibility,
+            partner_summary_visibility: partnerSummaryVisibility,
+            summary_legal_sensitivity: summaryLegalSensitivity,
+            public_listing_summary: publicListingSummaryV1,
+            owner_facing_summary: ownerFacingSummaryV1,
+            partner_facing_summary: partnerFacingSummaryV1,
+            internal_executive_summary: internalExecutiveSummaryV1,
+            controlled_risk_disclaimer: controlledRiskDisclaimerV1,
           },commercial_module_v1: {
             commercial_subtype: commercialSubtype,
             current_use: commercialCurrentUse,
@@ -1259,6 +1293,7 @@ export default function PropertyAssessmentPage() {
         <a href="#rural-module">Rural</a>
         <a href="#commercial-reading">Leitura comercial</a>
         <a href="#commercial-proposal-v1">Proposta comercial</a>
+        <a href="#controlled-summaries-v1">Resumos</a>
         <a href="#technical-assessment-v1">Avaliacao tecnica</a>
         <a href="#documentation-financial-v1">Doc. e financeiro</a>
         <a href="#owner-interview-v1">Entrevista</a>
@@ -3349,24 +3384,108 @@ export default function PropertyAssessmentPage() {
       </label>
 
       <hr />
-<h2>7. Resumos controlados</h2>
-      <p>Use estes campos para criar versoes seguras da ficha. Nao inclua documentos, telefone, CPF/CNPJ, numero exato do imovel ou notas privadas.</p>
+<h2 id="controlled-summaries-v1">Resumos Controlados V1</h2>
+      <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
+      <p className="analysis-note">Como avaliar: este modulo separa o que pode ser comunicado publicamente, o que pode ser mostrado ao proprietario, o que pode ser compartilhado com parceiros e o que deve permanecer interno. Nao exponha dado sensivel, risco juridico, preco minimo ou estrategia interna em resumo publico.</p>
 
-      <label>Resumo publico<br /><textarea value={publicSummary} onChange={(e) => setPublicSummary(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+      <label>Status do resumo<br />
+        <select value={summaryReadinessStatus} onChange={(e) => setSummaryReadinessStatus(e.target.value)}>
+          <option value="draft">Rascunho</option>
+          <option value="needs_review">Precisa de revisao</option>
+          <option value="ready_internal">Pronto para uso interno</option>
+          <option value="ready_owner">Pronto para proprietario</option>
+          <option value="ready_public">Pronto para anuncio publico</option>
+          <option value="blocked_by_risk">Bloqueado por risco</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> maturidade dos resumos gerados a partir da ficha.<br /><strong>Como avaliar:</strong> se ainda existem pendencias documentais, tecnicas ou financeiras, mantenha como rascunho ou precisa de revisao.</div>
       </label>
+
       <br /><br />
-      <label>Resumo para proprietario<br /><textarea value={ownerSummary} onChange={(e) => setOwnerSummary(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Nivel de exposicao publica<br />
+        <select value={publicExposureLevel} onChange={(e) => setPublicExposureLevel(e.target.value)}>
+          <option value="full">Completa</option>
+          <option value="limited">Limitada</option>
+          <option value="neighborhood_only">Somente bairro/regiao</option>
+          <option value="no_sensitive_details">Sem detalhes sensiveis</option>
+          <option value="do_not_publish">Nao publicar</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> quanto da informacao pode ir para ambiente publico.<br /><strong>Como avaliar:</strong> reduza exposicao quando houver risco, falta de documento, endereco sensivel, estrategia de preco ou pendencia relevante.</div>
       </label>
+
       <br /><br />
-      <label>Resumo para parceria<br /><textarea value={partnerSummary} onChange={(e) => setPartnerSummary(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Visibilidade do resumo para proprietario<br />
+        <select value={ownerSummaryVisibility} onChange={(e) => setOwnerSummaryVisibility(e.target.value)}>
+          <option value="can_share">Pode compartilhar</option>
+          <option value="share_after_review">Compartilhar apos revisao</option>
+          <option value="partial_only">Somente parcial</option>
+          <option value="internal_only">Somente interno</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> controle sobre o que pode ser apresentado ao proprietario.<br /><strong>Como avaliar:</strong> argumentos comerciais podem ser compartilhados; notas internas, risco sensivel e estrategia de negociacao devem ser protegidos.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Visibilidade para parceiros<br />
+        <select value={partnerSummaryVisibility} onChange={(e) => setPartnerSummaryVisibility(e.target.value)}>
+          <option value="open_to_partners">Aberto a parceiros</option>
+          <option value="restricted">Restrito</option>
+          <option value="only_after_authorization">Somente apos autorizacao</option>
+          <option value="do_not_share">Nao compartilhar</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> regra para compartilhar informacao com parceiros, outros brokers ou imobiliarias.<br /><strong>Como avaliar:</strong> se nao houver autorizacao clara ou se houver dado sensivel, mantenha restrito.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Sensibilidade juridica/comercial do resumo<br />
+        <select value={summaryLegalSensitivity} onChange={(e) => setSummaryLegalSensitivity(e.target.value)}>
+          <option value="low">Baixa</option>
+          <option value="medium">Media</option>
+          <option value="high">Alta</option>
+          <option value="critical">Critica</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> risco de o resumo conter informacao sensivel, juridica, financeira ou estrategica.<br /><strong>Como avaliar:</strong> quanto mais houver divida, restricao, preco minimo, documento pendente ou dado pessoal, maior a sensibilidade.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Resumo publico para anuncio<br />
+        <textarea value={publicListingSummaryV1} onChange={(e) => setPublicListingSummaryV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> versao segura e comercial que pode apoiar o texto do anuncio.<br /><strong>Como avaliar:</strong> destaque qualidades verificaveis. Nao inclua preco minimo, risco, documentos pendentes, dividas ou informacoes privadas.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Resumo para proprietario<br />
+        <textarea value={ownerFacingSummaryV1} onChange={(e) => setOwnerFacingSummaryV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> devolutiva profissional para o dono do imovel.<br /><strong>Como avaliar:</strong> escreva de forma objetiva, respeitosa e comercial, explicando recomendacoes de preco, fotos, documentos e proximos passos.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Resumo para parceiros<br />
+        <textarea value={partnerFacingSummaryV1} onChange={(e) => setPartnerFacingSummaryV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> resumo controlado para quem pode ajudar na venda, locacao ou parceria.<br /><strong>Como avaliar:</strong> compartilhe apenas o necessario para operacao, evitando estrategia interna, dados sensiveis e informacoes sem autorizacao.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Resumo executivo interno<br />
+        <textarea value={internalExecutiveSummaryV1} onChange={(e) => setInternalExecutiveSummaryV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> leitura interna para broker/agencia entender rapidamente a situacao do imovel.<br /><strong>Como avaliar:</strong> inclua potencial, risco, preco, pendencias, estrategia, urgencia e proxima acao em linguagem direta.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Disclaimer / ressalva controlada<br />
+        <textarea value={controlledRiskDisclaimerV1} onChange={(e) => setControlledRiskDisclaimerV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> ressalva para evitar conclusoes indevidas sobre documentos, estrutura ou regularidade.<br /><strong>Como avaliar:</strong> use quando a ficha tiver base visual, verbal ou preliminar e ainda depender de confirmacao documental ou especialista.</div>
       </label>
 
       <hr />
-
-      <h2>8. Notas privadas</h2>
+<h2>8. Notas privadas</h2>
       <p>Campo interno. Nao deve aparecer para publico, proprietario ou parceiros.</p>
       <label>Notas internas<br /><textarea value={privateNotes} onChange={(e) => setPrivateNotes(e.target.value)} style={{ width: '100%' }} />
         <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
