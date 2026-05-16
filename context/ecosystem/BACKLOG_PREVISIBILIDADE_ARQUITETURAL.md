@@ -1333,3 +1333,61 @@ Criterios futuros que devem bloquear exclusao definitiva:
 
 Observacao:
 Esses criterios ainda precisam ser desenhados com mais profundidade antes de virar regra final.
+
+-------------------------------------
+
+## Backlog - Atribuicao de Documento Profissional por agencia para outro broker
+
+Status: backlog tecnico / nao implementar agora  
+Core relacionado: Core Properties Form V1 / Documento Profissional do Imovel  
+Area: RLS, permissoes, agency/broker, workflow operacional  
+
+### Contexto
+
+A tabela `property_professional_assessments` possui policy conservadora de INSERT exigindo:
+
+- `created_by_profile_id = auth.uid()`
+- `responsible_profile_id = auth.uid()`
+- permissao para gerenciar o asset/listing relacionado
+
+Essa regra esta correta para a foundation atual, pois permite que o proprio broker crie e assuma o Documento Profissional.
+
+### Ponto futuro
+
+No fluxo futuro de agencia/imobiliaria, podera ser necessario que uma agencia crie uma demanda ou Documento Profissional e atribua a outro broker/corretor da equipe.
+
+### Decisao atual
+
+Nao alterar a policy agora.
+
+### Motivo
+
+A atribuicao para outro broker depende de modelagem previa de:
+
+- vinculo agencia/broker
+- papeis e permissoes dentro da agencia
+- escopo de acesso ao asset/listing
+- aceite ou ciencia do broker responsavel
+- auditoria de quem atribuiu
+- historico de alteracao de responsavel
+- protecao contra atribuicao entre organizacoes diferentes
+
+Alterar RLS antes dessa modelagem pode abrir permissao indevida.
+
+### Caminho futuro recomendado
+
+Criar uma RPC segura, por exemplo:
+
+`assign_professional_assessment_responsible(assessment_id, new_responsible_profile_id)`
+
+A funcao deve validar:
+
+- usuario logado pertence a organizacao correta
+- usuario tem papel autorizado para atribuir
+- novo responsavel pertence a mesma agencia/imobiliaria
+- assessment pertence ao escopo da organizacao
+- asset/listing pertence ao contexto permitido
+- alteracao deve registrar historico/auditoria
+
+Somente depois revisar RLS/policies.
+
