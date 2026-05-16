@@ -456,47 +456,255 @@ export default function PropertyAssessmentPage() {
 
   if (loading) {
     return (
-      <main style={{ padding: 24 }}>
+      <main className="assessment-page">
         <p>Carregando...</p>
       </main>
     )
   }
 
   return (
-    <main style={{ padding: 24 }}>
+    <main className="assessment-page">
       <style jsx global>{`
+        body {
+          background: #f3f5f7;
+        }
+
+        .assessment-page {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 28px;
+          color: #172033;
+        }
+
+        .assessment-toolbar {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: flex-start;
+          margin-bottom: 18px;
+        }
+
+        .button-link,
+        button {
+          border: 1px solid #cfd6df;
+          border-radius: 10px;
+          padding: 9px 13px;
+          background: #fff;
+          color: #172033;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+          font-weight: 600;
+          box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        button:hover,
+        .button-link:hover {
+          border-color: #94a3b8;
+          background: #f8fafc;
+        }
+
+        button:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+        }
+
+        .assessment-hero,
+        .assessment-card,
+        .assessment-linked-summary,
+        .assessment-action-bar {
+          background: #fff;
+          border: 1px solid #dde3ea;
+          border-radius: 18px;
+          box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+        }
+
+        .assessment-hero {
+          padding: 24px;
+          margin-bottom: 18px;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 16px;
+          align-items: start;
+        }
+
+        .assessment-eyebrow {
+          margin: 0 0 8px;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #64748b;
+        }
+
+        .assessment-hero h1 {
+          margin: 0;
+          font-size: 30px;
+          line-height: 1.15;
+        }
+
+        .assessment-hero p {
+          margin: 10px 0 0;
+          color: #526173;
+          max-width: 760px;
+        }
+
+        .assessment-badges {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          min-width: 220px;
+        }
+
+        .assessment-badge {
+          display: inline-flex;
+          justify-content: center;
+          border: 1px solid #dbe3ec;
+          background: #f8fafc;
+          color: #334155;
+          border-radius: 999px;
+          padding: 7px 10px;
+          font-size: 12px;
+          font-weight: 700;
+          white-space: nowrap;
+        }
+
+        .assessment-card {
+          padding: 18px;
+          margin: 18px 0;
+        }
+
+        .assessment-card h2,
+        .assessment-page h2 {
+          margin: 24px 0 10px;
+          padding: 16px 18px;
+          border: 1px solid #dde3ea;
+          border-radius: 16px;
+          background: linear-gradient(180deg, #ffffff, #f8fafc);
+          color: #172033;
+          font-size: 20px;
+        }
+
+        .assessment-page h2 + p {
+          color: #64748b;
+          margin-top: -2px;
+        }
+
+        .assessment-linked-summary {
+          padding: 16px 18px;
+          margin: 16px 0;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+        }
+
+        .summary-item {
+          border: 1px solid #e5eaf0;
+          border-radius: 14px;
+          padding: 12px;
+          background: #fbfcfe;
+        }
+
+        .summary-label {
+          display: block;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: #64748b;
+          margin-bottom: 4px;
+        }
+
+        .summary-value {
+          font-weight: 700;
+          color: #172033;
+          word-break: break-word;
+        }
+
+        label {
+          display: block;
+          font-weight: 700;
+          color: #243044;
+          margin-top: 10px;
+        }
+
         input,
         textarea,
         select {
-          border: 1px solid #999;
-          border-radius: 8px;
-          padding: 8px 10px;
-          min-height: 36px;
+          width: 100%;
+          border: 1px solid #cfd6df;
+          border-radius: 10px;
+          padding: 9px 11px;
+          min-height: 40px;
           box-sizing: border-box;
           background: #fff;
+          color: #172033;
+          margin-top: 6px;
+        }
+
+        input[type="checkbox"] {
+          width: auto;
+          min-height: auto;
+          margin-right: 8px;
         }
 
         textarea {
-          min-height: 90px;
+          min-height: 96px;
+          resize: vertical;
         }
 
-        button,
-        .button-link {
-          border: 1px solid #333;
-          border-radius: 8px;
-          padding: 8px 12px;
-          background: #fff;
-          color: #111;
-          text-decoration: none;
-          display: inline-block;
-          cursor: pointer;
-          margin-right: 8px;
+        hr {
+          border: 0;
+          border-top: 1px solid #e4e9ef;
+          margin: 24px 0;
+        }
+
+        .sensitive-note {
+          border-left: 4px solid #b45309;
+          background: #fffbeb;
+          padding: 12px 14px;
+          border-radius: 12px;
+          color: #78350f;
+          font-weight: 600;
+        }
+
+        .assessment-action-bar {
+          margin-top: 24px;
+          padding: 16px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          justify-content: space-between;
+          flex-wrap: wrap;
+        }
+
+        .assessment-status {
+          color: #334155;
+          font-weight: 700;
+        }
+
+        @media (max-width: 820px) {
+          .assessment-page {
+            padding: 18px;
+          }
+
+          .assessment-hero,
+          .assessment-linked-summary {
+            grid-template-columns: 1fr;
+          }
+
+          .assessment-badges {
+            min-width: 0;
+          }
         }
       `}</style>
 
-      <p>
+      <div className="assessment-toolbar no-print">
         <a className="button-link" href={`/operations/properties/${listingId}`}>
-          Voltar para checkup
+          ← Voltar para checkup
         </a>
         <a className="button-link" href={`/operations/properties/${listingId}/edit`}>
           Editar anuncio
@@ -504,9 +712,24 @@ export default function PropertyAssessmentPage() {
         <a className="button-link" href="/operations/properties/list">
           Voltar para lista
         </a>
-      </p>
+      </div>
 
-      <h1>Ficha Profissional de Captacao e Avaliacao</h1>
+      <section className="assessment-hero">
+        <div>
+          <p className="assessment-eyebrow">Documento Profissional do Imovel</p>
+          <h1>Ficha Profissional de Captacao e Avaliacao</h1>
+          <p>
+            Registro tecnico e comercial interno para apoiar captacao, vistoria, precificacao,
+            riscos, estrategia de negociacao e proximos passos do broker.
+          </p>
+        </div>
+
+        <div className="assessment-badges">
+          <span className="assessment-badge">{assessment ? 'Documento criado' : 'Preliminar nao criado'}</span>
+          <span className="assessment-badge">{assessmentStatus || 'draft'}</span>
+          <span className="assessment-badge">Uso interno</span>
+        </div>
+      </section>
 
       <style>{`
         @media print {
@@ -564,7 +787,7 @@ export default function PropertyAssessmentPage() {
         </button>
       </div>
 
-      <div style={{ border: '1px solid #ddd', padding: 16, marginBottom: 20 }}>
+      <section className="assessment-card">
         <h2>O que e esta ficha?</h2>
         <p>
           Esta ficha e um documento tecnico interno do profissional ou da imobiliaria.
@@ -578,11 +801,22 @@ export default function PropertyAssessmentPage() {
           Proprietario e parceiros devem ver apenas resumos controlados quando permitido.
           Notas privadas e dados sensiveis nao devem ser expostos.
         </p>
-      </div>
+      </section>
 
-      <p>
-        <strong>Anuncio vinculado:</strong> {listing?.title}
-      </p>
+      <section className="assessment-linked-summary">
+        <div className="summary-item">
+          <span className="summary-label">Anuncio vinculado</span>
+          <span className="summary-value">{listing?.title || 'Sem titulo'}</span>
+        </div>
+        <div className="summary-item">
+          <span className="summary-label">Listing ID</span>
+          <span className="summary-value">{listingId}</span>
+        </div>
+        <div className="summary-item">
+          <span className="summary-label">Status do documento</span>
+          <span className="summary-value">{assessment ? assessmentStatus : 'Preliminar pendente'}</span>
+        </div>
+      </section>
 
       {!assessment && (
         <>
@@ -610,7 +844,7 @@ export default function PropertyAssessmentPage() {
         <>
           <hr />
 
-          <div style={{ border: '1px solid #ddd', padding: 16, marginBottom: 20 }}>
+          <section className="assessment-card">
             <h2>Antes de liberar o documento</h2>
 
             <p>
@@ -626,7 +860,7 @@ export default function PropertyAssessmentPage() {
             <p>
               O vinculo com cliente podera ser feito depois, antes das etapas formais de revisao/aprovacao.
             </p>
-          </div>
+          </section>
 
           <button onClick={handleSave} disabled={saving}>
             {saving ? 'Salvando...' : 'Criar Documento Profissional'}
@@ -843,7 +1077,7 @@ export default function PropertyAssessmentPage() {
       <hr />
 
       <h2>4. Estrategia de preco interna</h2>
-      <p>Campos internos e sensiveis. Nao devem aparecer no anuncio publico.</p>
+      <p className="sensitive-note">Campos internos e sensiveis. Nao devem aparecer no anuncio publico nem em rotas abertas do marketplace.</p>
 
       <label>Preco pedido pelo proprietario<br /><input value={ownerRequestedPrice} onChange={(e) => setOwnerRequestedPrice(e.target.value)} /></label>
       <br /><br />
@@ -1029,13 +1263,13 @@ export default function PropertyAssessmentPage() {
 
       <hr />
 
-      <button onClick={handleSave} disabled={saving}>
-        {saving ? 'Salvando...' : 'Salvar ficha profissional'}
-      </button>
+      <div className="assessment-action-bar no-print">
+        <button onClick={handleSave} disabled={saving}>
+          {saving ? 'Salvando...' : 'Salvar ficha profissional'}
+        </button>
 
-      <br /><br />
-
-          {status && <p>{status}</p>}
+        {status && <span className="assessment-status">{status}</span>}
+      </div>
         </>
       )}
     </main>
