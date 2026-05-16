@@ -200,10 +200,6 @@ export default function PropertyAssessmentPage() {
       return
     }
 
-    if (!assessment && !ownerCpf.trim() && !ownerCnpj.trim()) {
-      setStatus('Informe CPF ou CNPJ do proprietario para criar a ficha profissional.')
-      return
-    }
 
     try {
       setSaving(true)
@@ -211,8 +207,9 @@ export default function PropertyAssessmentPage() {
       let clientEntityId = assessment?.client_entity_id || null
       let clientRelationshipId = assessment?.client_relationship_id || null
 
-      if (!assessment) {
+      if (!assessment && (ownerCpf.trim() || ownerCnpj.trim())) {
         setStatus('Vinculando proprietario...')
+
 
         const ownerResponse = await createOrReusePropertyOwnerFlow({
           display_name: ownerName,
@@ -342,7 +339,7 @@ export default function PropertyAssessmentPage() {
       setAssessment(response.data)
 
       if (!assessment) {
-        setStatus('Proprietario identificado no Core Clients. Documento Profissional liberado para preenchimento.')
+        setStatus(clientEntityId ? 'Proprietario vinculado. Documento Profissional liberado para preenchimento.' : 'Documento Profissional preliminar criado sem proprietario vinculado. Voce pode vincular o cliente depois.')
         setSaving(false)
         return
       }
@@ -437,7 +434,7 @@ export default function PropertyAssessmentPage() {
         <>
           <hr />
           <h2>1. Proprietario da ficha</h2>
-          <p>CPF ou CNPJ e obrigatorio para criar uma ficha profissional.</p>
+          <p>Opcional nesta etapa. Informe CPF ou CNPJ se quiser vincular o proprietario agora, ou crie o documento preliminar e vincule depois.</p>
 
           <label>Nome<br /><input value={ownerName} onChange={(e) => setOwnerName(e.target.value)} style={{ width: '100%' }} /></label>
           <br /><br />
@@ -463,22 +460,22 @@ export default function PropertyAssessmentPage() {
             <h2>Antes de liberar o documento</h2>
 
             <p>
-              O proprietario precisa estar identificado no Core Clients.
-              Pessoa, cliente ou proprietario nao pode ser duplicado em outras tabelas.
+              O Documento Profissional pode nascer como levantamento preliminar sem proprietario vinculado.
+              Pessoa, cliente ou proprietario nao pode ser duplicado fora do Core Clients.
             </p>
 
             <p>
-              Ao clicar no botao abaixo, o sistema vai buscar ou criar o cliente
-              pelo CPF/CNPJ e vincular este imovel ao relacionamento correto.
+              Se CPF ou CNPJ for informado, o sistema vai buscar ou criar o cliente no Core Clients.
+              Se nao for informado, o documento sera criado como preliminar.
             </p>
 
             <p>
-              Depois disso, o Documento Profissional do Imovel sera liberado.
+              O vinculo com cliente podera ser feito depois, antes das etapas formais de revisao/aprovacao.
             </p>
           </div>
 
           <button onClick={handleSave} disabled={saving}>
-            {saving ? 'Vinculando...' : 'Identificar proprietario e liberar documento'}
+            {saving ? 'Salvando...' : 'Criar Documento Profissional'}
           </button>
 
           <br /><br />
