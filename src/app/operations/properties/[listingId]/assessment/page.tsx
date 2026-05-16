@@ -190,6 +190,34 @@ export default function PropertyAssessmentPage() {
   const [proposalNextAction, setProposalNextAction] = useState('review_price')
   const [proposalFollowUpDate, setProposalFollowUpDate] = useState('')
   const [proposalInternalNotes, setProposalInternalNotes] = useState('')
+
+  const [technicalVisitQuality, setTechnicalVisitQuality] = useState('not_evaluated')
+  const [technicalConservationStatus, setTechnicalConservationStatus] = useState('not_verified')
+  const [technicalStructuralRisk, setTechnicalStructuralRisk] = useState('not_evaluated')
+  const [technicalMoistureRisk, setTechnicalMoistureRisk] = useState('not_evaluated')
+  const [technicalElectricalCondition, setTechnicalElectricalCondition] = useState('not_verified')
+  const [technicalHydraulicCondition, setTechnicalHydraulicCondition] = useState('not_verified')
+  const [technicalFinishingStandard, setTechnicalFinishingStandard] = useState('not_evaluated')
+  const [technicalRenovationNeed, setTechnicalRenovationNeed] = useState('not_evaluated')
+  const [technicalPhotoQuality, setTechnicalPhotoQuality] = useState('not_evaluated')
+  const [technicalSpecialistNeeded, setTechnicalSpecialistNeeded] = useState('not_evaluated')
+  const [technicalMainRisks, setTechnicalMainRisks] = useState('')
+  const [technicalImprovementSuggestions, setTechnicalImprovementSuggestions] = useState('')
+  const [technicalAssessmentNotesV1, setTechnicalAssessmentNotesV1] = useState('')
+
+  const [propertyRegistryStatus, setPropertyRegistryStatus] = useState('not_verified')
+  const [ownerDocumentStatus, setOwnerDocumentStatus] = useState('not_verified')
+  const [propertyTaxStatus, setPropertyTaxStatus] = useState('not_verified')
+  const [condominiumDebtStatus, setCondominiumDebtStatus] = useState('not_applicable')
+  const [financingDebtStatus, setFinancingDebtStatus] = useState('not_verified')
+  const [legalRestrictionStatus, setLegalRestrictionStatus] = useState('not_verified')
+  const [financingEligibilityStatus, setFinancingEligibilityStatus] = useState('not_evaluated')
+  const [fiscalRiskStatus, setFiscalRiskStatus] = useState('not_evaluated')
+  const [documentationRiskLevel, setDocumentationRiskLevel] = useState('not_evaluated')
+  const [documentationRecommendationV1, setDocumentationRecommendationV1] = useState('request_documents')
+  const [financialRecommendationV1, setFinancialRecommendationV1] = useState('to_confirm')
+  const [documentationNotesV1, setDocumentationNotesV1] = useState('')
+  const [financialNotesV1, setFinancialNotesV1] = useState('')
   const [commercialSubtype, setCommercialSubtype] = useState('commercial_store')
   const [commercialCurrentUse, setCommercialCurrentUse] = useState('not_verified')
   const [commercialBestUse, setCommercialBestUse] = useState('not_evaluated')
@@ -394,6 +422,36 @@ export default function PropertyAssessmentPage() {
         setProposalNextAction(commercialProposal.next_action || 'review_price')
         setProposalFollowUpDate(commercialProposal.follow_up_date || '')
         setProposalInternalNotes(commercialProposal.internal_notes || '')
+
+        const technicalAssessmentV1 = assessmentData.metadata?.technical_assessment_v1 || {}
+        setTechnicalVisitQuality(technicalAssessmentV1.visit_quality || 'not_evaluated')
+        setTechnicalConservationStatus(technicalAssessmentV1.conservation_status || 'not_verified')
+        setTechnicalStructuralRisk(technicalAssessmentV1.structural_risk || 'not_evaluated')
+        setTechnicalMoistureRisk(technicalAssessmentV1.moisture_risk || 'not_evaluated')
+        setTechnicalElectricalCondition(technicalAssessmentV1.electrical_condition || 'not_verified')
+        setTechnicalHydraulicCondition(technicalAssessmentV1.hydraulic_condition || 'not_verified')
+        setTechnicalFinishingStandard(technicalAssessmentV1.finishing_standard || 'not_evaluated')
+        setTechnicalRenovationNeed(technicalAssessmentV1.renovation_need || 'not_evaluated')
+        setTechnicalPhotoQuality(technicalAssessmentV1.photo_quality || 'not_evaluated')
+        setTechnicalSpecialistNeeded(technicalAssessmentV1.specialist_needed || 'not_evaluated')
+        setTechnicalMainRisks(technicalAssessmentV1.main_risks || '')
+        setTechnicalImprovementSuggestions(technicalAssessmentV1.improvement_suggestions || '')
+        setTechnicalAssessmentNotesV1(technicalAssessmentV1.technical_notes || '')
+
+        const documentationFinancialV1 = assessmentData.metadata?.documentation_financial_v1 || {}
+        setPropertyRegistryStatus(documentationFinancialV1.property_registry_status || 'not_verified')
+        setOwnerDocumentStatus(documentationFinancialV1.owner_document_status || 'not_verified')
+        setPropertyTaxStatus(documentationFinancialV1.property_tax_status || 'not_verified')
+        setCondominiumDebtStatus(documentationFinancialV1.condominium_debt_status || 'not_applicable')
+        setFinancingDebtStatus(documentationFinancialV1.financing_debt_status || 'not_verified')
+        setLegalRestrictionStatus(documentationFinancialV1.legal_restriction_status || 'not_verified')
+        setFinancingEligibilityStatus(documentationFinancialV1.financing_eligibility_status || 'not_evaluated')
+        setFiscalRiskStatus(documentationFinancialV1.fiscal_risk_status || 'not_evaluated')
+        setDocumentationRiskLevel(documentationFinancialV1.documentation_risk_level || 'not_evaluated')
+        setDocumentationRecommendationV1(documentationFinancialV1.documentation_recommendation || 'request_documents')
+        setFinancialRecommendationV1(documentationFinancialV1.financial_recommendation || 'to_confirm')
+        setDocumentationNotesV1(documentationFinancialV1.documentation_notes || '')
+        setFinancialNotesV1(documentationFinancialV1.financial_notes || '')
         const commercialModule = assessmentData.metadata?.commercial_module_v1 || {}
         setCommercialSubtype(commercialModule.commercial_subtype || 'commercial_store')
         setCommercialCurrentUse(commercialModule.current_use || 'not_verified')
@@ -680,6 +738,34 @@ export default function PropertyAssessmentPage() {
             next_action: proposalNextAction,
             follow_up_date: proposalFollowUpDate,
             internal_notes: proposalInternalNotes,
+          },          technical_assessment_v1: {
+            visit_quality: technicalVisitQuality,
+            conservation_status: technicalConservationStatus,
+            structural_risk: technicalStructuralRisk,
+            moisture_risk: technicalMoistureRisk,
+            electrical_condition: technicalElectricalCondition,
+            hydraulic_condition: technicalHydraulicCondition,
+            finishing_standard: technicalFinishingStandard,
+            renovation_need: technicalRenovationNeed,
+            photo_quality: technicalPhotoQuality,
+            specialist_needed: technicalSpecialistNeeded,
+            main_risks: technicalMainRisks,
+            improvement_suggestions: technicalImprovementSuggestions,
+            technical_notes: technicalAssessmentNotesV1,
+          },          documentation_financial_v1: {
+            property_registry_status: propertyRegistryStatus,
+            owner_document_status: ownerDocumentStatus,
+            property_tax_status: propertyTaxStatus,
+            condominium_debt_status: condominiumDebtStatus,
+            financing_debt_status: financingDebtStatus,
+            legal_restriction_status: legalRestrictionStatus,
+            financing_eligibility_status: financingEligibilityStatus,
+            fiscal_risk_status: fiscalRiskStatus,
+            documentation_risk_level: documentationRiskLevel,
+            documentation_recommendation: documentationRecommendationV1,
+            financial_recommendation: financialRecommendationV1,
+            documentation_notes: documentationNotesV1,
+            financial_notes: financialNotesV1,
           },commercial_module_v1: {
             commercial_subtype: commercialSubtype,
             current_use: commercialCurrentUse,
@@ -1173,7 +1259,8 @@ export default function PropertyAssessmentPage() {
         <a href="#rural-module">Rural</a>
         <a href="#commercial-reading">Leitura comercial</a>
         <a href="#commercial-proposal-v1">Proposta comercial</a>
-        <a href="#technical-assessment">Avaliacao tecnica</a>
+        <a href="#technical-assessment-v1">Avaliacao tecnica</a>
+        <a href="#documentation-financial-v1">Doc. e financeiro</a>
         <a href="#owner-interview-v1">Entrevista</a>
       </nav>
       <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
@@ -2661,27 +2748,169 @@ export default function PropertyAssessmentPage() {
 
       <hr />
 
-      <h2 id="technical-assessment">Avaliacao tecnica</h2>
-      <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
-      <label>Perfil geral<br /><textarea value={propertyProfileNotes} onChange={(e) => setPropertyProfileNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> data recomendada para concluir a próxima ação.<br /><strong>Como avaliar:</strong> use prazo realista para evitar demanda parada no funil.</div>
+      <h2 id="technical-assessment-v1">Avaliacao Tecnica V1</h2>
+      <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
+      <p className="analysis-note">Como avaliar: registre uma leitura profissional, mas sem transformar percepcao visual em laudo tecnico. Quando houver duvida estrutural, eletrica, hidraulica, umidade, documentacao ou seguranca, marque risco e recomende especialista.</p>
+
+      <label>Qualidade da vistoria realizada<br />
+        <select value={technicalVisitQuality} onChange={(e) => setTechnicalVisitQuality(e.target.value)}>
+          <option value="complete_in_person">Completa presencial</option>
+          <option value="partial_in_person">Parcial presencial</option>
+          <option value="external_only">Somente externa</option>
+          <option value="remote_by_photos">Remota por fotos/videos</option>
+          <option value="owner_informed">Informada pelo proprietario</option>
+          <option value="not_evaluated">Nao avaliada</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> nivel de profundidade da verificacao feita.<br /><strong>Como avaliar:</strong> quanto menor o contato real com o imovel, menor a confiabilidade da avaliacao.</div>
       </label>
+
       <br /><br />
-      <label>Conservacao<br /><textarea value={conservationNotes} onChange={(e) => setConservationNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Conservacao tecnica geral<br />
+        <select value={technicalConservationStatus} onChange={(e) => setTechnicalConservationStatus(e.target.value)}>
+          <option value="excellent">Excelente</option>
+          <option value="good">Boa</option>
+          <option value="regular">Regular</option>
+          <option value="poor">Ruim</option>
+          <option value="critical">Critica</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> estado geral percebido do imovel.<br /><strong>Como avaliar:</strong> observe acabamento, manutencao, desgaste, pintura, piso, portas, janelas, infiltracoes e necessidade de reparos.</div>
       </label>
+
       <br /><br />
-      <label>Estrutura<br /><textarea value={structureNotes} onChange={(e) => setStructureNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Risco estrutural aparente<br />
+        <select value={technicalStructuralRisk} onChange={(e) => setTechnicalStructuralRisk(e.target.value)}>
+          <option value="low">Baixo</option>
+          <option value="medium">Medio</option>
+          <option value="high">Alto</option>
+          <option value="specialist_required">Exige especialista</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> percepcao de risco em estrutura, trincas, rachaduras, laje, pilares, paredes ou desniveis.<br /><strong>Como avaliar:</strong> se houver qualquer sinal relevante ou duvida, nao conclua sozinho; marque especialista.</div>
       </label>
+
       <br /><br />
-      <label>Infraestrutura<br /><textarea value={infrastructureNotes} onChange={(e) => setInfrastructureNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Risco de umidade / infiltracao<br />
+        <select value={technicalMoistureRisk} onChange={(e) => setTechnicalMoistureRisk(e.target.value)}>
+          <option value="low">Baixo</option>
+          <option value="medium">Medio</option>
+          <option value="high">Alto</option>
+          <option value="visible_damage">Dano visivel</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> sinais de umidade, vazamento, mofo, manchas ou infiltracao.<br /><strong>Como avaliar:</strong> observe paredes, teto, banheiro, cozinha, rodape, laje, telhado e cheiro de mofo.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Condicao eletrica aparente<br />
+        <select value={technicalElectricalCondition} onChange={(e) => setTechnicalElectricalCondition(e.target.value)}>
+          <option value="good">Boa aparente</option>
+          <option value="regular">Regular</option>
+          <option value="needs_review">Precisa revisao</option>
+          <option value="risk_visible">Risco visivel</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> percepcao inicial da instalacao eletrica.<br /><strong>Como avaliar:</strong> observe quadro, fiacao aparente, tomadas, disjuntores, improvisos e relatos de queda de energia.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Condicao hidraulica aparente<br />
+        <select value={technicalHydraulicCondition} onChange={(e) => setTechnicalHydraulicCondition(e.target.value)}>
+          <option value="good">Boa aparente</option>
+          <option value="regular">Regular</option>
+          <option value="needs_review">Precisa revisao</option>
+          <option value="risk_visible">Risco visivel</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> percepcao inicial de agua, esgoto, registros, vazamentos e pressao.<br /><strong>Como avaliar:</strong> veja manchas, odor, retorno, banheiro, cozinha, area de servico e informacoes do proprietario.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Padrao de acabamento percebido<br />
+        <select value={technicalFinishingStandard} onChange={(e) => setTechnicalFinishingStandard(e.target.value)}>
+          <option value="basic">Basico</option>
+          <option value="standard">Padrao</option>
+          <option value="medium_high">Medio alto</option>
+          <option value="high_standard">Alto padrao</option>
+          <option value="luxury">Luxo</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> nivel de acabamento percebido no imovel.<br /><strong>Como avaliar:</strong> considere materiais, marcenaria, metais, piso, bancadas, iluminacao, esquadrias e coerencia com o bairro/preco.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Necessidade de reforma<br />
+        <select value={technicalRenovationNeed} onChange={(e) => setTechnicalRenovationNeed(e.target.value)}>
+          <option value="none">Nenhuma relevante</option>
+          <option value="cosmetic">Estetica leve</option>
+          <option value="moderate">Moderada</option>
+          <option value="heavy">Pesada</option>
+          <option value="structural_or_specialist">Estrutural / especialista</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> intensidade de reparos antes de vender ou locar melhor.<br /><strong>Como avaliar:</strong> diferencie pintura/foto de problemas que afetam valor, financiamento, seguranca ou habitabilidade.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Qualidade das fotos tecnicas/comerciais<br />
+        <select value={technicalPhotoQuality} onChange={(e) => setTechnicalPhotoQuality(e.target.value)}>
+          <option value="excellent">Excelente</option>
+          <option value="good">Boa</option>
+          <option value="regular">Regular</option>
+          <option value="poor">Ruim</option>
+          <option value="missing">Faltando</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> se as fotos ajudam ou prejudicam a venda.<br /><strong>Como avaliar:</strong> veja luz, enquadramento, quantidade, ambientes importantes, fachada, detalhes e pontos de risco.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Especialista necessario?<br />
+        <select value={technicalSpecialistNeeded} onChange={(e) => setTechnicalSpecialistNeeded(e.target.value)}>
+          <option value="no">Nao</option>
+          <option value="engineer">Engenheiro</option>
+          <option value="architect">Arquiteto</option>
+          <option value="electrician">Eletricista</option>
+          <option value="plumber">Encanador</option>
+          <option value="legal_or_registry">Juridico / cartorio</option>
+          <option value="multiple">Mais de um especialista</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> necessidade de avaliacao por profissional especifico.<br /><strong>Como avaliar:</strong> sempre que o risco passar da percepcao comercial, direcione para especialista.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Principais riscos tecnicos percebidos<br />
+        <textarea value={technicalMainRisks} onChange={(e) => setTechnicalMainRisks(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> lista dos riscos tecnicos ou fisicos mais relevantes.<br /><strong>Como avaliar:</strong> escreva de forma objetiva o que precisa ser conferido, corrigido ou explicado ao cliente/proprietario.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Sugestoes de melhoria antes de publicar<br />
+        <textarea value={technicalImprovementSuggestions} onChange={(e) => setTechnicalImprovementSuggestions(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> melhorias que podem aumentar liquidez e valor percebido.<br /><strong>Como avaliar:</strong> priorize itens de baixo custo e alto impacto: limpeza, pintura, organizacao, fotos, pequenos reparos e documentacao.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas tecnicas V1<br />
+        <textarea value={technicalAssessmentNotesV1} onChange={(e) => setTechnicalAssessmentNotesV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> resumo livre da avaliacao tecnica.<br /><strong>Como avaliar:</strong> registre raciocinio profissional, ressalvas e pontos que nao entraram nos campos estruturados.</div>
       </label>
 
       <hr />
-
-      <h2 id="owner-interview-v1">Entrevista com proprietario V1</h2>
+<h2 id="owner-interview-v1">Entrevista com proprietario V1</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: registre a conversa comercial real com o proprietario. Separe fala verbal, comprovacao documental, autorizacao, flexibilidade e pontos que podem travar a negociacao.</p>
 
@@ -2836,42 +3065,178 @@ export default function PropertyAssessmentPage() {
       <hr />
 
 
-      <h2>5. Documentacao e financeiro</h2>
-      <label>Situacao da propriedade<br /><textarea value={ownershipStatusNotes} onChange={(e) => setOwnershipStatusNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+      <h2 id="documentation-financial-v1">Documentacao e Financeiro V1</h2>
+      <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
+      <p className="analysis-note">Como avaliar: registre a situacao documental e financeira sem afirmar regularidade definitiva. Use este modulo para separar o que foi comprovado, o que foi informado verbalmente e o que ainda precisa ser conferido.</p>
+
+      <label>Matricula / registro do imovel<br />
+        <select value={propertyRegistryStatus} onChange={(e) => setPropertyRegistryStatus(e.target.value)}>
+          <option value="presented_valid">Apresentada aparentemente valida</option>
+          <option value="presented_needs_review">Apresentada, precisa conferencia</option>
+          <option value="not_presented">Nao apresentada</option>
+          <option value="discrepancy_found">Divergencia identificada</option>
+          <option value="relevant_risk">Risco relevante</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> situacao inicial do documento principal do imovel.<br /><strong>Como avaliar:</strong> marque valida apenas se foi apresentada e confere de forma aparente. Se nao analisou, use nao verificado.</div>
       </label>
+
       <br /><br />
-      <label>Matricula / registro / pendencias<br /><textarea value={registryNotes} onChange={(e) => setRegistryNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Documentos do proprietario<br />
+        <select value={ownerDocumentStatus} onChange={(e) => setOwnerDocumentStatus(e.target.value)}>
+          <option value="complete">Completos</option>
+          <option value="partial">Parciais</option>
+          <option value="pending">Pendentes</option>
+          <option value="inconsistent">Inconsistentes</option>
+          <option value="not_presented">Nao apresentados</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> situacao dos documentos pessoais ou empresariais do proprietario.<br /><strong>Como avaliar:</strong> se faltar CPF/CNPJ, comprovacao de representante ou titularidade, registre pendencia.</div>
       </label>
+
       <br /><br />
-      <label>Tributos<br /><textarea value={taxNotes} onChange={(e) => setTaxNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>IPTU / tributos do imovel<br />
+        <select value={propertyTaxStatus} onChange={(e) => setPropertyTaxStatus(e.target.value)}>
+          <option value="apparently_regular">Regular aparente</option>
+          <option value="pending_review">Pendente de conferencia</option>
+          <option value="debt_informed">Debito informado</option>
+          <option value="discrepancy_found">Divergencia identificada</option>
+          <option value="not_presented">Nao apresentado</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> leitura inicial de IPTU, taxas ou tributos relacionados ao imovel.<br /><strong>Como avaliar:</strong> sem guia, certidao ou comprovacao, nao trate como regular.</div>
       </label>
+
       <br /><br />
-      <label>Juridico<br /><textarea value={legalNotes} onChange={(e) => setLegalNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Debito de condominio<br />
+        <select value={condominiumDebtStatus} onChange={(e) => setCondominiumDebtStatus(e.target.value)}>
+          <option value="not_applicable">Nao se aplica</option>
+          <option value="apparently_clear">Aparentemente sem debito</option>
+          <option value="debt_informed">Debito informado</option>
+          <option value="pending_review">Pendente de conferencia</option>
+          <option value="relevant_risk">Risco relevante</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> situacao financeira junto ao condominio, quando existir.<br /><strong>Como avaliar:</strong> debito condominial pode impactar negociacao, escritura, posse e proposta.</div>
       </label>
+
       <br /><br />
-      <label>Dividas<br /><textarea value={debtNotes} onChange={(e) => setDebtNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Financiamento / alienacao / saldo devedor<br />
+        <select value={financingDebtStatus} onChange={(e) => setFinancingDebtStatus(e.target.value)}>
+          <option value="paid_off">Quitado informado/comprovado</option>
+          <option value="financed">Financiado</option>
+          <option value="alienated">Alienado</option>
+          <option value="debt_informed">Saldo devedor informado</option>
+          <option value="to_confirm">A confirmar</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> existencia de financiamento, alienacao ou saldo devedor.<br /><strong>Como avaliar:</strong> diferencie imovel quitado de imovel com saldo. Se for verbal, use a confirmar.</div>
       </label>
+
       <br /><br />
-      <label>Condominio<br /><textarea value={condoFeeNotes} onChange={(e) => setCondoFeeNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Restricao juridica conhecida<br />
+        <select value={legalRestrictionStatus} onChange={(e) => setLegalRestrictionStatus(e.target.value)}>
+          <option value="none_informed">Nenhuma informada</option>
+          <option value="to_confirm">A confirmar</option>
+          <option value="inventory_or_divorce">Inventario/divorcio</option>
+          <option value="lawsuit_or_lien">Acao judicial/penhora</option>
+          <option value="ownership_conflict">Conflito de titularidade</option>
+          <option value="relevant_risk">Risco relevante</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> risco juridico que pode travar venda, locacao ou transferencia.<br /><strong>Como avaliar:</strong> nao afirme inexistencia de restricao sem documento/certidao. Use a confirmar quando nao houver prova.</div>
       </label>
+
       <br /><br />
-      <label>IPTU<br /><textarea value={iptuNotes} onChange={(e) => setIptuNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Elegibilidade para financiamento<br />
+        <select value={financingEligibilityStatus} onChange={(e) => setFinancingEligibilityStatus(e.target.value)}>
+          <option value="likely_eligible">Provavelmente elegivel</option>
+          <option value="depends_on_documents">Depende de documentos</option>
+          <option value="depends_on_regularization">Depende de regularizacao</option>
+          <option value="unlikely">Pouco provavel</option>
+          <option value="not_eligible_apparent">Aparentemente nao elegivel</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> leitura preliminar sobre possibilidade de financiamento.<br /><strong>Como avaliar:</strong> considere matricula, averbação, area, habite-se, quitacao, restricoes e padrao bancario.</div>
       </label>
+
       <br /><br />
-      <label>Financiamento<br /><textarea value={financingNotes} onChange={(e) => setFinancingNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Risco fiscal / tributario<br />
+        <select value={fiscalRiskStatus} onChange={(e) => setFiscalRiskStatus(e.target.value)}>
+          <option value="low">Baixo</option>
+          <option value="medium">Medio</option>
+          <option value="high">Alto</option>
+          <option value="pending_review">Pendente de conferencia</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> risco ligado a impostos, taxas, dividas ou custos fiscais da operacao.<br /><strong>Como avaliar:</strong> se houver duvida sobre IPTU, ITBI, ganho de capital, condominio ou taxas, registre pendencia.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Nivel de risco documental<br />
+        <select value={documentationRiskLevel} onChange={(e) => setDocumentationRiskLevel(e.target.value)}>
+          <option value="low">Baixo</option>
+          <option value="medium">Medio</option>
+          <option value="high">Alto</option>
+          <option value="critical">Critico</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> classificacao geral do risco documental da ficha.<br /><strong>Como avaliar:</strong> alto ou critico quando faltar documento essencial, houver divergencia, restricao ou duvida de titularidade.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Recomendacao documental<br />
+        <select value={documentationRecommendationV1} onChange={(e) => setDocumentationRecommendationV1(e.target.value)}>
+          <option value="request_documents">Solicitar documentos</option>
+          <option value="send_to_legal_review">Enviar para revisao juridica</option>
+          <option value="validate_registry">Validar matricula/registro</option>
+          <option value="validate_owner_identity">Validar proprietario/representante</option>
+          <option value="validate_debts">Validar debitos</option>
+          <option value="regularize_before_publish">Regularizar antes de publicar</option>
+          <option value="ok_to_continue">Pode continuar</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> proxima acao documental recomendada.<br /><strong>Como avaliar:</strong> escolha a acao que reduz o maior risco antes de proposta, contrato ou publicacao forte.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Recomendacao financeira<br />
+        <select value={financialRecommendationV1} onChange={(e) => setFinancialRecommendationV1(e.target.value)}>
+          <option value="to_confirm">A confirmar</option>
+          <option value="review_price">Revisar preco</option>
+          <option value="review_debts">Revisar debitos</option>
+          <option value="evaluate_financing">Avaliar financiamento</option>
+          <option value="evaluate_discount_margin">Avaliar margem de desconto</option>
+          <option value="ok_to_continue">Pode continuar</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> acao financeira recomendada para destravar o negocio.<br /><strong>Como avaliar:</strong> considere preco, saldo devedor, debitos, financiamento, margem e capacidade de negociacao.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas documentais V1<br />
+        <textarea value={documentationNotesV1} onChange={(e) => setDocumentationNotesV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> observacoes livres sobre documentos, titularidade, restricoes e pendencias.<br /><strong>Como avaliar:</strong> registre fatos, fontes e documentos pendentes sem concluir juridicamente no lugar de especialista.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas financeiras V1<br />
+        <textarea value={financialNotesV1} onChange={(e) => setFinancialNotesV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> observacoes livres sobre preco, debitos, financiamento e custos.<br /><strong>Como avaliar:</strong> registre valores informados, duvidas, necessidade de comprovacao e impacto na negociacao.</div>
       </label>
 
       <hr />
-
-      <h2 id="commercial-proposal-v1">Estrategia Comercial e Proposta Comercial V1</h2>
+<h2 id="commercial-proposal-v1">Estrategia Comercial e Proposta Comercial V1</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: transforme a ficha tecnica em decisao comercial. A proposta deve orientar preco, publicacao, negociacao, argumento para o proprietario e proxima acao pratica.</p>
 
