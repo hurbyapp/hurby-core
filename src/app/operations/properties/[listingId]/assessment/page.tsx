@@ -508,6 +508,62 @@ export default function PropertyAssessmentPage() {
 
       <h1>Ficha Profissional de Captacao e Avaliacao</h1>
 
+      <style>{`
+        @media print {
+          body {
+            background: #fff !important;
+          }
+
+          button,
+          .no-print {
+            display: none !important;
+          }
+
+          main {
+            max-width: none !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          input,
+          select,
+          textarea {
+            border: 1px solid #999 !important;
+          }
+
+          textarea {
+            min-height: 80px !important;
+          }
+        }
+
+        @page {
+          margin: 14mm;
+        }
+      `}</style>
+
+      <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+        <button
+          type="button"
+          onClick={() => window.print()}
+          title="Exportar pagina em PDF"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 12px',
+            border: '1px solid #ccc',
+            borderRadius: 8,
+            background: '#fff',
+            cursor: 'pointer',
+            fontWeight: 600
+          }}
+        >
+          <span aria-hidden="true">📄</span>
+          Exportar PDF
+        </button>
+      </div>
+
       <div style={{ border: '1px solid #ddd', padding: 16, marginBottom: 20 }}>
         <h2>O que e esta ficha?</h2>
         <p>
