@@ -229,6 +229,17 @@ export default function PropertyAssessmentPage() {
   const [partnerFacingSummaryV1, setPartnerFacingSummaryV1] = useState('')
   const [internalExecutiveSummaryV1, setInternalExecutiveSummaryV1] = useState('')
   const [controlledRiskDisclaimerV1, setControlledRiskDisclaimerV1] = useState('')
+
+  const [privateNoteSensitivity, setPrivateNoteSensitivity] = useState('internal')
+  const [privateNotePriority, setPrivateNotePriority] = useState('medium')
+  const [privateNoteCategory, setPrivateNoteCategory] = useState('general')
+  const [privateOperationalAlert, setPrivateOperationalAlert] = useState('none')
+  const [privateNegotiationMemo, setPrivateNegotiationMemo] = useState('')
+  const [privateOwnerBehaviorNotes, setPrivateOwnerBehaviorNotes] = useState('')
+  const [privateRiskNotesV1, setPrivateRiskNotesV1] = useState('')
+  const [privateAgencyNotes, setPrivateAgencyNotes] = useState('')
+  const [privateFollowUpNotes, setPrivateFollowUpNotes] = useState('')
+  const [privateDoNotShareNotes, setPrivateDoNotShareNotes] = useState('')
   const [commercialSubtype, setCommercialSubtype] = useState('commercial_store')
   const [commercialCurrentUse, setCommercialCurrentUse] = useState('not_verified')
   const [commercialBestUse, setCommercialBestUse] = useState('not_evaluated')
@@ -475,6 +486,18 @@ export default function PropertyAssessmentPage() {
         setPartnerFacingSummaryV1(controlledSummariesV1.partner_facing_summary || '')
         setInternalExecutiveSummaryV1(controlledSummariesV1.internal_executive_summary || '')
         setControlledRiskDisclaimerV1(controlledSummariesV1.controlled_risk_disclaimer || '')
+
+        const privateNotesV1 = assessmentData.metadata?.private_notes_v1 || {}
+        setPrivateNoteSensitivity(privateNotesV1.note_sensitivity || 'internal')
+        setPrivateNotePriority(privateNotesV1.note_priority || 'medium')
+        setPrivateNoteCategory(privateNotesV1.note_category || 'general')
+        setPrivateOperationalAlert(privateNotesV1.operational_alert || 'none')
+        setPrivateNegotiationMemo(privateNotesV1.negotiation_memo || '')
+        setPrivateOwnerBehaviorNotes(privateNotesV1.owner_behavior_notes || '')
+        setPrivateRiskNotesV1(privateNotesV1.risk_notes || '')
+        setPrivateAgencyNotes(privateNotesV1.agency_notes || '')
+        setPrivateFollowUpNotes(privateNotesV1.follow_up_notes || '')
+        setPrivateDoNotShareNotes(privateNotesV1.do_not_share_notes || '')
         const commercialModule = assessmentData.metadata?.commercial_module_v1 || {}
         setCommercialSubtype(commercialModule.commercial_subtype || 'commercial_store')
         setCommercialCurrentUse(commercialModule.current_use || 'not_verified')
@@ -800,6 +823,17 @@ export default function PropertyAssessmentPage() {
             partner_facing_summary: partnerFacingSummaryV1,
             internal_executive_summary: internalExecutiveSummaryV1,
             controlled_risk_disclaimer: controlledRiskDisclaimerV1,
+          },          private_notes_v1: {
+            note_sensitivity: privateNoteSensitivity,
+            note_priority: privateNotePriority,
+            note_category: privateNoteCategory,
+            operational_alert: privateOperationalAlert,
+            negotiation_memo: privateNegotiationMemo,
+            owner_behavior_notes: privateOwnerBehaviorNotes,
+            risk_notes: privateRiskNotesV1,
+            agency_notes: privateAgencyNotes,
+            follow_up_notes: privateFollowUpNotes,
+            do_not_share_notes: privateDoNotShareNotes,
           },commercial_module_v1: {
             commercial_subtype: commercialSubtype,
             current_use: commercialCurrentUse,
@@ -1294,6 +1328,7 @@ export default function PropertyAssessmentPage() {
         <a href="#commercial-reading">Leitura comercial</a>
         <a href="#commercial-proposal-v1">Proposta comercial</a>
         <a href="#controlled-summaries-v1">Resumos</a>
+        <a href="#private-notes-v1">Notas privadas</a>
         <a href="#technical-assessment-v1">Avaliacao tecnica</a>
         <a href="#documentation-financial-v1">Doc. e financeiro</a>
         <a href="#owner-interview-v1">Entrevista</a>
@@ -3485,15 +3520,109 @@ export default function PropertyAssessmentPage() {
       </label>
 
       <hr />
-<h2>8. Notas privadas</h2>
-      <p>Campo interno. Nao deve aparecer para publico, proprietario ou parceiros.</p>
-      <label>Notas internas<br /><textarea value={privateNotes} onChange={(e) => setPrivateNotes(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+<h2 id="private-notes-v1">Notas Privadas V1</h2>
+      <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
+      <p className="analysis-note">Como avaliar: este modulo e estritamente interno. Use para registrar percepcoes, alertas, memoria operacional, comportamento do proprietario, estrategia sensivel, riscos e combinados que nao devem aparecer no anuncio, no resumo publico ou em compartilhamento com terceiros.</p>
+
+      <label>Sensibilidade da nota<br />
+        <select value={privateNoteSensitivity} onChange={(e) => setPrivateNoteSensitivity(e.target.value)}>
+          <option value="internal">Interna</option>
+          <option value="restricted">Restrita</option>
+          <option value="sensitive">Sensivel</option>
+          <option value="legal_sensitive">Sensivel juridicamente</option>
+          <option value="do_not_share">Nao compartilhar</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> nivel de cuidado com as anotacoes privadas.<br /><strong>Como avaliar:</strong> quanto mais envolver preco minimo, risco juridico, comportamento, conflito, dado pessoal ou estrategia, maior a sensibilidade.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Prioridade da nota<br />
+        <select value={privateNotePriority} onChange={(e) => setPrivateNotePriority(e.target.value)}>
+          <option value="low">Baixa</option>
+          <option value="medium">Media</option>
+          <option value="high">Alta</option>
+          <option value="urgent">Urgente</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> urgencia operacional da anotacao.<br /><strong>Como avaliar:</strong> use alta ou urgente quando a nota pode afetar publicacao, proposta, documento, preco, atendimento ou fechamento.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Categoria principal<br />
+        <select value={privateNoteCategory} onChange={(e) => setPrivateNoteCategory(e.target.value)}>
+          <option value="general">Geral</option>
+          <option value="negotiation">Negociacao</option>
+          <option value="owner_behavior">Comportamento do proprietario</option>
+          <option value="documentation_risk">Risco documental</option>
+          <option value="price_strategy">Estrategia de preco</option>
+          <option value="legal_attention">Atencao juridica</option>
+          <option value="operational_follow_up">Acompanhamento operacional</option>
+          <option value="agency_management">Gestao da agencia</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> tema central da nota privada.<br /><strong>Como avaliar:</strong> classifique para facilitar filtro futuro, auditoria interna e retomada da demanda.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Alerta operacional<br />
+        <select value={privateOperationalAlert} onChange={(e) => setPrivateOperationalAlert(e.target.value)}>
+          <option value="none">Nenhum</option>
+          <option value="needs_owner_alignment">Precisa alinhar com proprietario</option>
+          <option value="do_not_publish_yet">Nao publicar ainda</option>
+          <option value="price_conflict">Conflito de preco</option>
+          <option value="document_risk">Risco documental</option>
+          <option value="communication_risk">Risco de comunicacao</option>
+          <option value="requires_manager_review">Exige revisao de gestor</option>
+          <option value="requires_legal_review">Exige revisao juridica</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> sinalizador interno para impedir erro operacional.<br /><strong>Como avaliar:</strong> marque alerta quando alguem da equipe precisa saber antes de publicar, negociar, compartilhar ou avançar.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Memoria privada de negociacao<br />
+        <textarea value={privateNegotiationMemo} onChange={(e) => setPrivateNegotiationMemo(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> registro sensivel sobre margem, combinados, abertura de desconto e estrategia de abordagem.<br /><strong>Como avaliar:</strong> escreva para a equipe lembrar o raciocinio comercial sem expor isso ao proprietario, comprador ou publico.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas sobre comportamento do proprietario<br />
+        <textarea value={privateOwnerBehaviorNotes} onChange={(e) => setPrivateOwnerBehaviorNotes(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> percepcao operacional sobre disponibilidade, resistencia, ansiedade, confiabilidade ou travas do proprietario.<br /><strong>Como avaliar:</strong> seja objetivo e profissional. Evite julgamentos pessoais; registre apenas impacto na operacao.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas privadas de risco<br />
+        <textarea value={privateRiskNotesV1} onChange={(e) => setPrivateRiskNotesV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> riscos percebidos que nao devem ir para resumo publico.<br /><strong>Como avaliar:</strong> inclua riscos documentais, financeiros, tecnicos, juridicos, comerciais ou de reputacao que exigem cuidado.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas internas da agencia / equipe<br />
+        <textarea value={privateAgencyNotes} onChange={(e) => setPrivateAgencyNotes(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> orientacoes internas para gestor, agencia, broker responsavel ou time operacional.<br /><strong>Como avaliar:</strong> registre alinhamentos de equipe, pendencias, prioridade, responsavel e contexto que nao deve sair da operacao.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas de acompanhamento futuro<br />
+        <textarea value={privateFollowUpNotes} onChange={(e) => setPrivateFollowUpNotes(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> memoria do que deve ser cobrado, revisado ou acompanhado depois.<br /><strong>Como avaliar:</strong> escreva proximos passos, prazos, retorno esperado e pontos que nao podem ser esquecidos.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas que nao devem ser compartilhadas<br />
+        <textarea value={privateDoNotShareNotes} onChange={(e) => setPrivateDoNotShareNotes(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> bloco de maxima restricao interna.<br /><strong>Como avaliar:</strong> use para preco minimo, risco juridico sensivel, estrategia de pressao, conflito e informacao que nao deve aparecer em relatorio externo.</div>
       </label>
 
       <hr />
-
-      <div className="assessment-action-bar no-print">
+<div className="assessment-action-bar no-print">
         <button onClick={handleSave} disabled={saving}>
           {saving ? 'Salvando...' : 'Salvar ficha profissional'}
         </button>
