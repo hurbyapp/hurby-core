@@ -149,6 +149,23 @@ export default function PropertyAssessmentPage() {
   const [negotiationMarginAuthorized, setNegotiationMarginAuthorized] = useState(false)
   const [priceConfidenceLevel, setPriceConfidenceLevel] = useState('pending_verification')
 
+  const [ruralSubtype, setRuralSubtype] = useState('small_farm')
+  const [ruralTotalArea, setRuralTotalArea] = useState('')
+  const [ruralAreaUnit, setRuralAreaUnit] = useState('hectare')
+  const [ruralAreaMatchesDocument, setRuralAreaMatchesDocument] = useState('not_verified')
+  const [ruralAccessQuality, setRuralAccessQuality] = useState('not_evaluated')
+  const [rainySeasonAccessRisk, setRainySeasonAccessRisk] = useState('not_evaluated')
+  const [electricityAvailable, setElectricityAvailable] = useState('not_verified')
+  const [waterAvailability, setWaterAvailability] = useState('not_verified')
+  const [improvementsCondition, setImprovementsCondition] = useState('not_verified')
+  const [currentRuralUse, setCurrentRuralUse] = useState('not_verified')
+  const [productivePotential, setProductivePotential] = useState('not_evaluated')
+  const [environmentalRisk, setEnvironmentalRisk] = useState('not_evaluated')
+  const [ruralDocumentationStatus, setRuralDocumentationStatus] = useState('not_verified')
+  const [georeferencingStatus, setGeoreferencingStatus] = useState('not_verified')
+  const [ruralMarketAppeal, setRuralMarketAppeal] = useState('not_evaluated')
+  const [ruralRecommendation, setRuralRecommendation] = useState('review_price')
+  const [ruralNotes, setRuralNotes] = useState('')
   const [commercialSubtype, setCommercialSubtype] = useState('commercial_store')
   const [commercialCurrentUse, setCommercialCurrentUse] = useState('not_verified')
   const [commercialBestUse, setCommercialBestUse] = useState('not_evaluated')
@@ -309,6 +326,24 @@ export default function PropertyAssessmentPage() {
         setNegotiationMarginAuthorized(Boolean(priceStrategy.negotiation_margin_authorized))
         setPriceConfidenceLevel(priceStrategy.price_confidence_level || 'pending_verification')
 
+        const ruralModule = assessmentData.metadata?.rural_module_v1 || {}
+        setRuralSubtype(ruralModule.rural_subtype || 'small_farm')
+        setRuralTotalArea(ruralModule.total_area?.toString() || '')
+        setRuralAreaUnit(ruralModule.area_unit || 'hectare')
+        setRuralAreaMatchesDocument(ruralModule.area_matches_document || 'not_verified')
+        setRuralAccessQuality(ruralModule.access_quality || 'not_evaluated')
+        setRainySeasonAccessRisk(ruralModule.rainy_season_access_risk || 'not_evaluated')
+        setElectricityAvailable(ruralModule.electricity_available || 'not_verified')
+        setWaterAvailability(ruralModule.water_availability || 'not_verified')
+        setImprovementsCondition(ruralModule.improvements_condition || 'not_verified')
+        setCurrentRuralUse(ruralModule.current_rural_use || 'not_verified')
+        setProductivePotential(ruralModule.productive_potential || 'not_evaluated')
+        setEnvironmentalRisk(ruralModule.environmental_risk || 'not_evaluated')
+        setRuralDocumentationStatus(ruralModule.rural_documentation_status || 'not_verified')
+        setGeoreferencingStatus(ruralModule.georeferencing_status || 'not_verified')
+        setRuralMarketAppeal(ruralModule.rural_market_appeal || 'not_evaluated')
+        setRuralRecommendation(ruralModule.rural_recommendation || 'review_price')
+        setRuralNotes(ruralModule.rural_notes || '')
         const commercialModule = assessmentData.metadata?.commercial_module_v1 || {}
         setCommercialSubtype(commercialModule.commercial_subtype || 'commercial_store')
         setCommercialCurrentUse(commercialModule.current_use || 'not_verified')
@@ -553,7 +588,25 @@ export default function PropertyAssessmentPage() {
             negotiation_margin_authorized: negotiationMarginAuthorized,
             price_confidence_level: priceConfidenceLevel,
           },
-          commercial_module_v1: {
+          rural_module_v1: {
+            rural_subtype: ruralSubtype,
+            total_area: moneyOrNull(ruralTotalArea),
+            area_unit: ruralAreaUnit,
+            area_matches_document: ruralAreaMatchesDocument,
+            access_quality: ruralAccessQuality,
+            rainy_season_access_risk: rainySeasonAccessRisk,
+            electricity_available: electricityAvailable,
+            water_availability: waterAvailability,
+            improvements_condition: improvementsCondition,
+            current_rural_use: currentRuralUse,
+            productive_potential: productivePotential,
+            environmental_risk: environmentalRisk,
+            rural_documentation_status: ruralDocumentationStatus,
+            georeferencing_status: georeferencingStatus,
+            rural_market_appeal: ruralMarketAppeal,
+            rural_recommendation: ruralRecommendation,
+            rural_notes: ruralNotes,
+          },          commercial_module_v1: {
             commercial_subtype: commercialSubtype,
             current_use: commercialCurrentUse,
             intended_best_use: commercialBestUse,
@@ -1043,6 +1096,7 @@ export default function PropertyAssessmentPage() {
         <a href="#apartment-module">Apartamento</a>
         <a href="#land-module">Terreno</a>
         <a href="#commercial-module">Comercial</a>
+        <a href="#rural-module">Rural</a>
         <a href="#commercial-reading">Leitura comercial</a>
         <a href="#technical-assessment">Avaliacao tecnica</a>
         <a href="#owner-interview">Entrevista</a>
@@ -2206,7 +2260,233 @@ export default function PropertyAssessmentPage() {
 
       <hr />
 
-      <h2 id="commercial-reading">9. Leitura comercial e proximos passos</h2>
+            <h2 id="rural-module">9. Modulo Rural V1</h2>
+      <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
+      <p>Campos especificos para chacara, sitio, fazenda, area rural, imovel produtivo, lazer rural ou investimento rural. Nesta fase salvam em metadata JSONB.</p>
+      <p className="analysis-note">Como avaliar: rural depende de area, acesso, agua, energia, benfeitorias, documentacao rural, risco ambiental, divisas e potencial produtivo/comercial.</p>
+
+      <label>Subtipo rural<br />
+        <select value={ruralSubtype} onChange={(e) => setRuralSubtype(e.target.value)}>
+          <option value="small_farm">Chacara</option>
+          <option value="country_house">Sitio</option>
+          <option value="farm">Fazenda</option>
+          <option value="rural_land">Area rural</option>
+          <option value="leisure_area">Area de lazer rural</option>
+          <option value="productive_farm">Imovel rural produtivo</option>
+          <option value="rural_residence">Moradia rural</option>
+          <option value="rural_investment_area">Area rural para investimento</option>
+          <option value="rural_area_with_improvements">Area rural com benfeitorias</option>
+          <option value="rural_area_without_improvements">Area rural sem benfeitorias</option>
+          <option value="other">Outro</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> classificacao principal do imovel rural.<br /><strong>Como avaliar:</strong> escolha pelo uso dominante: lazer, moradia, producao, investimento ou area sem estrutura.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Area total rural<br />
+        <input value={ruralTotalArea} onChange={(e) => setRuralTotalArea(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> medida principal da area rural.<br /><strong>Como avaliar:</strong> use documento, georreferenciamento ou informacao confiavel. Se for verbal, trate como a confirmar.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Unidade de medida<br />
+        <select value={ruralAreaUnit} onChange={(e) => setRuralAreaUnit(e.target.value)}>
+          <option value="square_meter">m²</option>
+          <option value="hectare">Hectare</option>
+          <option value="alqueire">Alqueire</option>
+          <option value="acre">Acre</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> unidade usada para medir a area rural.<br /><strong>Como avaliar:</strong> confira se a unidade bate com o documento e com a pratica local.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Area confere com documento?<br />
+        <select value={ruralAreaMatchesDocument} onChange={(e) => setRuralAreaMatchesDocument(e.target.value)}>
+          <option value="yes">Sim</option>
+          <option value="no">Nao</option>
+          <option value="to_confirm">A confirmar</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> comparacao entre area informada e documento rural.<br /><strong>Como avaliar:</strong> marque sim apenas se conferiu documento, matricula, CAR, CCIR, ITR ou georreferenciamento.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Qualidade do acesso<br />
+        <select value={ruralAccessQuality} onChange={(e) => setRuralAccessQuality(e.target.value)}>
+          <option value="excellent">Excelente</option>
+          <option value="good">Boa</option>
+          <option value="regular">Regular</option>
+          <option value="difficult">Dificil</option>
+          <option value="seasonal_difficulty">Dificil em epoca de chuva</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> facilidade de chegar ao imovel.<br /><strong>Como avaliar:</strong> considere estrada, distancia, chuva, veiculo necessario e acesso para comprador, visitante ou operacao rural.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Risco de acesso em periodo de chuva<br />
+        <select value={rainySeasonAccessRisk} onChange={(e) => setRainySeasonAccessRisk(e.target.value)}>
+          <option value="low">Baixo</option>
+          <option value="medium">Medio</option>
+          <option value="high">Alto</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> chance de o acesso piorar ou impedir chegada na chuva.<br /><strong>Como avaliar:</strong> observe estrada de terra, pontes, atoleiros, aclives, relatos locais e distancia de via principal.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Energia disponivel<br />
+        <select value={electricityAvailable} onChange={(e) => setElectricityAvailable(e.target.value)}>
+          <option value="yes">Sim</option>
+          <option value="no">Nao</option>
+          <option value="partial">Parcial</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> existencia de energia no imovel rural.<br /><strong>Como avaliar:</strong> confirme rede publica, solar, gerador ou infraestrutura parcial. Se nao comprovou, use nao verificado.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Disponibilidade de agua<br />
+        <select value={waterAvailability} onChange={(e) => setWaterAvailability(e.target.value)}>
+          <option value="abundant">Abundante</option>
+          <option value="sufficient">Suficiente</option>
+          <option value="limited">Limitada</option>
+          <option value="seasonal">Sazonal</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> condicao geral de agua para uso rural.<br /><strong>Como avaliar:</strong> considere poco, rio, corrego, nascente, lago, abastecimento e se seca em alguma epoca.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Condicao das benfeitorias<br />
+        <select value={improvementsCondition} onChange={(e) => setImprovementsCondition(e.target.value)}>
+          <option value="excellent">Excelente</option>
+          <option value="good">Boa</option>
+          <option value="regular">Regular</option>
+          <option value="poor">Ruim</option>
+          <option value="critical">Critica</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> estado de casa sede, cercas, currais, galpoes, poco, piscina, pomar ou estruturas rurais.<br /><strong>Como avaliar:</strong> observe utilidade real, manutencao, risco, custo de reparo e impacto no valor.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Uso rural atual<br />
+        <select value={currentRuralUse} onChange={(e) => setCurrentRuralUse(e.target.value)}>
+          <option value="leisure">Lazer</option>
+          <option value="residence">Moradia</option>
+          <option value="cattle">Pecuaria</option>
+          <option value="agriculture">Agricultura</option>
+          <option value="mixed_production">Producao mista</option>
+          <option value="unused">Sem uso</option>
+          <option value="rental_income">Renda/arrendamento</option>
+          <option value="tourism">Turismo rural</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> como a propriedade e usada hoje.<br /><strong>Como avaliar:</strong> diferencie uso real de potencial futuro. Se nao houver atividade confirmada, marque nao verificado ou sem uso.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Potencial produtivo<br />
+        <select value={productivePotential} onChange={(e) => setProductivePotential(e.target.value)}>
+          <option value="high">Alto</option>
+          <option value="medium">Medio</option>
+          <option value="low">Baixo</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> capacidade percebida de gerar producao ou renda rural.<br /><strong>Como avaliar:</strong> considere solo aparente, agua, acesso, estrutura, pasto, plantio, benfeitorias e vocacao da regiao.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Risco ambiental<br />
+        <select value={environmentalRisk} onChange={(e) => setEnvironmentalRisk(e.target.value)}>
+          <option value="low">Baixo</option>
+          <option value="medium">Medio</option>
+          <option value="high">Alto</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> risco relacionado a APP, reserva, vegetacao, agua, restricao ou passivo ambiental.<br /><strong>Como avaliar:</strong> nao declare regularidade; marque risco quando houver duvida, vegetacao sensivel, curso d'agua ou falta de CAR/documento.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Status documental rural<br />
+        <select value={ruralDocumentationStatus} onChange={(e) => setRuralDocumentationStatus(e.target.value)}>
+          <option value="apparently_regular">Regular aparente</option>
+          <option value="pending_review">Pendente de conferencia</option>
+          <option value="discrepancy_found">Divergencia identificada</option>
+          <option value="relevant_risk">Risco relevante</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> leitura inicial da documentacao rural.<br /><strong>Como avaliar:</strong> confira matricula, CCIR, ITR, CAR, georreferenciamento e contratos. Sem documento, use pendente ou nao verificado.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Georreferenciamento<br />
+        <select value={georeferencingStatus} onChange={(e) => setGeoreferencingStatus(e.target.value)}>
+          <option value="done">Feito</option>
+          <option value="not_done">Nao feito</option>
+          <option value="to_confirm">A confirmar</option>
+          <option value="not_required_informed">Informado como nao obrigatorio</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> situacao do georreferenciamento da area.<br /><strong>Como avaliar:</strong> marque feito apenas com informacao/documento confiavel. Na duvida, use a confirmar ou nao verificado.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Atratividade comercial rural<br />
+        <select value={ruralMarketAppeal} onChange={(e) => setRuralMarketAppeal(e.target.value)}>
+          <option value="high">Alta</option>
+          <option value="medium">Media</option>
+          <option value="low">Baixa</option>
+          <option value="depends_on_price">Depende do preco</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> potencial de interesse do mercado pelo imovel rural.<br /><strong>Como avaliar:</strong> pese acesso, agua, distancia, benfeitorias, documentacao, uso produtivo, lazer e preco.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Recomendacao especifica para rural<br />
+        <select value={ruralRecommendation} onChange={(e) => setRuralRecommendation(e.target.value)}>
+          <option value="publish_as_is">Publicar como esta</option>
+          <option value="review_price">Revisar preco</option>
+          <option value="request_documents">Solicitar documentos</option>
+          <option value="validate_area">Validar area</option>
+          <option value="validate_access">Validar acesso</option>
+          <option value="validate_water_sources">Validar agua</option>
+          <option value="validate_environmental_status">Validar situacao ambiental</option>
+          <option value="improve_photos">Melhorar fotos</option>
+          <option value="require_specialist_assessment">Exigir avaliacao de especialista</option>
+          <option value="not_recommend_publish_yet">Nao recomendar publicacao ainda</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> proxima decisao profissional para o imovel rural.<br /><strong>Como avaliar:</strong> priorize documentos, area, acesso, agua e risco ambiental antes de publicar com seguranca.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Observacoes especificas do rural<br />
+        <textarea value={ruralNotes} onChange={(e) => setRuralNotes(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> observacoes livres sobre acesso, agua, benfeitorias, producao, risco ou oportunidade rural.<br /><strong>Como avaliar:</strong> registre informacoes importantes que nao cabem nos campos estruturados.</div>
+      </label>
+
+      <hr />
+
+      <h2 id="commercial-reading">10. Leitura comercial e proximos passos</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: esta leitura deve transformar a vistoria em decisao pratica. Se o preco, risco ou documento ainda nao estiver claro, priorize revisao, pedido de documentos ou nova visita.</p>
 
