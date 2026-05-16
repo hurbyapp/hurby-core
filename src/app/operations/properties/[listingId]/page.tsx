@@ -11,7 +11,7 @@ Exibir o checkup interno do imóvel profissional.
 
 REGRA DE PRODUTO:
 - Anúncio é peça pública/comercial.
-- Ficha profissional é documento técnico interno/adicional.
+- Documento Profissional é documento técnico interno/adicional.
 - Checkup é tela interna de conferência.
 - Upload de fotos não pertence ao checkup.
 - Fotos públicas do anúncio ficam em property_listing_media.
@@ -60,6 +60,22 @@ function formatValue(value: any) {
     return value ? 'Sim' : 'Não'
   }
 
+  if (Array.isArray(value)) {
+    return value.length ? value.map((item) => formatValue(item)).join(', ') : '-'
+  }
+
+  if (typeof value === 'object') {
+    const entries = Object.entries(value)
+
+    if (entries.length === 0) {
+      return '-'
+    }
+
+    return entries
+      .map(([key, itemValue]) => `${formatJsonKey(key)}: ${formatValue(itemValue)}`)
+      .join('\n')
+  }
+
   return String(value)
 }
 
@@ -71,6 +87,12 @@ function getJsonValue(source: any, key: string) {
   return formatValue(source[key])
 }
 
+function formatJsonKey(key: string) {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
 function InfoLine({
   label,
   value,
@@ -79,9 +101,10 @@ function InfoLine({
   value: any
 }) {
   return (
-    <p style={{ margin: '6px 0' }}>
-      <strong>{label}:</strong> {formatValue(value)}
-    </p>
+    <div className="checkup-line">
+      <div className="checkup-label">{label}</div>
+      <div className="checkup-value">{formatValue(value)}</div>
+    </div>
   )
 }
 
@@ -95,9 +118,61 @@ function JsonLine({
   field: string
 }) {
   return (
-    <p style={{ margin: '6px 0' }}>
-      <strong>{label}:</strong> {getJsonValue(source, field)}
-    </p>
+    <div className="checkup-line">
+      <div className="checkup-label">{label}</div>
+      <div className="checkup-value">{getJsonValue(source, field)}</div>
+    </div>
+  )
+}
+
+function JsonObjectLines({
+  source,
+}: {
+  source: any
+}) {
+  if (!source || typeof source !== 'object') {
+    return (
+      <div className="checkup-line">
+        <div className="checkup-label">Status</div>
+        <div className="checkup-value">Sem dados salvos neste módulo.</div>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {Object.entries(source).map(([key, value]) => (
+        <div className="checkup-line" key={key}>
+          <div className="checkup-label">{formatJsonKey(key)}</div>
+          <div className="checkup-value">{formatValue(value)}</div>
+        </div>
+      ))}
+    </>
+  )
+}
+
+function ModuleBlock({
+  id,
+  title,
+  children,
+}: {
+  id: string
+  title: string
+  children: React.ReactNode
+}) {
+  return (
+    <>
+      <div className="checkup-module-heading" id={id}>
+        <h3>{title}</h3>
+        <a className="checkup-page-up" href="#documento-profissional-v1">
+          Page up
+        </a>
+      </div>
+
+      <div className="checkup-module-box">
+        {children}
+      </div>
+    </>
   )
 }
 
@@ -192,10 +267,15 @@ export default function PropertyDetailPage() {
   const location = asset.property_asset_locations?.[0] || {}
   const features = asset.property_asset_features?.[0] || {}
   const portfolioItem = listing.portfolio_items?.[0] || null
+  const assessmentMetadata = assessment?.metadata || {}
 
   return (
-    <main style={{ padding: 24, maxWidth: 1180, margin: '0 auto' }}>
+    <main className="checkup-page">
       <style jsx global>{`
+        body {
+          background: #f3f5f7;
+        }
+
         @media print {
           .no-print {
             display: none !important;
@@ -203,6 +283,18 @@ export default function PropertyDetailPage() {
 
           body {
             background: #fff;
+          }
+
+          .checkup-page {
+            max-width: none !important;
+            padding: 0 !important;
+          }
+
+          .checkup-v1-shell,
+          .hurby-section,
+          .checkup-module-box {
+            box-shadow: none !important;
+            break-inside: avoid;
           }
         }
 
@@ -231,12 +323,20 @@ export default function PropertyDetailPage() {
           font-size: 14px;
         }
 
+        .checkup-page {
+          padding: 24px;
+          max-width: 1180px;
+          margin: 0 auto;
+          color: #172033;
+        }
+
         .hurby-section {
-          border: 1px solid #ddd;
-          border-radius: 12px;
-          padding: 16px;
-          margin: 16px 0;
+          border: 1px solid #d8e0ea;
+          border-radius: 18px;
+          padding: 18px;
+          margin: 18px 0;
           background: #fff;
+          box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
         }
 
         .hurby-photo-grid {
@@ -264,6 +364,124 @@ export default function PropertyDetailPage() {
           color: #666;
           font-size: 14px;
         }
+
+        .checkup-v1-shell {
+          border: 1px solid #d8e0ea;
+          border-radius: 18px;
+          background: #f8fafc;
+          padding: 18px;
+          margin-top: 18px;
+        }
+
+        .checkup-v1-nav {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          padding: 12px;
+          border: 1px solid #dbe3ec;
+          border-radius: 16px;
+          background: #fff;
+          margin: 12px 0 18px;
+        }
+
+        .checkup-v1-nav a {
+          text-decoration: none;
+          border: 1px solid #dbe3ec;
+          border-radius: 999px;
+          padding: 7px 10px;
+          color: #334155;
+          background: #f8fafc;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .checkup-v1-nav a:hover {
+          border-color: #94a3b8;
+          background: #eef4fb;
+        }
+
+        .checkup-module-heading {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin: 24px 0 8px;
+        }
+
+        .checkup-module-heading h3 {
+          margin: 0;
+          color: #172033;
+          font-size: 18px;
+        }
+
+        .checkup-page-up {
+          color: #2563eb;
+          text-decoration: none;
+          font-size: 12px;
+          font-weight: 800;
+          white-space: nowrap;
+        }
+
+        .checkup-page-up:hover {
+          text-decoration: underline;
+        }
+
+        .checkup-module-box {
+          background: #fff;
+          border: 1px solid #dbe3ec;
+          border-radius: 16px;
+          padding: 14px 16px;
+          box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+        }
+
+        .checkup-line {
+          display: grid;
+          grid-template-columns: minmax(180px, 34%) minmax(0, 1fr);
+          gap: 14px;
+          align-items: start;
+          padding: 8px 0;
+          border-bottom: 1px solid #edf1f5;
+        }
+
+        .checkup-line:last-child {
+          border-bottom: 0;
+        }
+
+        .checkup-label {
+          text-align: right;
+          color: #64748b;
+          font-weight: 800;
+          font-size: 13px;
+        }
+
+        .checkup-value {
+          text-align: left;
+          color: #172033;
+          font-size: 13px;
+          line-height: 1.45;
+          word-break: break-word;
+          white-space: pre-wrap;
+        }
+
+        @media (max-width: 760px) {
+          .checkup-page {
+            padding: 16px;
+          }
+
+          .checkup-line {
+            grid-template-columns: 1fr;
+            gap: 4px;
+          }
+
+          .checkup-label {
+            text-align: left;
+          }
+
+          .checkup-module-heading {
+            align-items: flex-start;
+            flex-direction: column;
+          }
+        }
       `}</style>
 
       <div className="no-print">
@@ -282,7 +500,7 @@ export default function PropertyDetailPage() {
           className="button-link"
           href={`/operations/properties/${listing.id}/assessment`}
         >
-          {assessment ? 'Editar ficha profissional' : 'Criar ficha profissional'}
+          {assessment ? 'Editar Documento Profissional' : 'Criar Documento Profissional'}
         </a>
 
         <button onClick={() => window.print()}>
@@ -290,7 +508,7 @@ export default function PropertyDetailPage() {
         </button>
       </div>
 
-      <h1>Checkup interno do imóvel</h1>
+      <h1 id="topo-checkup">Checkup interno do imóvel</h1>
 
       <div className="hurby-section">
         <h2>Orientação</h2>
@@ -301,7 +519,7 @@ export default function PropertyDetailPage() {
         </p>
 
         <p>
-          O anúncio é a peça comercial. A ficha profissional é um documento
+          O anúncio é a peça comercial. O Documento Profissional é um documento
           técnico separado. Dados sensíveis, notas privadas e informações do
           proprietário não devem ser expostos publicamente sem regra específica.
         </p>
@@ -427,21 +645,18 @@ export default function PropertyDetailPage() {
       </section>
 
       <section className="hurby-section">
-        <h2>7. Ficha profissional</h2>
+        <h2 id="documento-profissional-v1">7. Documento Profissional V1</h2>
 
         {!assessment && (
           <>
-            <p>
-              Este anúncio ainda não possui Ficha Profissional de Captação e
-              Avaliação vinculada.
-            </p>
+            <p>Este anúncio ainda não possui Documento Profissional vinculado.</p>
 
             <p className="no-print">
               <a
                 className="button-link"
                 href={`/operations/properties/${listing.id}/assessment`}
               >
-                Criar ficha profissional
+                Criar Documento Profissional
               </a>
             </p>
           </>
@@ -449,58 +664,111 @@ export default function PropertyDetailPage() {
 
         {assessment && (
           <>
-            <InfoLine label="Ficha ID" value={assessment.id} />
-            <InfoLine label="Status da ficha" value={assessment.assessment_status} />
-            <InfoLine label="Finalidade" value={assessment.assessment_purpose} />
-            <InfoLine label="Disponível para parceria" value={assessment.is_available_for_partnership} />
-            <InfoLine label="Exclusivo" value={assessment.is_exclusive} />
-            <InfoLine label="Ocultar endereço para parceiros" value={assessment.hide_exact_address_for_partners} />
-            <InfoLine label="Proprietário pode ver resumo" value={assessment.owner_can_view_summary} />
+            <nav className="checkup-v1-nav" aria-label="Módulos do Documento Profissional V1">
+              <a href="#v1-identificacao">Identificação</a>
+              <a href="#v1-maturidade">Maturidade</a>
+              <a href="#v1-base-comum">Base comum</a>
+              <a href="#v1-preco">Preço</a>
+              <a href="#v1-tecnica">Técnica</a>
+              <a href="#v1-documentacao">Doc./Financeiro</a>
+              <a href="#v1-entrevista">Entrevista</a>
+              <a href="#v1-proposta">Proposta</a>
+              <a href="#v1-casa">Casa</a>
+              <a href="#v1-apartamento">Apartamento</a>
+              <a href="#v1-terreno">Terreno</a>
+              <a href="#v1-comercial">Comercial</a>
+              <a href="#v1-rural">Rural</a>
+              <a href="#v1-resumos">Resumos</a>
+              <a href="#v1-privadas">Notas privadas</a>
+              <a href="#topo-checkup">Page up</a>
+            </nav>
 
-            <h3>7.1 Avaliação técnica</h3>
-            <JsonLine label="Perfil geral" source={assessment.technical_assessment} field="property_profile_notes" />
-            <JsonLine label="Conservação" source={assessment.technical_assessment} field="conservation_notes" />
-            <JsonLine label="Estrutura" source={assessment.technical_assessment} field="structure_notes" />
-            <JsonLine label="Infraestrutura" source={assessment.technical_assessment} field="infrastructure_notes" />
+            <div className="checkup-v1-shell">
+              <ModuleBlock id="v1-identificacao" title="7.0 Identificação da ficha">
+                <InfoLine label="Ficha ID" value={assessment.id} />
+                <InfoLine label="Status da ficha" value={assessment.assessment_status} />
+                <InfoLine label="Finalidade" value={assessment.assessment_purpose} />
+                <InfoLine label="Disponível para parceria" value={assessment.is_available_for_partnership} />
+                <InfoLine label="Exclusivo" value={assessment.is_exclusive} />
+                <InfoLine label="Ocultar endereço para parceiros" value={assessment.hide_exact_address_for_partners} />
+                <InfoLine label="Proprietário pode ver resumo" value={assessment.owner_can_view_summary} />
+              </ModuleBlock>
 
-            <h3>7.2 Entrevista com proprietário</h3>
-            <JsonLine label="Restrições" source={assessment.owner_interview} field="owner_restrictions" />
-            <JsonLine label="Condições para locação" source={assessment.owner_interview} field="rent_conditions" />
-            <JsonLine label="Condições para venda" source={assessment.owner_interview} field="sale_conditions" />
-            <JsonLine label="Expectativas" source={assessment.owner_interview} field="owner_expectations" />
+              <ModuleBlock id="v1-maturidade" title="7.1 Maturidade do Documento V1">
+                <JsonLine label="Base comum" source={assessmentMetadata} field="base_common_v1" />
+                <JsonLine label="Estratégia de preço" source={assessmentMetadata} field="price_strategy_v1" />
+                <JsonLine label="Avaliação técnica" source={assessmentMetadata} field="technical_assessment_v1" />
+                <JsonLine label="Documentação e financeiro" source={assessmentMetadata} field="documentation_financial_v1" />
+                <JsonLine label="Entrevista com proprietário" source={assessmentMetadata} field="owner_interview_v1" />
+                <JsonLine label="Proposta comercial" source={assessmentMetadata} field="commercial_proposal_v1" />
+                <JsonLine label="Casa" source={assessmentMetadata} field="house_module_v1" />
+                <JsonLine label="Apartamento" source={assessmentMetadata} field="apartment_module_v1" />
+                <JsonLine label="Terreno" source={assessmentMetadata} field="land_module_v1" />
+                <JsonLine label="Comercial" source={assessmentMetadata} field="commercial_module_v1" />
+                <JsonLine label="Rural" source={assessmentMetadata} field="rural_module_v1" />
+                <JsonLine label="Resumos controlados" source={assessmentMetadata} field="controlled_summaries_v1" />
+                <JsonLine label="Notas privadas" source={assessmentMetadata} field="private_notes_v1" />
+              </ModuleBlock>
 
-            <h3>7.3 Documentação</h3>
-            <JsonLine label="Situação da propriedade" source={assessment.documentation_assessment} field="ownership_status_notes" />
-            <JsonLine label="Matrícula / registro" source={assessment.documentation_assessment} field="registry_notes" />
-            <JsonLine label="Tributos" source={assessment.documentation_assessment} field="tax_notes" />
-            <JsonLine label="Jurídico" source={assessment.documentation_assessment} field="legal_notes" />
+              <ModuleBlock id="v1-base-comum" title="7.2 Base Comum V1">
+                <JsonObjectLines source={assessmentMetadata.base_common_v1} />
+              </ModuleBlock>
 
-            <h3>7.4 Financeiro</h3>
-            <JsonLine label="Dívidas" source={assessment.financial_assessment} field="debt_notes" />
-            <JsonLine label="Condomínio" source={assessment.financial_assessment} field="condo_fee_notes" />
-            <JsonLine label="IPTU" source={assessment.financial_assessment} field="iptu_notes" />
-            <JsonLine label="Financiamento" source={assessment.financial_assessment} field="financing_notes" />
+              <ModuleBlock id="v1-preco" title="7.3 Estratégia de Preço V1">
+                <JsonObjectLines source={assessmentMetadata.price_strategy_v1} />
+              </ModuleBlock>
 
-            <h3>7.5 Estratégia comercial</h3>
-            <JsonLine label="Pontos fortes" source={assessment.commercial_assessment} field="commercial_strengths" />
-            <JsonLine label="Pontos de atenção" source={assessment.commercial_assessment} field="commercial_risks" />
-            <JsonLine label="Percepção sobre preço" source={assessment.commercial_assessment} field="price_perception" />
-            <JsonLine label="Estratégia de negociação" source={assessment.commercial_assessment} field="negotiation_strategy" />
+              <ModuleBlock id="v1-tecnica" title="7.4 Avaliação Técnica V1">
+                <JsonObjectLines source={assessmentMetadata.technical_assessment_v1} />
+              </ModuleBlock>
 
-            <h3>7.6 Resumos controlados</h3>
-            <JsonLine label="Resumo público" source={assessment.public_summary} field="summary" />
-            <JsonLine label="Resumo para proprietário" source={assessment.owner_visibility_summary} field="summary" />
-            <JsonLine label="Resumo para parceria" source={assessment.partner_visibility_summary} field="summary" />
+              <ModuleBlock id="v1-documentacao" title="7.5 Documentação e Financeiro V1">
+                <JsonObjectLines source={assessmentMetadata.documentation_financial_v1} />
+              </ModuleBlock>
 
-            <h3>7.7 Notas privadas</h3>
-            <JsonLine label="Notas internas" source={assessment.private_notes} field="notes" />
+              <ModuleBlock id="v1-entrevista" title="7.6 Entrevista com Proprietário V1">
+                <JsonObjectLines source={assessmentMetadata.owner_interview_v1} />
+              </ModuleBlock>
 
-            <p className="no-print">
+              <ModuleBlock id="v1-proposta" title="7.7 Estratégia Comercial e Proposta V1">
+                <JsonObjectLines source={assessmentMetadata.commercial_proposal_v1} />
+              </ModuleBlock>
+
+              <ModuleBlock id="v1-casa" title="7.8.1 Casa">
+                <JsonObjectLines source={assessmentMetadata.house_module_v1} />
+              </ModuleBlock>
+
+              <ModuleBlock id="v1-apartamento" title="7.8.2 Apartamento / Unidade">
+                <JsonObjectLines source={assessmentMetadata.apartment_module_v1} />
+              </ModuleBlock>
+
+              <ModuleBlock id="v1-terreno" title="7.8.3 Terreno / Lote">
+                <JsonObjectLines source={assessmentMetadata.land_module_v1} />
+              </ModuleBlock>
+
+              <ModuleBlock id="v1-comercial" title="7.8.4 Comercial">
+                <JsonObjectLines source={assessmentMetadata.commercial_module_v1} />
+              </ModuleBlock>
+
+              <ModuleBlock id="v1-rural" title="7.8.5 Rural">
+                <JsonObjectLines source={assessmentMetadata.rural_module_v1} />
+              </ModuleBlock>
+
+              <ModuleBlock id="v1-resumos" title="7.9 Resumos Controlados V1">
+                <JsonObjectLines source={assessmentMetadata.controlled_summaries_v1} />
+              </ModuleBlock>
+
+              <ModuleBlock id="v1-privadas" title="7.10 Notas Privadas V1">
+                <JsonObjectLines source={assessmentMetadata.private_notes_v1} />
+              </ModuleBlock>
+            </div>
+
+            <p className="no-print" style={{ marginTop: 16 }}>
               <a
                 className="button-link"
                 href={`/operations/properties/${listing.id}/assessment`}
               >
-                Editar ficha profissional
+                Editar Documento Profissional
               </a>
             </p>
           </>
