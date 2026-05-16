@@ -179,6 +179,17 @@ export default function PropertyAssessmentPage() {
   const [ownerCommunicationPreference, setOwnerCommunicationPreference] = useState('not_informed')
   const [ownerMainObjectionsV1, setOwnerMainObjectionsV1] = useState('')
   const [ownerInterviewNotesV1, setOwnerInterviewNotesV1] = useState('')
+
+  const [proposalCommercialDiagnosis, setProposalCommercialDiagnosis] = useState('not_evaluated')
+  const [proposalRecommendedPositioning, setProposalRecommendedPositioning] = useState('standard_market')
+  const [proposalListingStrategy, setProposalListingStrategy] = useState('publish_after_review')
+  const [proposalNegotiationStrategy, setProposalNegotiationStrategy] = useState('neutral_margin')
+  const [proposalOwnerArgument, setProposalOwnerArgument] = useState('')
+  const [proposalPublicHighlights, setProposalPublicHighlights] = useState('')
+  const [proposalAttentionPoints, setProposalAttentionPoints] = useState('')
+  const [proposalNextAction, setProposalNextAction] = useState('review_price')
+  const [proposalFollowUpDate, setProposalFollowUpDate] = useState('')
+  const [proposalInternalNotes, setProposalInternalNotes] = useState('')
   const [commercialSubtype, setCommercialSubtype] = useState('commercial_store')
   const [commercialCurrentUse, setCommercialCurrentUse] = useState('not_verified')
   const [commercialBestUse, setCommercialBestUse] = useState('not_evaluated')
@@ -371,6 +382,18 @@ export default function PropertyAssessmentPage() {
         setOwnerCommunicationPreference(ownerInterviewModule.owner_communication_preference || 'not_informed')
         setOwnerMainObjectionsV1(ownerInterviewModule.owner_main_objections || '')
         setOwnerInterviewNotesV1(ownerInterviewModule.owner_interview_notes || '')
+
+        const commercialProposal = assessmentData.metadata?.commercial_proposal_v1 || {}
+        setProposalCommercialDiagnosis(commercialProposal.commercial_diagnosis || 'not_evaluated')
+        setProposalRecommendedPositioning(commercialProposal.recommended_positioning || 'standard_market')
+        setProposalListingStrategy(commercialProposal.listing_strategy || 'publish_after_review')
+        setProposalNegotiationStrategy(commercialProposal.negotiation_strategy || 'neutral_margin')
+        setProposalOwnerArgument(commercialProposal.owner_argument || '')
+        setProposalPublicHighlights(commercialProposal.public_highlights || '')
+        setProposalAttentionPoints(commercialProposal.attention_points || '')
+        setProposalNextAction(commercialProposal.next_action || 'review_price')
+        setProposalFollowUpDate(commercialProposal.follow_up_date || '')
+        setProposalInternalNotes(commercialProposal.internal_notes || '')
         const commercialModule = assessmentData.metadata?.commercial_module_v1 || {}
         setCommercialSubtype(commercialModule.commercial_subtype || 'commercial_store')
         setCommercialCurrentUse(commercialModule.current_use || 'not_verified')
@@ -646,6 +669,17 @@ export default function PropertyAssessmentPage() {
             owner_communication_preference: ownerCommunicationPreference,
             owner_main_objections: ownerMainObjectionsV1,
             owner_interview_notes: ownerInterviewNotesV1,
+          },          commercial_proposal_v1: {
+            commercial_diagnosis: proposalCommercialDiagnosis,
+            recommended_positioning: proposalRecommendedPositioning,
+            listing_strategy: proposalListingStrategy,
+            negotiation_strategy: proposalNegotiationStrategy,
+            owner_argument: proposalOwnerArgument,
+            public_highlights: proposalPublicHighlights,
+            attention_points: proposalAttentionPoints,
+            next_action: proposalNextAction,
+            follow_up_date: proposalFollowUpDate,
+            internal_notes: proposalInternalNotes,
           },commercial_module_v1: {
             commercial_subtype: commercialSubtype,
             current_use: commercialCurrentUse,
@@ -1138,6 +1172,7 @@ export default function PropertyAssessmentPage() {
         <a href="#commercial-module">Comercial</a>
         <a href="#rural-module">Rural</a>
         <a href="#commercial-reading">Leitura comercial</a>
+        <a href="#commercial-proposal-v1">Proposta comercial</a>
         <a href="#technical-assessment">Avaliacao tecnica</a>
         <a href="#owner-interview-v1">Entrevista</a>
       </nav>
@@ -2836,26 +2871,120 @@ export default function PropertyAssessmentPage() {
 
       <hr />
 
-      <h2>6. Estrategia comercial</h2>
-      <label>Pontos fortes<br /><textarea value={commercialStrengths} onChange={(e) => setCommercialStrengths(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+      <h2 id="commercial-proposal-v1">Estrategia Comercial e Proposta Comercial V1</h2>
+      <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
+      <p className="analysis-note">Como avaliar: transforme a ficha tecnica em decisao comercial. A proposta deve orientar preco, publicacao, negociacao, argumento para o proprietario e proxima acao pratica.</p>
+
+      <label>Diagnostico comercial do imovel<br />
+        <select value={proposalCommercialDiagnosis} onChange={(e) => setProposalCommercialDiagnosis(e.target.value)}>
+          <option value="high_potential">Alto potencial comercial</option>
+          <option value="good_potential">Bom potencial comercial</option>
+          <option value="average_potential">Potencial medio</option>
+          <option value="depends_on_price">Depende de ajuste de preco</option>
+          <option value="requires_corrections">Precisa de ajustes antes de publicar</option>
+          <option value="high_risk">Alto risco comercial/documental</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> leitura executiva do potencial do imovel como produto de mercado.<br /><strong>Como avaliar:</strong> cruze preco, liquidez, risco, estado, documentacao, modulo do tipo de imovel e motivacao do proprietario.</div>
       </label>
+
       <br /><br />
-      <label>Pontos de atencao<br /><textarea value={commercialRisks} onChange={(e) => setCommercialRisks(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Posicionamento recomendado<br />
+        <select value={proposalRecommendedPositioning} onChange={(e) => setProposalRecommendedPositioning(e.target.value)}>
+          <option value="premium_positioning">Posicionamento premium</option>
+          <option value="standard_market">Mercado padrao</option>
+          <option value="opportunity">Oportunidade</option>
+          <option value="investment">Investimento</option>
+          <option value="family_home">Moradia familiar</option>
+          <option value="income_property">Renda/locacao</option>
+          <option value="needs_repositioning">Precisa reposicionamento</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> narrativa comercial que deve guiar anuncio, atendimento e argumentacao.<br /><strong>Como avaliar:</strong> escolha o enquadramento que melhor vende o imovel sem prometer algo que a ficha nao sustenta.</div>
       </label>
+
       <br /><br />
-      <label>Percepcao sobre preco<br /><textarea value={pricePerception} onChange={(e) => setPricePerception(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Estrategia de publicacao<br />
+        <select value={proposalListingStrategy} onChange={(e) => setProposalListingStrategy(e.target.value)}>
+          <option value="publish_now">Publicar agora</option>
+          <option value="publish_after_review">Publicar apos revisao</option>
+          <option value="publish_after_documents">Publicar apos documentos</option>
+          <option value="publish_after_photos">Publicar apos fotos melhores</option>
+          <option value="hold_until_price_adjustment">Aguardar ajuste de preco</option>
+          <option value="do_not_publish_yet">Nao publicar ainda</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> decisao sobre levar ou nao o imovel para vitrine publica.<br /><strong>Como avaliar:</strong> se documento, preco, foto ou risco estiverem fracos, segure ou publique com revisao planejada.</div>
       </label>
+
       <br /><br />
-      <label>Estrategia de negociacao<br /><textarea value={negotiationStrategy} onChange={(e) => setNegotiationStrategy(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Estrategia de negociacao<br />
+        <select value={proposalNegotiationStrategy} onChange={(e) => setProposalNegotiationStrategy(e.target.value)}>
+          <option value="firm_price">Preco firme</option>
+          <option value="neutral_margin">Margem moderada</option>
+          <option value="aggressive_discount">Desconto agressivo</option>
+          <option value="start_high_reduce_later">Comecar alto e reduzir depois</option>
+          <option value="campaign_discount">Campanha/desconto por prazo</option>
+          <option value="owner_alignment_needed">Precisa alinhar com proprietario</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> plano de condução da negociacao.<br /><strong>Como avaliar:</strong> use preco minimo, urgencia, flexibilidade do proprietario e resposta esperada do mercado.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Argumentacao para o proprietario<br />
+        <textarea value={proposalOwnerArgument} onChange={(e) => setProposalOwnerArgument(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> texto de apoio para explicar ao proprietario a recomendacao profissional.<br /><strong>Como avaliar:</strong> escreva com base em fatos: preco, risco, comparaveis, liquidez, documentos, fotos e perfil do comprador.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Pontos fortes para o anuncio<br />
+        <textarea value={proposalPublicHighlights} onChange={(e) => setProposalPublicHighlights(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> argumentos que podem virar destaque publico do anuncio.<br /><strong>Como avaliar:</strong> use apenas pontos que podem ser sustentados por fotos, dados ou verificacao profissional.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Pontos de atencao antes de publicar<br />
+        <textarea value={proposalAttentionPoints} onChange={(e) => setProposalAttentionPoints(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> riscos, pendencias ou ajustes que podem prejudicar a venda ou a locacao.<br /><strong>Como avaliar:</strong> registre o que precisa ser resolvido, confirmado ou explicado antes de expor o imovel com forca.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Proxima acao recomendada<br />
+        <select value={proposalNextAction} onChange={(e) => setProposalNextAction(e.target.value)}>
+          <option value="review_price">Revisar preco</option>
+          <option value="align_with_owner">Alinhar com proprietario</option>
+          <option value="request_documents">Solicitar documentos</option>
+          <option value="schedule_new_visit">Agendar nova visita</option>
+          <option value="improve_photos">Melhorar fotos</option>
+          <option value="create_listing">Criar anuncio</option>
+          <option value="publish_listing">Publicar anuncio</option>
+          <option value="monitor_performance">Acompanhar performance</option>
+          <option value="archive_capture">Arquivar captacao</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> movimento pratico depois da proposta comercial.<br /><strong>Como avaliar:</strong> escolha a acao que mais destrava o funil agora.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Data sugerida para retorno<br />
+        <input type="date" value={proposalFollowUpDate} onChange={(e) => setProposalFollowUpDate(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> prazo para cobrar documento, ajustar preco, revisar anuncio ou falar com o proprietario.<br /><strong>Como avaliar:</strong> use uma data realista para evitar que a captacao fique parada.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas internas da proposta comercial<br />
+        <textarea value={proposalInternalNotes} onChange={(e) => setProposalInternalNotes(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> observacoes internas da estrategia comercial.<br /><strong>Como avaliar:</strong> registre raciocinio, combinado verbal, margem, duvidas e alertas para retomada futura.</div>
       </label>
 
       <hr />
-
-      <h2>7. Resumos controlados</h2>
+<h2>7. Resumos controlados</h2>
       <p>Use estes campos para criar versoes seguras da ficha. Nao inclua documentos, telefone, CPF/CNPJ, numero exato do imovel ou notas privadas.</p>
 
       <label>Resumo publico<br /><textarea value={publicSummary} onChange={(e) => setPublicSummary(e.target.value)} style={{ width: '100%' }} />
