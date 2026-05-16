@@ -166,6 +166,19 @@ export default function PropertyAssessmentPage() {
   const [ruralMarketAppeal, setRuralMarketAppeal] = useState('not_evaluated')
   const [ruralRecommendation, setRuralRecommendation] = useState('review_price')
   const [ruralNotes, setRuralNotes] = useState('')
+
+  const [ownerInterviewSource, setOwnerInterviewSource] = useState('not_verified')
+  const [ownerMotivation, setOwnerMotivation] = useState('not_evaluated')
+  const [negotiationUrgency, setNegotiationUrgency] = useState('not_evaluated')
+  const [ownerAvailability, setOwnerAvailability] = useState('to_schedule')
+  const [exclusiveAuthorization, setExclusiveAuthorization] = useState('not_verified')
+  const [commissionAgreementStatus, setCommissionAgreementStatus] = useState('not_verified')
+  const [documentationProvidedStatus, setDocumentationProvidedStatus] = useState('not_provided')
+  const [priceFlexibility, setPriceFlexibility] = useState('not_evaluated')
+  const [exchangeInterest, setExchangeInterest] = useState('not_verified')
+  const [ownerCommunicationPreference, setOwnerCommunicationPreference] = useState('not_informed')
+  const [ownerMainObjectionsV1, setOwnerMainObjectionsV1] = useState('')
+  const [ownerInterviewNotesV1, setOwnerInterviewNotesV1] = useState('')
   const [commercialSubtype, setCommercialSubtype] = useState('commercial_store')
   const [commercialCurrentUse, setCommercialCurrentUse] = useState('not_verified')
   const [commercialBestUse, setCommercialBestUse] = useState('not_evaluated')
@@ -344,6 +357,20 @@ export default function PropertyAssessmentPage() {
         setRuralMarketAppeal(ruralModule.rural_market_appeal || 'not_evaluated')
         setRuralRecommendation(ruralModule.rural_recommendation || 'review_price')
         setRuralNotes(ruralModule.rural_notes || '')
+
+        const ownerInterviewModule = assessmentData.metadata?.owner_interview_v1 || {}
+        setOwnerInterviewSource(ownerInterviewModule.owner_interview_source || 'not_verified')
+        setOwnerMotivation(ownerInterviewModule.owner_motivation || 'not_evaluated')
+        setNegotiationUrgency(ownerInterviewModule.negotiation_urgency || 'not_evaluated')
+        setOwnerAvailability(ownerInterviewModule.owner_availability || 'to_schedule')
+        setExclusiveAuthorization(ownerInterviewModule.exclusive_authorization || 'not_verified')
+        setCommissionAgreementStatus(ownerInterviewModule.commission_agreement_status || 'not_verified')
+        setDocumentationProvidedStatus(ownerInterviewModule.documentation_provided_status || 'not_provided')
+        setPriceFlexibility(ownerInterviewModule.price_flexibility || 'not_evaluated')
+        setExchangeInterest(ownerInterviewModule.exchange_interest || 'not_verified')
+        setOwnerCommunicationPreference(ownerInterviewModule.owner_communication_preference || 'not_informed')
+        setOwnerMainObjectionsV1(ownerInterviewModule.owner_main_objections || '')
+        setOwnerInterviewNotesV1(ownerInterviewModule.owner_interview_notes || '')
         const commercialModule = assessmentData.metadata?.commercial_module_v1 || {}
         setCommercialSubtype(commercialModule.commercial_subtype || 'commercial_store')
         setCommercialCurrentUse(commercialModule.current_use || 'not_verified')
@@ -606,7 +633,20 @@ export default function PropertyAssessmentPage() {
             rural_market_appeal: ruralMarketAppeal,
             rural_recommendation: ruralRecommendation,
             rural_notes: ruralNotes,
-          },          commercial_module_v1: {
+          },                    owner_interview_v1: {
+            owner_interview_source: ownerInterviewSource,
+            owner_motivation: ownerMotivation,
+            negotiation_urgency: negotiationUrgency,
+            owner_availability: ownerAvailability,
+            exclusive_authorization: exclusiveAuthorization,
+            commission_agreement_status: commissionAgreementStatus,
+            documentation_provided_status: documentationProvidedStatus,
+            price_flexibility: priceFlexibility,
+            exchange_interest: exchangeInterest,
+            owner_communication_preference: ownerCommunicationPreference,
+            owner_main_objections: ownerMainObjectionsV1,
+            owner_interview_notes: ownerInterviewNotesV1,
+          },commercial_module_v1: {
             commercial_subtype: commercialSubtype,
             current_use: commercialCurrentUse,
             intended_best_use: commercialBestUse,
@@ -1099,7 +1139,7 @@ export default function PropertyAssessmentPage() {
         <a href="#rural-module">Rural</a>
         <a href="#commercial-reading">Leitura comercial</a>
         <a href="#technical-assessment">Avaliacao tecnica</a>
-        <a href="#owner-interview">Entrevista</a>
+        <a href="#owner-interview-v1">Entrevista</a>
       </nav>
       <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
         <button
@@ -2606,25 +2646,160 @@ export default function PropertyAssessmentPage() {
 
       <hr />
 
-      <h2 id="owner-interview">Entrevista com proprietario</h2>
-      <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
-      <label>Restricoes<br /><textarea value={ownerRestrictions} onChange={(e) => setOwnerRestrictions(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+      <h2 id="owner-interview-v1">Entrevista com proprietario V1</h2>
+      <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
+      <p className="analysis-note">Como avaliar: registre a conversa comercial real com o proprietario. Separe fala verbal, comprovacao documental, autorizacao, flexibilidade e pontos que podem travar a negociacao.</p>
+
+      <label>Fonte da entrevista<br />
+        <select value={ownerInterviewSource} onChange={(e) => setOwnerInterviewSource(e.target.value)}>
+          <option value="owner_direct">Proprietario direto</option>
+          <option value="owner_representative">Representante do proprietario</option>
+          <option value="family_member">Familiar</option>
+          <option value="tenant">Inquilino</option>
+          <option value="third_party">Terceiro</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> quem forneceu as informacoes da entrevista.<br /><strong>Como avaliar:</strong> quanto mais distante do proprietario real, menor a confianca da informacao.</div>
       </label>
+
       <br /><br />
-      <label>Condicoes para locacao<br /><textarea value={rentConditions} onChange={(e) => setRentConditions(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Motivacao do proprietario<br />
+        <select value={ownerMotivation} onChange={(e) => setOwnerMotivation(e.target.value)}>
+          <option value="sell_fast">Quer vender rapido</option>
+          <option value="test_market">Quer testar mercado</option>
+          <option value="upgrade_property">Quer trocar por outro imovel</option>
+          <option value="financial_need">Necessidade financeira</option>
+          <option value="relocation">Mudanca de cidade/bairro</option>
+          <option value="investment_reallocation">Realocar investimento</option>
+          <option value="rent_income">Busca renda de locacao</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> motivo principal para vender, alugar ou anunciar.<br /><strong>Como avaliar:</strong> motivacao forte geralmente aumenta abertura para preco realista e negociacao.</div>
       </label>
+
       <br /><br />
-      <label>Condicoes para venda<br /><textarea value={saleConditions} onChange={(e) => setSaleConditions(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Urgencia de negociacao<br />
+        <select value={negotiationUrgency} onChange={(e) => setNegotiationUrgency(e.target.value)}>
+          <option value="high">Alta</option>
+          <option value="medium">Media</option>
+          <option value="low">Baixa</option>
+          <option value="no_urgency">Sem urgencia</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> pressao de tempo para concluir o negocio.<br /><strong>Como avaliar:</strong> urgencia alta pode justificar ajuste de preco, campanha ou abordagem mais ativa.</div>
       </label>
+
       <br /><br />
-      <label>Expectativas<br /><textarea value={ownerExpectations} onChange={(e) => setOwnerExpectations(e.target.value)} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+
+      <label>Disponibilidade do proprietario<br />
+        <select value={ownerAvailability} onChange={(e) => setOwnerAvailability(e.target.value)}>
+          <option value="available">Disponivel</option>
+          <option value="limited">Limitada</option>
+          <option value="hard_to_contact">Dificil contato</option>
+          <option value="requires_scheduling">Exige agendamento</option>
+          <option value="to_schedule">A agendar</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> facilidade de contato e agenda com o proprietario.<br /><strong>Como avaliar:</strong> baixa disponibilidade pode atrasar visita, documento, proposta e fechamento.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Autorizacao / exclusividade<br />
+        <select value={exclusiveAuthorization} onChange={(e) => setExclusiveAuthorization(e.target.value)}>
+          <option value="exclusive_authorized">Exclusividade autorizada</option>
+          <option value="non_exclusive_authorized">Autorizacao sem exclusividade</option>
+          <option value="verbal_only">Apenas verbal</option>
+          <option value="not_authorized">Nao autorizado</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> nivel de autorizacao para trabalhar o imovel.<br /><strong>Como avaliar:</strong> autorizacao verbal ajuda no inicio, mas deve evoluir para registro formal.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Comissao / acordo comercial<br />
+        <select value={commissionAgreementStatus} onChange={(e) => setCommissionAgreementStatus(e.target.value)}>
+          <option value="agreed">Acordada</option>
+          <option value="verbal_agreement">Acordo verbal</option>
+          <option value="pending_definition">Pendente de definicao</option>
+          <option value="conflict_or_doubt">Conflito ou duvida</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> situacao do acordo de remuneracao profissional.<br /><strong>Como avaliar:</strong> se nao houver clareza sobre comissao, registre pendencia antes de avancar.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Documentos fornecidos<br />
+        <select value={documentationProvidedStatus} onChange={(e) => setDocumentationProvidedStatus(e.target.value)}>
+          <option value="complete">Completos</option>
+          <option value="partial">Parciais</option>
+          <option value="promised">Prometidos</option>
+          <option value="not_provided">Nao fornecidos</option>
+          <option value="refused">Recusados</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> quanto da documentacao foi entregue pelo proprietario.<br /><strong>Como avaliar:</strong> sem documento, evite afirmar regularidade, financiamento ou seguranca juridica.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Flexibilidade de preco<br />
+        <select value={priceFlexibility} onChange={(e) => setPriceFlexibility(e.target.value)}>
+          <option value="high">Alta</option>
+          <option value="medium">Media</option>
+          <option value="low">Baixa</option>
+          <option value="none">Nenhuma</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> abertura do proprietario para ajustar preco ou negociar.<br /><strong>Como avaliar:</strong> use junto com preco minimo aceitavel, urgencia e resposta do mercado.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Interesse em permuta<br />
+        <select value={exchangeInterest} onChange={(e) => setExchangeInterest(e.target.value)}>
+          <option value="yes_property">Aceita imovel</option>
+          <option value="yes_vehicle">Aceita veiculo</option>
+          <option value="yes_both">Aceita imovel ou veiculo</option>
+          <option value="no">Nao aceita</option>
+          <option value="to_confirm">A confirmar</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> abertura para receber outro bem como parte do negocio.<br /><strong>Como avaliar:</strong> diferencie interesse real de possibilidade vaga; confirme limites e tipos aceitos.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Preferencia de comunicacao<br />
+        <select value={ownerCommunicationPreference} onChange={(e) => setOwnerCommunicationPreference(e.target.value)}>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="phone">Telefone</option>
+          <option value="email">E-mail</option>
+          <option value="in_person">Presencial</option>
+          <option value="representative">Via representante</option>
+          <option value="not_informed">Nao informado</option>
+        </select>
+        <div className="field-guide"><strong>O que e:</strong> canal mais adequado para tratar os proximos passos.<br /><strong>Como avaliar:</strong> escolha o canal que realmente acelera retorno, documento, visita e proposta.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Principais objecoes ou travas do proprietario<br />
+        <textarea value={ownerMainObjectionsV1} onChange={(e) => setOwnerMainObjectionsV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> barreiras comerciais percebidas na conversa.<br /><strong>Como avaliar:</strong> registre resistencia a preco, comissao, exclusividade, documento, visita, foto ou prazo.</div>
+      </label>
+
+      <br /><br />
+
+      <label>Notas da entrevista V1<br />
+        <textarea value={ownerInterviewNotesV1} onChange={(e) => setOwnerInterviewNotesV1(e.target.value)} />
+        <div className="field-guide"><strong>O que e:</strong> resumo profissional da conversa com o proprietario.<br /><strong>Como avaliar:</strong> escreva informacoes uteis para retomar a negociacao sem depender de memoria.</div>
       </label>
 
       <hr />
+
 
       <h2>5. Documentacao e financeiro</h2>
       <label>Situacao da propriedade<br /><textarea value={ownershipStatusNotes} onChange={(e) => setOwnershipStatusNotes(e.target.value)} style={{ width: '100%' }} />
