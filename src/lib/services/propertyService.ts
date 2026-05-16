@@ -8,7 +8,7 @@ src/lib/services/propertyService.ts
 =========================================================
 
 OBJETIVO:
-Centralizar as operaÃ§Ãµes oficiais do nÃºcleo imobiliÃ¡rio
+Centralizar as operaÃƒÂ§ÃƒÂµes oficiais do nÃƒÂºcleo imobiliÃƒÂ¡rio
 operacional do HURBY.
 
 Esta service layer trabalha com:
@@ -19,15 +19,15 @@ Esta service layer trabalha com:
 - Property Media
 
 IMPORTANTE:
-NÃ£o acessar Supabase diretamente nas pÃ¡ginas para operaÃ§Ãµes
-de imÃ³veis quando houver fluxo operacional composto.
+NÃƒÂ£o acessar Supabase diretamente nas pÃƒÂ¡ginas para operaÃƒÂ§ÃƒÂµes
+de imÃƒÂ³veis quando houver fluxo operacional composto.
 
-Toda criaÃ§Ã£o operacional de imÃ³vel deve passar por esta
+Toda criaÃƒÂ§ÃƒÂ£o operacional de imÃƒÂ³vel deve passar por esta
 service layer para evitar retorno ao modelo antigo:
 
-user -> imÃ³vel
+user -> imÃƒÂ³vel
 
-O modelo correto Ã©:
+O modelo correto ÃƒÂ©:
 
 profile
 -> portfolio
@@ -37,30 +37,30 @@ profile
 
 ---------------------------------------------------------
 
-NÃƒO MISTURAR AQUI:
+NÃƒÆ’O MISTURAR AQUI:
 - leads
 - financeiro
 - IA
 - assinatura
 - marketplace
 - contratos
-- gestÃ£o de locaÃ§Ã£o
+- gestÃƒÂ£o de locaÃƒÂ§ÃƒÂ£o
 
 ---------------------------------------------------------
 
 CONCEITOS:
 
 PROPERTY ASSET
-= ativo imobiliÃ¡rio operacional
+= ativo imobiliÃƒÂ¡rio operacional
 
 PROPERTY LISTING
-= manifestaÃ§Ã£o comercial/publicitÃ¡ria do ativo
+= manifestaÃƒÂ§ÃƒÂ£o comercial/publicitÃƒÂ¡ria do ativo
 
 PORTFOLIO
 = carteira operacional contextual
 
 PORTFOLIO ITEM
-= vÃ­nculo entre carteira, ativo, listing, origem,
+= vÃƒÂ­nculo entre carteira, ativo, listing, origem,
 responsabilidade e visibilidade
 
 OPERATIONAL ORIGIN
@@ -68,30 +68,30 @@ OPERATIONAL ORIGIN
 
 ---------------------------------------------------------
 
-MÃDIA:
-MÃ­dias pertencem ao PROPERTY LISTING.
-NÃ£o pertencem diretamente ao PROPERTY ASSET.
+MÃƒÂDIA:
+MÃƒÂ­dias pertencem ao PROPERTY LISTING.
+NÃƒÂ£o pertencem diretamente ao PROPERTY ASSET.
 
 Motivo:
-- anÃºncio pode morrer
-- mÃ­dia pode morrer
+- anÃƒÂºncio pode morrer
+- mÃƒÂ­dia pode morrer
 - asset permanece
-- histÃ³rico permanece
-- gestÃ£o futura permanece
+- histÃƒÂ³rico permanece
+- gestÃƒÂ£o futura permanece
 
 ---------------------------------------------------------
 
-OBSERVAÃ‡ÃƒO TÃ‰CNICA:
-A criaÃ§Ã£o completa usa RPC transacional no banco.
+OBSERVAÃƒâ€¡ÃƒÆ’O TÃƒâ€°CNICA:
+A criaÃƒÂ§ÃƒÂ£o completa usa RPC transacional no banco.
 
-A ediÃ§Ã£o bÃ¡sica desta etapa permite atualizar:
+A ediÃƒÂ§ÃƒÂ£o bÃƒÂ¡sica desta etapa permite atualizar:
 - campos do listing
 - tipo do asset
 - modelo operacional do asset
 
 Futuro:
-ediÃ§Ãµes sensÃ­veis de asset devem passar por regras
-mais fortes de auditoria e histÃ³rico operacional.
+ediÃƒÂ§ÃƒÂµes sensÃƒÂ­veis de asset devem passar por regras
+mais fortes de auditoria e histÃƒÂ³rico operacional.
 
 =========================================================
 */
@@ -855,20 +855,23 @@ export async function createProfessionalAssessment(
     }
   }
 
-  if (!payload.client_entity_id) {
+  const requestedAssessmentStatus = payload.assessment_status || 'draft'
+  const requiresClientLink = requestedAssessmentStatus !== 'draft'
+
+  if (requiresClientLink && !payload.client_entity_id) {
     return {
       data: null,
       error: {
-        message: 'Documento Profissional do Imovel exige proprietario vinculado ao Core Clients.',
+        message: 'Documento Profissional formal exige proprietario vinculado ao Core Clients.',
       },
     }
   }
 
-  if (!payload.client_relationship_id) {
+  if (requiresClientLink && !payload.client_relationship_id) {
     return {
       data: null,
       error: {
-        message: 'Documento Profissional do Imovel exige relacionamento cliente-imovel vinculado.',
+        message: 'Documento Profissional formal exige relacionamento cliente-imovel vinculado.',
       },
     }
   }
