@@ -120,6 +120,35 @@ export default function PropertyAssessmentPage() {
   const [partnerSummary, setPartnerSummary] = useState('')
   const [privateNotes, setPrivateNotes] = useState('')
 
+  const [documentType, setDocumentType] = useState('preliminary_survey')
+  const [documentOrigin, setDocumentOrigin] = useState('from_existing_listing')
+  const [informationOrigin, setInformationOrigin] = useState('not_verified')
+  const [visitStatus, setVisitStatus] = useState('no')
+  const [informationProvider, setInformationProvider] = useState('unknown')
+  const [informationConfidence, setInformationConfidence] = useState('pending_verification')
+  const [commercialPurpose, setCommercialPurpose] = useState('listing_review')
+  const [occupancyStatus, setOccupancyStatus] = useState('not_verified')
+  const [visitAvailability, setVisitAvailability] = useState('authorization_required')
+  const [documentationStatus, setDocumentationStatus] = useState('not_verified')
+  const [paidOffStatus, setPaidOffStatus] = useState('to_confirm')
+  const [financingStatus, setFinancingStatus] = useState('to_confirm')
+  const [financialStatus, setFinancialStatus] = useState('to_confirm')
+  const [marketPricePerception, setMarketPricePerception] = useState('not_evaluated')
+  const [estimatedLiquidity, setEstimatedLiquidity] = useState('not_evaluated')
+  const [commercialAttractiveness, setCommercialAttractiveness] = useState('not_evaluated')
+  const [recommendationStatus, setRecommendationStatus] = useState('request_documents')
+  const [nextStepStatus, setNextStepStatus] = useState('request_documents')
+  const [nextStepOwner, setNextStepOwner] = useState('current_broker')
+  const [nextStepDueDate, setNextStepDueDate] = useState('')
+
+  const [ownerRequestedPrice, setOwnerRequestedPrice] = useState('')
+  const [ownerMinimumAcceptablePrice, setOwnerMinimumAcceptablePrice] = useState('')
+  const [professionalRecommendedPrice, setProfessionalRecommendedPrice] = useState('')
+  const [initialListingPrice, setInitialListingPrice] = useState('')
+  const [currentListingPrice, setCurrentListingPrice] = useState('')
+  const [negotiationMarginAuthorized, setNegotiationMarginAuthorized] = useState(false)
+  const [priceConfidenceLevel, setPriceConfidenceLevel] = useState('pending_verification')
+
   const [status, setStatus] = useState('')
 
   useEffect(() => {
@@ -186,6 +215,37 @@ export default function PropertyAssessmentPage() {
         setOwnerSummary(readJsonText(assessmentData.owner_visibility_summary, 'summary'))
         setPartnerSummary(readJsonText(assessmentData.partner_visibility_summary, 'summary'))
         setPrivateNotes(readJsonText(assessmentData.private_notes, 'notes'))
+
+        const baseCommon = assessmentData.metadata?.base_common_v1 || {}
+        setDocumentType(baseCommon.document_type || 'preliminary_survey')
+        setDocumentOrigin(baseCommon.document_origin || 'from_existing_listing')
+        setInformationOrigin(baseCommon.information_origin || 'not_verified')
+        setVisitStatus(baseCommon.visit_status || 'no')
+        setInformationProvider(baseCommon.information_provider || 'unknown')
+        setInformationConfidence(baseCommon.information_confidence || 'pending_verification')
+        setCommercialPurpose(baseCommon.commercial_purpose || 'listing_review')
+        setOccupancyStatus(baseCommon.occupancy_status || 'not_verified')
+        setVisitAvailability(baseCommon.visit_availability || 'authorization_required')
+        setDocumentationStatus(baseCommon.documentation_status || 'not_verified')
+        setPaidOffStatus(baseCommon.paid_off_status || 'to_confirm')
+        setFinancingStatus(baseCommon.financing_status || 'to_confirm')
+        setFinancialStatus(baseCommon.financial_status || 'to_confirm')
+        setMarketPricePerception(baseCommon.market_price_perception || 'not_evaluated')
+        setEstimatedLiquidity(baseCommon.estimated_liquidity || 'not_evaluated')
+        setCommercialAttractiveness(baseCommon.commercial_attractiveness || 'not_evaluated')
+        setRecommendationStatus(baseCommon.recommendation_status || 'request_documents')
+        setNextStepStatus(baseCommon.next_step_status || 'request_documents')
+        setNextStepOwner(baseCommon.next_step_owner || 'current_broker')
+        setNextStepDueDate(baseCommon.next_step_due_date || '')
+
+        const priceStrategy = assessmentData.metadata?.price_strategy_v1 || {}
+        setOwnerRequestedPrice(priceStrategy.owner_requested_price?.toString() || '')
+        setOwnerMinimumAcceptablePrice(priceStrategy.owner_minimum_acceptable_price?.toString() || '')
+        setProfessionalRecommendedPrice(priceStrategy.professional_recommended_price?.toString() || '')
+        setInitialListingPrice(priceStrategy.initial_listing_price?.toString() || '')
+        setCurrentListingPrice(priceStrategy.current_listing_price?.toString() || '')
+        setNegotiationMarginAuthorized(Boolean(priceStrategy.negotiation_margin_authorized))
+        setPriceConfidenceLevel(priceStrategy.price_confidence_level || 'pending_verification')
       }
 
       setLoading(false)
@@ -237,6 +297,13 @@ export default function PropertyAssessmentPage() {
       }
 
       setStatus('Salvando ficha profissional...')
+
+      const moneyOrNull = (value: string) => {
+        const normalized = value.replace(',', '.').trim()
+        if (!normalized) return null
+        const parsed = Number(normalized)
+        return Number.isFinite(parsed) ? parsed : null
+      }
 
       const response = await saveProfessionalAssessmentForListing({
         property_asset_id: listing.property_assets.id,
@@ -327,6 +394,37 @@ export default function PropertyAssessmentPage() {
           ...(assessment?.metadata || {}),
           source: 'operations_properties_assessment',
           core: 'CORE_PROPERTIES_FORM_V1',
+          base_common_v1: {
+            document_type: documentType,
+            document_origin: documentOrigin,
+            information_origin: informationOrigin,
+            visit_status: visitStatus,
+            information_provider: informationProvider,
+            information_confidence: informationConfidence,
+            commercial_purpose: commercialPurpose,
+            occupancy_status: occupancyStatus,
+            visit_availability: visitAvailability,
+            documentation_status: documentationStatus,
+            paid_off_status: paidOffStatus,
+            financing_status: financingStatus,
+            financial_status: financialStatus,
+            market_price_perception: marketPricePerception,
+            estimated_liquidity: estimatedLiquidity,
+            commercial_attractiveness: commercialAttractiveness,
+            recommendation_status: recommendationStatus,
+            next_step_status: nextStepStatus,
+            next_step_owner: nextStepOwner,
+            next_step_due_date: nextStepDueDate,
+          },
+          price_strategy_v1: {
+            owner_requested_price: moneyOrNull(ownerRequestedPrice),
+            owner_minimum_acceptable_price: moneyOrNull(ownerMinimumAcceptablePrice),
+            professional_recommended_price: moneyOrNull(professionalRecommendedPrice),
+            initial_listing_price: moneyOrNull(initialListingPrice),
+            current_listing_price: moneyOrNull(currentListingPrice),
+            negotiation_margin_authorized: negotiationMarginAuthorized,
+            price_confidence_level: priceConfidenceLevel,
+          },
         },
       })
 
@@ -519,6 +617,283 @@ export default function PropertyAssessmentPage() {
 
       <br /><br />
 
+
+      <hr />
+
+      <h2>3. Base Comum V1</h2>
+      <p>Campos estruturados iniciais. Nesta fase salvam em metadata JSONB, mas foram modelados para virar estrutura antes do fechamento do core.</p>
+
+      <label>Tipo do documento<br />
+        <select value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+          <option value="preliminary_survey">Levantamento preliminar</option>
+          <option value="professional_capture">Captacao profissional</option>
+          <option value="commercial_inspection">Vistoria comercial</option>
+          <option value="listing_review">Revisao de anuncio</option>
+          <option value="pricing_support">Apoio a precificacao</option>
+          <option value="proposal_preparation">Preparacao para proposta</option>
+          <option value="contract_preparation">Preparacao para contrato</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Origem do documento<br />
+        <select value={documentOrigin} onChange={(e) => setDocumentOrigin(e.target.value)}>
+          <option value="from_existing_listing">Nasceu de anuncio existente</option>
+          <option value="without_listing">Nasceu sem anuncio</option>
+          <option value="from_existing_client">Nasceu de cliente existente</option>
+          <option value="external_lead">Atendimento externo</option>
+          <option value="referral">Indicacao</option>
+          <option value="agency_demand">Demanda da agencia</option>
+          <option value="marketplace_migration">Migracao do marketplace</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Origem principal da informacao<br />
+        <select value={informationOrigin} onChange={(e) => setInformationOrigin(e.target.value)}>
+          <option value="verified_in_person">Verificado presencialmente</option>
+          <option value="informed_by_owner">Informado pelo proprietario</option>
+          <option value="informed_by_representative">Informado por representante</option>
+          <option value="informed_by_tenant">Informado por inquilino</option>
+          <option value="informed_by_third_party">Informado por terceiro</option>
+          <option value="extracted_from_document">Extraido de documento</option>
+          <option value="extracted_from_previous_listing">Extraido de anuncio anterior</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Visita presencial<br />
+        <select value={visitStatus} onChange={(e) => setVisitStatus(e.target.value)}>
+          <option value="yes">Sim</option>
+          <option value="no">Nao</option>
+          <option value="partial">Parcial</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Quem forneceu as informacoes<br />
+        <select value={informationProvider} onChange={(e) => setInformationProvider(e.target.value)}>
+          <option value="owner">Proprietario</option>
+          <option value="owner_representative">Representante do proprietario</option>
+          <option value="tenant">Inquilino</option>
+          <option value="building_staff">Portaria/zelador</option>
+          <option value="another_broker">Outro broker/corretor</option>
+          <option value="third_party">Terceiro</option>
+          <option value="unknown">Nao informado</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Nivel de confianca da informacao<br />
+        <select value={informationConfidence} onChange={(e) => setInformationConfidence(e.target.value)}>
+          <option value="high">Alto</option>
+          <option value="medium">Medio</option>
+          <option value="low">Baixo</option>
+          <option value="pending_verification">Pendente de comprovacao</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Finalidade tecnica/comercial<br />
+        <select value={commercialPurpose} onChange={(e) => setCommercialPurpose(e.target.value)}>
+          <option value="sale">Venda</option>
+          <option value="rental">Locacao</option>
+          <option value="seasonal_rental">Temporada</option>
+          <option value="property_management">Administracao/gestao</option>
+          <option value="price_review">Revisao de preco</option>
+          <option value="portfolio_capture">Captacao para carteira</option>
+          <option value="proposal_preparation">Preparacao para proposta</option>
+          <option value="listing_review">Revisao de anuncio</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Ocupacao<br />
+        <select value={occupancyStatus} onChange={(e) => setOccupancyStatus(e.target.value)}>
+          <option value="vacant">Vazio</option>
+          <option value="occupied_by_owner">Ocupado pelo proprietario</option>
+          <option value="occupied_by_tenant">Ocupado por inquilino</option>
+          <option value="occupied_by_third_party">Ocupado por terceiro</option>
+          <option value="under_construction">Em obra</option>
+          <option value="closed_no_access">Fechado sem acesso</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Disponibilidade para visita<br />
+        <select value={visitAvailability} onChange={(e) => setVisitAvailability(e.target.value)}>
+          <option value="free_access">Livre</option>
+          <option value="by_appointment">Mediante agendamento</option>
+          <option value="restricted">Restrita</option>
+          <option value="authorization_required">Somente com autorizacao</option>
+          <option value="unavailable">Indisponivel no momento</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Situacao documental aparente<br />
+        <select value={documentationStatus} onChange={(e) => setDocumentationStatus(e.target.value)}>
+          <option value="apparently_regular">Regular aparente</option>
+          <option value="pending_review">Pendente de conferencia</option>
+          <option value="discrepancy_found">Divergencia identificada</option>
+          <option value="relevant_risk">Risco relevante</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Imovel quitado<br />
+        <select value={paidOffStatus} onChange={(e) => setPaidOffStatus(e.target.value)}>
+          <option value="yes">Sim</option>
+          <option value="no">Nao</option>
+          <option value="to_confirm">A confirmar</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Aceita financiamento<br />
+        <select value={financingStatus} onChange={(e) => setFinancingStatus(e.target.value)}>
+          <option value="yes">Sim</option>
+          <option value="no">Nao</option>
+          <option value="to_confirm">A confirmar</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Situacao financeira geral<br />
+        <select value={financialStatus} onChange={(e) => setFinancialStatus(e.target.value)}>
+          <option value="to_confirm">A confirmar</option>
+          <option value="apparently_clear">Aparentemente sem pendencia</option>
+          <option value="debt_informed">Divida informada</option>
+          <option value="relevant_risk">Risco relevante</option>
+          <option value="not_verified">Nao verificado</option>
+        </select>
+      </label>
+
+      <hr />
+
+      <h2>4. Estrategia de preco interna</h2>
+      <p>Campos internos e sensiveis. Nao devem aparecer no anuncio publico.</p>
+
+      <label>Preco pedido pelo proprietario<br /><input value={ownerRequestedPrice} onChange={(e) => setOwnerRequestedPrice(e.target.value)} /></label>
+      <br /><br />
+      <label>Preco minimo aceitavel<br /><input value={ownerMinimumAcceptablePrice} onChange={(e) => setOwnerMinimumAcceptablePrice(e.target.value)} /></label>
+      <br /><br />
+      <label>Preco recomendado pelo profissional<br /><input value={professionalRecommendedPrice} onChange={(e) => setProfessionalRecommendedPrice(e.target.value)} /></label>
+      <br /><br />
+      <label>Preco inicial anunciado<br /><input value={initialListingPrice} onChange={(e) => setInitialListingPrice(e.target.value)} /></label>
+      <br /><br />
+      <label>Preco atual anunciado<br /><input value={currentListingPrice} onChange={(e) => setCurrentListingPrice(e.target.value)} /></label>
+      <br /><br />
+      <label><input type="checkbox" checked={negotiationMarginAuthorized} onChange={(e) => setNegotiationMarginAuthorized(e.target.checked)} /> Existe margem/carta branca de negociacao</label>
+      <br /><br />
+      <label>Confianca da estrategia de preco<br />
+        <select value={priceConfidenceLevel} onChange={(e) => setPriceConfidenceLevel(e.target.value)}>
+          <option value="high">Alta</option>
+          <option value="medium">Media</option>
+          <option value="low">Baixa</option>
+          <option value="pending_verification">Pendente de comprovacao</option>
+        </select>
+      </label>
+
+      <hr />
+
+      <h2>5. Leitura comercial e proximos passos</h2>
+
+      <label>Percepcao do preco<br />
+        <select value={marketPricePerception} onChange={(e) => setMarketPricePerception(e.target.value)}>
+          <option value="below_market">Abaixo do mercado</option>
+          <option value="coherent">Coerente</option>
+          <option value="above_market">Acima do mercado</option>
+          <option value="far_above_market">Muito acima do mercado</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Liquidez estimada<br />
+        <select value={estimatedLiquidity} onChange={(e) => setEstimatedLiquidity(e.target.value)}>
+          <option value="high">Alta</option>
+          <option value="medium">Media</option>
+          <option value="low">Baixa</option>
+          <option value="depends_on_price_adjustment">Depende de ajuste de preco</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Atratividade comercial<br />
+        <select value={commercialAttractiveness} onChange={(e) => setCommercialAttractiveness(e.target.value)}>
+          <option value="high">Alta</option>
+          <option value="medium">Media</option>
+          <option value="low">Baixa</option>
+          <option value="depends_on_improvement">Depende de melhoria</option>
+          <option value="not_evaluated">Nao avaliado</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Recomendacao principal<br />
+        <select value={recommendationStatus} onChange={(e) => setRecommendationStatus(e.target.value)}>
+          <option value="publish_listing">Publicar anuncio</option>
+          <option value="review_price_before_publish">Revisar preco antes de publicar</option>
+          <option value="request_documents">Solicitar documentos</option>
+          <option value="schedule_new_visit">Agendar nova visita</option>
+          <option value="improve_public_photos">Melhorar fotos publicas</option>
+          <option value="wait_authorization">Aguardar autorizacao</option>
+          <option value="do_not_publish_yet">Nao recomendar publicacao ainda</option>
+          <option value="archive_capture">Arquivar captacao</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Proximo passo<br />
+        <select value={nextStepStatus} onChange={(e) => setNextStepStatus(e.target.value)}>
+          <option value="create_listing">Criar anuncio</option>
+          <option value="review_existing_listing">Revisar anuncio existente</option>
+          <option value="link_client">Vincular cliente</option>
+          <option value="send_to_internal_review">Enviar para revisao interna</option>
+          <option value="request_documents">Solicitar documentos</option>
+          <option value="adjust_price">Ajustar preco</option>
+          <option value="schedule_new_visit">Agendar nova visita</option>
+          <option value="monitor_performance">Acompanhar performance</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Responsavel pelo proximo passo<br />
+        <select value={nextStepOwner} onChange={(e) => setNextStepOwner(e.target.value)}>
+          <option value="current_broker">Broker atual</option>
+          <option value="agency">Agencia</option>
+          <option value="another_broker">Outro broker</option>
+          <option value="administrative">Administrativo</option>
+        </select>
+      </label>
+
+      <br /><br />
+
+      <label>Prazo sugerido<br /><input type="date" value={nextStepDueDate} onChange={(e) => setNextStepDueDate(e.target.value)} /></label>
+
+      <hr />
       <label><input type="checkbox" checked={isExclusive} onChange={(e) => setIsExclusive(e.target.checked)} /> Imovel exclusivo</label>
       <br />
       <label><input type="checkbox" checked={isAvailableForPartnership} onChange={(e) => setIsAvailableForPartnership(e.target.checked)} /> Disponivel para parceria futura</label>
