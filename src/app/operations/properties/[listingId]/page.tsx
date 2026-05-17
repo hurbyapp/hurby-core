@@ -1379,15 +1379,275 @@ export default function PropertyDetailPage() {
 
         {assessment && (
           <>
+            {/* WORKFLOW_PIPELINE_VISUAL_V1 */}
+            <section
+              style={{
+                border: '1px solid #dbe3ea',
+                borderRadius: 16,
+                padding: 18,
+                marginBottom: 18,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ marginTop: 0 }}>Pipeline profissional do imóvel</h3>
+
+              <p style={{ marginTop: 0, color: '#5f6b7a', lineHeight: 1.5 }}>
+                Este fluxo mostra em que ponto o imóvel está dentro da jornada profissional:
+                entrada, análise, estratégia, proposta, publicação e histórico. Nesta V1,
+                alguns passos ainda são leitura operacional e preparação para acoplagens futuras.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                {[
+                  {
+                    label: '1. Entrada',
+                    status: 'Concluido',
+                    hint: 'Anuncio e imóvel ja existem no sistema.',
+                  },
+                  {
+                    label: '2. Dados herdados',
+                    status: hasModuleData(assessmentMetadata.base_common_v1) ? 'Em andamento' : 'Pendente',
+                    hint: 'Base reaproveitada do anuncio básico.',
+                  },
+                  {
+                    label: '3. Proprietario',
+                    status: hasModuleData(assessmentMetadata.owner_interview_v1) ? 'Em andamento' : 'Pendente',
+                    hint: 'Informacoes declaradas pelo proprietario.',
+                  },
+                  {
+                    label: '4. Avaliacao',
+                    status: hasModuleData(assessmentMetadata.technical_assessment_v1) ? 'Em andamento' : 'Pendente',
+                    hint: 'Leitura observada pelo profissional.',
+                  },
+                  {
+                    label: '5. Risco',
+                    status: hasModuleData(assessmentMetadata.documentation_financial_v1) ? 'Em andamento' : 'Pendente',
+                    hint: 'Documentacao, financeiro e pontos de atencao.',
+                  },
+                  {
+                    label: '6. Estrategia',
+                    status: hasModuleData(assessmentMetadata.price_strategy_v1) || hasModuleData(assessmentMetadata.commercial_proposal_v1) ? 'Em andamento' : 'Pendente',
+                    hint: 'Preco, negociacao e posicionamento.',
+                  },
+                  {
+                    label: '7. Proposta',
+                    status: hasModuleData(assessmentMetadata.commercial_proposal_v1) ? 'Preparada' : 'Pendente',
+                    hint: 'Base para apresentar ao proprietario.',
+                  },
+                  {
+                    label: '8. Publicacao',
+                    status: 'Futuro',
+                    hint: 'Acoplar estrategia ao anuncio publico.',
+                  },
+                  {
+                    label: '9. Historico',
+                    status: hasModuleData(assessmentMetadata.private_notes_v1) ? 'Com registro' : 'Inicial',
+                    hint: 'Notas, decisoes e lifecycle.',
+                  },
+                ].map((step) => (
+                  <div
+                    key={step.label}
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 12,
+                      padding: 12,
+                      background: '#fff',
+                    }}
+                  >
+                    <strong>{step.label}</strong>
+                    <div style={{ marginTop: 8, fontSize: 13 }}>
+                      Status: <strong>{step.status}</strong>
+                    </div>
+                    <p style={{ marginBottom: 0, fontSize: 12, color: '#667085', lineHeight: 1.4 }}>
+                      {step.hint}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* PROPERTY_SCORE_PREVIEW_V1 */}
+            <section
+              style={{
+                border: '1px solid #dbe3ea',
+                borderRadius: 16,
+                padding: 18,
+                marginBottom: 18,
+                background: '#fff',
+              }}
+            >
+              <h3 style={{ marginTop: 0 }}>Pontuacao operacional do patrimonio</h3>
+
+              <p style={{ marginTop: 0, color: '#5f6b7a', lineHeight: 1.5 }}>
+                Esta pontuacao e uma leitura inicial da maturidade da analise.
+                Ainda nao e a nota final do patrimonio. A regra definitiva devera
+                considerar tipo, subtipo, pesos por resposta, equalizacao por categoria
+                e estrategia comercial.
+              </p>
+
+              {(() => {
+                const typeModuleFilled =
+                  (shouldShowTypeModule('house') && hasModuleData(assessmentMetadata.house_module_v1)) ||
+                  (shouldShowTypeModule('apartment') && hasModuleData(assessmentMetadata.apartment_module_v1)) ||
+                  (shouldShowTypeModule('land') && hasModuleData(assessmentMetadata.land_module_v1)) ||
+                  (shouldShowTypeModule('commercial') && hasModuleData(assessmentMetadata.commercial_module_v1)) ||
+                  (shouldShowTypeModule('rural') && hasModuleData(assessmentMetadata.rural_module_v1))
+
+                const scoreItems = [
+                  {
+                    label: 'Dados herdados do anuncio',
+                    weight: 10,
+                    done: hasModuleData(assessmentMetadata.base_common_v1),
+                    hint: 'Base inicial reaproveitada do anuncio.',
+                  },
+                  {
+                    label: 'Avaliacao declarada',
+                    weight: 10,
+                    done: hasModuleData(assessmentMetadata.owner_interview_v1),
+                    hint: 'Informacoes coletadas com proprietario.',
+                  },
+                  {
+                    label: 'Modulo por tipo/subtipo',
+                    weight: 20,
+                    done: !!typeModuleFilled,
+                    hint: 'Criterios especificos do tipo de imovel.',
+                  },
+                  {
+                    label: 'Avaliacao observada',
+                    weight: 15,
+                    done: hasModuleData(assessmentMetadata.technical_assessment_v1),
+                    hint: 'Leitura profissional sobre estado e condicao.',
+                  },
+                  {
+                    label: 'Documentacao e risco',
+                    weight: 15,
+                    done: hasModuleData(assessmentMetadata.documentation_financial_v1),
+                    hint: 'Riscos, pendencias e validacoes.',
+                  },
+                  {
+                    label: 'Estrategia de preco',
+                    weight: 10,
+                    done: hasModuleData(assessmentMetadata.price_strategy_v1),
+                    hint: 'Preco, margem e negociacao.',
+                  },
+                  {
+                    label: 'Estrategia comercial/proposta',
+                    weight: 15,
+                    done: hasModuleData(assessmentMetadata.commercial_proposal_v1),
+                    hint: 'Plano para proprietario e publicacao.',
+                  },
+                  {
+                    label: 'Comunicacao e historico',
+                    weight: 5,
+                    done:
+                      hasModuleData(assessmentMetadata.controlled_summaries_v1) ||
+                      hasModuleData(assessmentMetadata.private_notes_v1),
+                    hint: 'Registros, decisoes e comunicacao controlada.',
+                  },
+                ]
+
+                const total = scoreItems.reduce((sum, item) => sum + item.weight, 0)
+                const current = scoreItems.reduce((sum, item) => sum + (item.done ? item.weight : 0), 0)
+                const percent = total > 0 ? Math.round((current / total) * 100) : 0
+
+                let label = 'Inicial'
+
+                if (percent >= 80) {
+                  label = 'Forte'
+                } else if (percent >= 60) {
+                  label = 'Boa base'
+                } else if (percent >= 35) {
+                  label = 'Em construcao'
+                }
+
+                return (
+                  <div>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'minmax(0, 1fr) auto',
+                        gap: 16,
+                        alignItems: 'center',
+                        marginBottom: 14,
+                      }}
+                    >
+                      <div>
+                        <div
+                          style={{
+                            height: 12,
+                            borderRadius: 999,
+                            background: '#e5eaf0',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: `${percent}%`,
+                              height: '100%',
+                              background: '#2563eb',
+                            }}
+                          />
+                        </div>
+
+                        <p style={{ marginBottom: 0, color: '#5f6b7a', fontSize: 13 }}>
+                          Base calculada por blocos preenchidos. A nota final futura
+                          devera usar pesos por resposta e equalizacao por tipo/subtipo.
+                        </p>
+                      </div>
+
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: 30, fontWeight: 800 }}>{percent}%</div>
+                        <div style={{ fontSize: 13, color: '#5f6b7a' }}>{label}</div>
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                        gap: 10,
+                      }}
+                    >
+                      {scoreItems.map((item) => (
+                        <div
+                          key={item.label}
+                          style={{
+                            border: '1px solid #d7dee8',
+                            borderRadius: 12,
+                            padding: 12,
+                            background: item.done ? '#f8fafc' : '#fff',
+                          }}
+                        >
+                          <strong>{item.label}</strong>
+                          <div style={{ marginTop: 6, fontSize: 13 }}>
+                            Peso: {item.weight} pontos | {item.done ? 'Considerado' : 'Pendente'}
+                          </div>
+                          <p style={{ marginBottom: 0, fontSize: 12, color: '#667085', lineHeight: 1.4 }}>
+                            {item.hint}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })()}
+            </section>
+
             <nav className="checkup-v1-nav" aria-label="Módulos da Análise Patrimonial V1">
               <a href="#v1-identificacao">Identificação</a>
-              <a href="#v1-maturidade">Maturidade</a>
-              <a href="#v1-base-comum">Base comum</a>
-              <a href="#v1-preco">Preço</a>
-              <a href="#v1-tecnica">Técnica</a>
+              <a href="#v1-maturidade">Pipeline</a>
+              <a href="#v1-base-comum">Dados herdados</a>
+              <a href="#v1-preco">Preço e negociação</a>
+              <a href="#v1-tecnica">Avaliação observada</a>
               <a href="#v1-documentacao">Doc./Financeiro</a>
-              <a href="#v1-entrevista">Entrevista</a>
-              <a href="#v1-proposta">Proposta</a>
+              <a href="#v1-entrevista">Declaração proprietário</a>
+              <a href="#v1-proposta">Estratégia/proposta</a>
               {shouldShowTypeModule('house') && <a href="#v1-casa">Casa</a>}
               {shouldShowTypeModule('apartment') && <a href="#v1-apartamento">Apartamento</a>}
               {shouldShowTypeModule('land') && <a href="#v1-terreno">Terreno</a>}
@@ -1404,7 +1664,7 @@ export default function PropertyDetailPage() {
             </div>
 
             <div className="checkup-v1-shell">
-              <ModuleBlock id="v1-identificacao" title="7.0 Identificação da análise">
+              <ModuleBlock id="v1-identificacao" title="7.0 Identificacao e vinculo da analise">
                 <InfoLine label="Análise ID" value={assessment.id} />
                 <InfoLine label="Status da análise" value={assessment.assessment_status} />
                 <InfoLine label="Finalidade" value={assessment.assessment_purpose} />
@@ -1415,7 +1675,7 @@ export default function PropertyDetailPage() {
                 <InfoLine label="Tipo do imóvel" value={propertyType?.label || propertyType?.slug || 'Não identificado'} />
               </ModuleBlock>
 
-              <ModuleBlock id="v1-maturidade" title="7.1 Status de preenchimento da Análise">
+              <ModuleBlock id="v1-maturidade" title="7.1 Pipeline e status da analise">
               {(() => {
                 const isFieldAnswered = (value: any) => {
                   if (value === true || value === false) return true
@@ -1565,27 +1825,27 @@ export default function PropertyDetailPage() {
                 <InfoLine label="Notas privadas" value={hasModuleData(assessmentMetadata.private_notes_v1) ? 'Preenchido' : 'Pendente'} />
               </ModuleBlock>
 
-              <ModuleBlock id="v1-base-comum" title="7.2 Base Comum V1">
+              <ModuleBlock id="v1-base-comum" title="7.2 Dados herdados do anuncio">
                 <JsonObjectLines source={assessmentMetadata.base_common_v1} />
               </ModuleBlock>
 
-              <ModuleBlock id="v1-preco" title="7.3 Estratégia de preço">
+              <ModuleBlock id="v1-preco" title="7.6 Estrategia de preco e negociacao">
                 <JsonObjectLines source={assessmentMetadata.price_strategy_v1} />
               </ModuleBlock>
 
-              <ModuleBlock id="v1-tecnica" title="7.4 Avaliação técnica">
+              <ModuleBlock id="v1-tecnica" title="7.4 Avaliacao observada do imovel">
                 <JsonObjectLines source={assessmentMetadata.technical_assessment_v1} />
               </ModuleBlock>
 
-              <ModuleBlock id="v1-documentacao" title="7.5 Documentação e financeiro">
+              <ModuleBlock id="v1-documentacao" title="7.5 Documentacao, financeiro e risco">
                 <JsonObjectLines source={assessmentMetadata.documentation_financial_v1} />
               </ModuleBlock>
 
-              <ModuleBlock id="v1-entrevista" title="7.6 Entrevista com proprietário">
+              <ModuleBlock id="v1-entrevista" title="7.3 Avaliacao declarada pelo proprietario">
                 <JsonObjectLines source={assessmentMetadata.owner_interview_v1} />
               </ModuleBlock>
 
-              <ModuleBlock id="v1-proposta" title="7.7 Estratégia comercial e proposta">
+              <ModuleBlock id="v1-proposta" title="7.7 Estrategia comercial e proposta ao proprietario">
                 <JsonObjectLines source={assessmentMetadata.commercial_proposal_v1} />
               </ModuleBlock>
 
@@ -1619,11 +1879,11 @@ export default function PropertyDetailPage() {
               </ModuleBlock>
               )}
 
-              <ModuleBlock id="v1-resumos" title="7.9 Resumos controlados">
+              <ModuleBlock id="v1-resumos" title="7.9 Comunicacao controlada">
                 <JsonObjectLines source={assessmentMetadata.controlled_summaries_v1} />
               </ModuleBlock>
 
-              <ModuleBlock id="v1-privadas" title="7.10 Notas privadas">
+              <ModuleBlock id="v1-privadas" title="7.10 Historico, notas privadas e lifecycle">
                 <JsonObjectLines source={assessmentMetadata.private_notes_v1} />
               </ModuleBlock>
             </div>

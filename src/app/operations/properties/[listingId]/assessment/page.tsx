@@ -1635,7 +1635,7 @@ export default function PropertyAssessmentPage() {
 
       <section className="owner-link-placeholder-v1">
         <div>
-          <span className="owner-kicker">Proprietario</span>
+          <span className="owner-kicker">Proprietario/origem</span>
           <strong>Nao vinculado</strong>
           <p>
             Este patrimonio ainda nao possui proprietario vinculado no Core Clients.
@@ -1701,19 +1701,19 @@ export default function PropertyAssessmentPage() {
       `}</style>
 
       <nav className="module-nav no-print" aria-label="Navegacao da Análise Patrimonial">
-        <a href="#owner-link">Proprietario</a>
-        <a href="#document-control">Controle</a>
+        <a href="#owner-link">Proprietario/origem</a>
+        <a href="#document-control">Pipeline</a>
         <a href="#base-common">Base Comum</a>
-        <a href="#price-strategy">Preco</a>
+        <a href="#price-strategy">Preco/negociacao</a>
         {shouldShowTypeModule('house') && <a href="#house-module">Casa</a>}
         {shouldShowTypeModule('apartment') && <a href="#apartment-module">Apartamento</a>}
         {shouldShowTypeModule('land') && <a href="#land-module">Terreno</a>}
         {shouldShowTypeModule('commercial') && <a href="#commercial-module">Comercial</a>}
         {shouldShowTypeModule('rural') && <a href="#rural-module">Rural</a>}
-        <a href="#commercial-reading">Leitura comercial</a>
-        <a href="#commercial-proposal-v1">Proposta comercial</a>
-        <a href="#controlled-summaries-v1">Resumos</a>
-        <a href="#private-notes-v1">Notas privadas</a>
+        <a href="#commercial-reading">Analise profissional</a>
+        <a href="#commercial-proposal-v1">Estrategia/proposta</a>
+        <a href="#controlled-summaries-v1">Comunicacao</a>
+        <a href="#private-notes-v1">Historico/notas</a>
         <a href="#technical-assessment-v1">Avaliacao tecnica</a>
         <a href="#documentation-financial-v1">Doc. e financeiro</a>
         <a href="#owner-interview-v1">Entrevista</a>
@@ -1742,6 +1742,13 @@ export default function PropertyAssessmentPage() {
 
       <section className="assessment-card">
         <h2>O que e esta análise?</h2>
+        {/* WORKFLOW_PATCH_LABELS_V1 */}
+        <p className="analysis-note">
+          Esta tela esta sendo reorganizada para deixar de funcionar como fichario solto.
+          A ordem operacional esperada e: dados herdados do anuncio, avaliacao declarada,
+          avaliacao observada, modulo por tipo/subtipo, documentacao e risco, estrategia,
+          proposta, comunicacao controlada e historico/lifecycle.
+        </p>
         <p>
           A Análise Patrimonial é uma ferramenta técnica interna do profissional ou da imobiliária.
           Ela nao e o anuncio publico do imovel.
@@ -1774,7 +1781,7 @@ export default function PropertyAssessmentPage() {
       {!assessment && (
         <>
           <hr />
-          <h2 id="owner-link">1. Proprietario da análise</h2>
+          <h2 id="owner-link">1. Proprietario e origem da analise</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
           <p>Opcional nesta etapa. Informe CPF ou CNPJ se quiser vincular o proprietario agora, ou crie a análise preliminar e vincule depois.</p>
 
@@ -1833,7 +1840,7 @@ export default function PropertyAssessmentPage() {
 
           <hr />
 
-          <h2 id="document-control">2. Controle da análise</h2>
+          <h2 id="document-control">2. Pipeline e controle da analise</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
 
       <label>
@@ -1871,7 +1878,7 @@ export default function PropertyAssessmentPage() {
 
       <hr />
 
-      <h2 id="base-common">3. Base Comum V1</h2>
+      <h2 id="base-common">3. Dados herdados do anuncio</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
       <p>Campos estruturados iniciais. Nesta fase salvam em metadata JSONB, mas foram modelados para virar estrutura antes do fechamento do core.</p>
       <p className="analysis-note">Como analisar: marque a opcao mais fiel ao que foi comprovado. Se a informacao veio apenas de fala do proprietario, use opcoes como "nao verificado", "a confirmar" ou "pendente de comprovacao".</p>
@@ -1935,7 +1942,7 @@ export default function PropertyAssessmentPage() {
 
       <label>Quem forneceu as informacoes<br />
         <select value={informationProvider} onChange={(e) => setInformationProvider(e.target.value)}>
-          <option value="owner">Proprietario</option>
+          <option value="owner">Proprietario/origem</option>
           <option value="owner_representative">Representante do proprietario</option>
           <option value="tenant">Inquilino</option>
           <option value="building_staff">Portaria/zelador</option>
@@ -2051,7 +2058,7 @@ export default function PropertyAssessmentPage() {
       </label>
       <hr />
 
-      <h2 id="price-strategy">4. Estrategia de preco interna</h2>
+      <h2 id="price-strategy">6. Estrategia de preco e negociacao</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
       <p className="sensitive-note">Campos internos e sensiveis. Nao devem aparecer no anuncio publico nem em rotas abertas do marketplace.</p>
       <p className="analysis-note">Como avaliar: diferencie preco pedido, preco minimo aceitavel e preco recomendado. O minimo aceitavel e negociacao interna; o preco anunciado e estrategia publica.</p>
@@ -2082,7 +2089,7 @@ export default function PropertyAssessmentPage() {
         <>
       <hr />
 
-      <h2 id="house-module">5. Modulo Casa V1</h2>
+      <h2 id="house-module">4. Modulo Casa - avaliacao por subtipo</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
       <p>Campos especificos para casa de rua, casa em condominio, sobrado, casa terrea ou casa com area externa. Nesta fase salvam em metadata JSONB.</p>
       <p className="analysis-note">Como avaliar: observe condicao aparente, risco estrutural visivel, area externa, telhado, conservacao e compatibilidade com documentos. Nao trate percepcao visual como laudo tecnico.</p>
@@ -2306,7 +2313,7 @@ export default function PropertyAssessmentPage() {
         <>
       <hr />
 
-      <h2 id="apartment-module">6. Modulo Apartamento / Studio / Loft / Kitnet V1</h2>
+      <h2 id="apartment-module">4. Modulo Apartamento - avaliacao por subtipo</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
       <p>Campos especificos para unidade residencial em edificio ou condominio. Nesta fase salvam em metadata JSONB.</p>
       <p className="analysis-note">Como avaliar: considere unidade e condominio juntos. Andar, vaga, taxa condominial, vista, sol, ventilacao e regras de uso podem mudar liquidez e preco.</p>
@@ -2512,7 +2519,7 @@ export default function PropertyAssessmentPage() {
         <>
       <hr />
 
-      <h2 id="land-module">7. Modulo Terreno / Lote V1</h2>
+      <h2 id="land-module">4. Modulo Terreno - avaliacao por subtipo</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
       <p>Campos especificos para lote, terreno urbano, terreno em condominio, area comercial ou area com potencial construtivo. Nesta fase salvam em metadata JSONB.</p>
       <p className="analysis-note">Como avaliar: terreno depende de medida, frente, infraestrutura, acesso, topografia, zoneamento e documento. Se nao houver fonte oficial, marque como "a confirmar" ou "nao verificado".</p>
@@ -2694,7 +2701,7 @@ export default function PropertyAssessmentPage() {
         <>
       <hr />
 
-            <h2 id="commercial-module">8. Modulo Comercial V1</h2>
+            <h2 id="commercial-module">4. Modulo Comercial - avaliacao por subtipo</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
       <p>Campos especificos para sala, loja, galpao, ponto comercial, predio comercial ou espaco logistico. Nesta fase salvam em metadata JSONB.</p>
       <p className="analysis-note">Como avaliar: comercial depende de uso permitido, visibilidade, fluxo, estacionamento, energia, acessibilidade, AVCB, documentacao e adequacao da atividade.</p>
@@ -2900,7 +2907,7 @@ export default function PropertyAssessmentPage() {
         <>
       <hr />
 
-            <h2 id="rural-module">9. Modulo Rural V1</h2>
+            <h2 id="rural-module">4. Modulo Rural - avaliacao por subtipo</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
       <p>Campos especificos para chacara, sitio, fazenda, area rural, imovel produtivo, lazer rural ou investimento rural. Nesta fase salvam em metadata JSONB.</p>
       <p className="analysis-note">Como avaliar: rural depende de area, acesso, agua, energia, benfeitorias, documentacao rural, risco ambiental, divisas e potencial produtivo/comercial.</p>
@@ -3128,7 +3135,7 @@ export default function PropertyAssessmentPage() {
       )}
       <hr />
 
-      <h2 id="commercial-reading">10. Leitura comercial e proximos passos</h2>
+      <h2 id="commercial-reading">7. Analise profissional e proximos passos</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: esta leitura deve transformar a vistoria em decisao pratica. Se o preco, risco ou documento ainda nao estiver claro, priorize revisao, pedido de documentos ou nova visita.</p>
 
@@ -3227,7 +3234,7 @@ export default function PropertyAssessmentPage() {
       <label><input type="checkbox" checked={ownerCanViewSummary} onChange={(e) => setOwnerCanViewSummary(e.target.checked)} /> Proprietario pode ver resumo controlado</label>
       <hr />
 
-      <h2 id="technical-assessment-v1">Avaliacao Tecnica V1</h2>
+      <h2 id="technical-assessment-v1">5. Avaliacao observada do imovel</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: registre uma leitura profissional, mas sem transformar percepcao visual em laudo tecnico. Quando houver duvida estrutural, eletrica, hidraulica, umidade, documentacao ou seguranca, marque risco e recomende especialista.</p>
 
@@ -3388,7 +3395,7 @@ export default function PropertyAssessmentPage() {
         <div className="field-guide"><strong>O que e:</strong> resumo livre da avaliacao tecnica.<br /><strong>Como avaliar:</strong> registre raciocinio profissional, ressalvas e pontos que nao entraram nos campos estruturados.</div>
       </label>
       <hr />
-<h2 id="owner-interview-v1">Entrevista com proprietario V1</h2>
+<h2 id="owner-interview-v1">3.1 Avaliacao declarada pelo proprietario</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: registre a conversa comercial real com o proprietario. Separe fala verbal, comprovacao documental, autorizacao, flexibilidade e pontos que podem travar a negociacao.</p>
 
@@ -3542,7 +3549,7 @@ export default function PropertyAssessmentPage() {
       <hr />
 
 
-      <h2 id="documentation-financial-v1">Documentacao e Financeiro V1</h2>
+      <h2 id="documentation-financial-v1">5.1 Documentacao, financeiro e risco</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: registre a situacao documental e financeira sem afirmar regularidade definitiva. Use este modulo para separar o que foi comprovado, o que foi informado verbalmente e o que ainda precisa ser conferido.</p>
 
@@ -3712,7 +3719,7 @@ export default function PropertyAssessmentPage() {
         <div className="field-guide"><strong>O que e:</strong> observacoes livres sobre preco, debitos, financiamento e custos.<br /><strong>Como avaliar:</strong> registre valores informados, duvidas, necessidade de comprovacao e impacto na negociacao.</div>
       </label>
       <hr />
-<h2 id="commercial-proposal-v1">Estrategia Comercial e Proposta Comercial V1</h2>
+<h2 id="commercial-proposal-v1">8. Estrategia comercial e proposta ao proprietario</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: transforme a análise tecnica em decisao comercial. A proposta deve orientar preco, publicacao, negociacao, argumento para o proprietario e proxima acao pratica.</p>
 
@@ -3824,7 +3831,7 @@ export default function PropertyAssessmentPage() {
         <div className="field-guide"><strong>O que e:</strong> observacoes internas da estrategia comercial.<br /><strong>Como avaliar:</strong> registre raciocinio, combinado verbal, margem, duvidas e alertas para retomada futura.</div>
       </label>
       <hr />
-<h2 id="controlled-summaries-v1">Resumos Controlados V1</h2>
+<h2 id="controlled-summaries-v1">9. Comunicacao controlada</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: este modulo separa o que pode ser comunicado publicamente, o que pode ser mostrado ao proprietario, o que pode ser compartilhado com parceiros e o que deve permanecer interno. Nao exponha dado sensivel, risco juridico, preco minimo ou estrategia interna em resumo publico.</p>
 
@@ -3924,7 +3931,7 @@ export default function PropertyAssessmentPage() {
         <div className="field-guide"><strong>O que e:</strong> ressalva para evitar conclusoes indevidas sobre documentos, estrutura ou regularidade.<br /><strong>Como avaliar:</strong> use quando a análise tiver base visual, verbal ou preliminar e ainda depender de confirmacao documental ou especialista.</div>
       </label>
       <hr />
-<h2 id="private-notes-v1">Notas Privadas V1</h2>
+<h2 id="private-notes-v1">10. Historico, notas privadas e lifecycle</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
       <p className="analysis-note">Como avaliar: este modulo e estritamente interno. Use para registrar percepcoes, alertas, memoria operacional, comportamento do proprietario, estrategia sensivel, riscos e combinados que nao devem aparecer no anuncio, no resumo publico ou em compartilhamento com terceiros.</p>
 
