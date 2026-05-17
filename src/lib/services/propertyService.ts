@@ -1250,3 +1250,40 @@ export async function upsertPropertyAssetFeaturesByAssetId(
     .select()
     .single()
 }
+
+
+// =========================================================
+// CLIENT CONTEXT READ HELPERS
+// Added for Pipeline Pro attach mode.
+// Read-only helpers. Do not use to duplicate owner/client data.
+// =========================================================
+
+export async function getClientEntityById(clientEntityId: string) {
+  if (!clientEntityId) {
+    return {
+      data: null,
+      error: null,
+    }
+  }
+
+  return await supabase
+    .from('client_entities')
+    .select('*')
+    .eq('id', clientEntityId)
+    .maybeSingle()
+}
+
+export async function getClientRelationshipById(clientRelationshipId: string) {
+  if (!clientRelationshipId) {
+    return {
+      data: null,
+      error: null,
+    }
+  }
+
+  return await supabase
+    .from('client_relationships')
+    .select('*')
+    .eq('id', clientRelationshipId)
+    .maybeSingle()
+}

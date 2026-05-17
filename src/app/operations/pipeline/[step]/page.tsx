@@ -57,6 +57,7 @@ REGRA:
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { getPropertyListingById, getProfessionalAssessmentByListingId, getClientEntityById, getClientRelationshipById } from '@/lib/services/propertyService'
 
 const steps: Record<string, any> = {
   atendimento: {
@@ -173,6 +174,22 @@ export default function PipelineStepPage() {
     mode: '',
   })
 
+  // ATTACH_LISTING_REAL_CONTEXT_STATE_V1
+  const [attachedListing, setAttachedListing] = useState<any | null>(null)
+  const [attachedListingStatus, setAttachedListingStatus] = useState('')
+  const [attachedListingError, setAttachedListingError] = useState('')
+
+  // ATTACH_ASSESSMENT_REAL_CONTEXT_STATE_V1
+  const [attachedAssessment, setAttachedAssessment] = useState<any | null>(null)
+  const [attachedAssessmentStatus, setAttachedAssessmentStatus] = useState('')
+  const [attachedAssessmentError, setAttachedAssessmentError] = useState('')
+
+  // ATTACH_CLIENT_REAL_CONTEXT_STATE_V1
+  const [attachedClient, setAttachedClient] = useState<any | null>(null)
+  const [attachedClientRelationship, setAttachedClientRelationship] = useState<any | null>(null)
+  const [attachedClientStatus, setAttachedClientStatus] = useState('')
+  const [attachedClientError, setAttachedClientError] = useState('')
+
   const stepKey = String(params.step || '')
   const step = steps[stepKey] || steps.atendimento
 
@@ -192,6 +209,116 @@ export default function PipelineStepPage() {
   const mode = attachContext.mode
   const isAttachMode = mode === 'attach' && !!listingId
 
+  // ATTACH_LISTING_REAL_CONTEXT_FETCH_V1
+  useEffect(() => {
+    if (!listingId || mode !== 'attach') {
+      setAttachedListing(null)
+      setAttachedListingStatus('')
+      setAttachedListingError('')
+      setAttachedAssessment(null)
+      setAttachedAssessmentStatus('')
+      setAttachedAssessmentError('')
+      setAttachedClient(null)
+      setAttachedClientRelationship(null)
+      setAttachedClientStatus('')
+      setAttachedClientError('')
+      return
+    }
+
+    let active = true
+
+    async function loadAttachedListing() {
+      setAttachedListingStatus('Carregando anúncio existente...')
+      setAttachedListingError('')
+
+      const [listingResponse, assessmentResponse] = await Promise.all([
+        getPropertyListingById(listingId),
+        getProfessionalAssessmentByListingId(listingId),
+      ])
+
+      if (!active) return
+
+      if (listingResponse.error || !listingResponse.data) {
+        console.error('ATTACH LISTING LOAD ERROR:', listingResponse.error)
+        setAttachedListing(null)
+        setAttachedListingStatus('')
+        setAttachedListingError('Não foi possível carregar os dados do anúncio existente.')
+        return
+      }
+
+      setAttachedListing(listingResponse.data)
+      setAttachedListingStatus('Anúncio existente carregado.')
+
+      // ATTACH_ASSESSMENT_REAL_CONTEXT_FETCH_V1
+      if (assessmentResponse.error) {
+        console.error('ATTACH ASSESSMENT LOAD ERROR:', assessmentResponse.error)
+        setAttachedAssessment(null)
+        setAttachedAssessmentStatus('')
+        setAttachedAssessmentError('Não foi possível carregar a análise profissional existente.')
+        return
+      }
+
+      if (assessmentResponse.data) {
+        setAttachedAssessment(assessmentResponse.data)
+        setAttachedAssessmentStatus('Análise/Dossiê profissional encontrado.')
+
+        // ATTACH_CLIENT_REAL_CONTEXT_FETCH_V1
+        const clientEntityId = assessmentResponse.data.client_entity_id
+        const clientRelationshipId = assessmentResponse.data.client_relationship_id
+
+        if (clientEntityId) {
+          const [clientResponse, relationshipResponse] = await Promise.all([
+            getClientEntityById(clientEntityId),
+            clientRelationshipId
+              ? getClientRelationshipById(clientRelationshipId)
+              : Promise.resolve({ data: null, error: null }),
+          ])
+
+          if (!active) return
+
+          if (clientResponse.error) {
+            console.error('ATTACH CLIENT LOAD ERROR:', clientResponse.error)
+            setAttachedClient(null)
+            setAttachedClientStatus('')
+            setAttachedClientError('Não foi possível carregar o cliente/proprietário vinculado.')
+          } else {
+            setAttachedClient(clientResponse.data)
+            setAttachedClientStatus(
+              clientResponse.data
+                ? 'Cliente/proprietário vinculado encontrado.'
+                : 'Cliente/proprietário não encontrado pelo ID vinculado.'
+            )
+          }
+
+          if (relationshipResponse.error) {
+            console.error('ATTACH CLIENT RELATIONSHIP LOAD ERROR:', relationshipResponse.error)
+            setAttachedClientRelationship(null)
+          } else {
+            setAttachedClientRelationship(relationshipResponse.data)
+          }
+        } else {
+          setAttachedClient(null)
+          setAttachedClientRelationship(null)
+          setAttachedClientStatus('Análise encontrada, mas sem cliente/proprietário vinculado.')
+          setAttachedClientError('')
+        }
+      } else {
+        setAttachedAssessment(null)
+        setAttachedAssessmentStatus('Ainda não existe análise profissional para este anúncio.')
+        setAttachedClient(null)
+        setAttachedClientRelationship(null)
+        setAttachedClientStatus('Sem análise formal, ainda não há cliente vinculado neste fluxo.')
+        setAttachedClientError('')
+      }
+    }
+
+    loadAttachedListing()
+
+    return () => {
+      active = false
+    }
+  }, [listingId, mode])
+
   // PIPELINE_PREV_NEXT_CONTEXT_V1
   const currentStepIndex = stepOrder.indexOf(stepKey)
   const previousStep = currentStepIndex > 0 ? stepOrder[currentStepIndex - 1] : ''
@@ -204,6 +331,47 @@ export default function PipelineStepPage() {
     isAttachMode
       ? `/operations/pipeline/${targetStep}?listingId=${listingId}&mode=attach`
       : `/operations/pipeline/${targetStep}`
+
+  // ATTACH_LISTING_REAL_CONTEXT_DERIVED_V1
+  const attachedAsset = attachedListing?.property_assets || {}
+  const attachedStatus = attachedListing?.listing_status || {}
+  const attachedBusinessContext = attachedListing?.property_business_context || {}
+  const attachedPortfolioItem = Array.isArray(attachedListing?.portfolio_items)
+    ? attachedListing?.portfolio_items?.[0]
+    : attachedListing?.portfolio_items
+
+  // ATTACH_ASSESSMENT_REAL_CONTEXT_DERIVED_V1
+  const attachedAssessmentMetadata = attachedAssessment?.metadata || {}
+  const attachedAssessmentHasClient = Boolean(
+    attachedAssessment?.client_entity_id ||
+    attachedAssessment?.client_relationship_id
+  )
+  const attachedAssessmentStatusLabel =
+    attachedAssessment?.assessment_status || 'Sem análise formal'
+
+  // ATTACH_CLIENT_REAL_CONTEXT_DERIVED_V1
+  const attachedClientName =
+    attachedClient?.display_name ||
+    attachedClient?.legal_name ||
+    'Não informado'
+
+  const attachedClientDocument =
+    attachedClient?.document_cpf ||
+    attachedClient?.document_cnpj ||
+    'Não informado'
+
+  const attachedClientRelationshipStatus =
+    attachedClientRelationship?.relationship_status ||
+    'Não informado'
+
+  const formatMoney = (value: unknown) => {
+    if (typeof value !== 'number') return 'Não informado'
+
+    return value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    })
+  }
 
   return (
     <main
@@ -359,6 +527,418 @@ export default function PipelineStepPage() {
 
       
 
+
+
+      {isAttachMode && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 20,
+          }}
+        >
+          {/* ATTACH_LISTING_REAL_CONTEXT_PANEL_V1 */}
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este painel apenas lê dados reais do anúncio/listingId.
+            - Não salva Pipeline Pro.
+            - Não cria Anúncio Placeholder.
+            - Não altera listing, asset, cliente, assessment ou portfolio.
+            - Futuramente deve carregar proprietário vinculado, mídia, checkup,
+              dossiê, progresso real e permissões.
+            - Não alterar service/schema/RLS/RPC sem auditoria.
+          */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 13,
+                  color: '#667085',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 800,
+                }}
+              >
+                Contexto real do anúncio acoplado
+              </p>
+
+              <h2 style={{ marginBottom: 6 }}>
+                {attachedListing?.title || 'Anúncio existente'}
+              </h2>
+
+              <p style={{ margin: 0, color: '#667085', lineHeight: 1.5 }}>
+                {attachedListingStatus || attachedListingError || 'Aguardando leitura do anúncio existente.'}
+              </p>
+            </div>
+
+            <Link
+              href={listingId ? `/operations/properties/${listingId}` : '/operations/properties/list'}
+              style={{
+                display: 'inline-flex',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #d7dee8',
+                background: '#f8fafc',
+                color: '#344054',
+                textDecoration: 'none',
+                fontWeight: 700,
+              }}
+            >
+              Abrir Checkup / Dossiê
+            </Link>
+          </div>
+
+          {attachedListingError && (
+            <div
+              style={{
+                border: '1px solid #fecaca',
+                borderRadius: 12,
+                padding: 12,
+                background: '#fef2f2',
+                color: '#991b1b',
+                marginBottom: 12,
+              }}
+            >
+              {attachedListingError}
+            </div>
+          )}
+
+          {/* ATTACH_ASSESSMENT_REAL_CONTEXT_PANEL_V1 */}
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este bloco lê a análise/dossiê profissional existente.
+            - Não substitui Pipeline Pro.
+            - Não grava progresso.
+            - Ajuda o modo attach a saber se o anúncio já possui base profissional.
+            - Futuramente deve calcular maturidade, módulos preenchidos e pendências reais.
+          */}
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: attachedAssessment ? '#f0fdf4' : '#fffbeb',
+              marginBottom: 12,
+            }}
+          >
+            <strong>Dossiê / Análise profissional existente</strong>
+
+            <p style={{ margin: '6px 0 12px', color: '#667085', lineHeight: 1.5 }}>
+              {attachedAssessmentError ||
+                attachedAssessmentStatus ||
+                'Verificando se existe análise profissional vinculada ao anúncio.'}
+            </p>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: 10,
+              }}
+            >
+              {[
+                {
+                  label: 'Status da análise',
+                  value: attachedAssessmentStatusLabel,
+                },
+                {
+                  label: 'Cliente vinculado',
+                  value: attachedAssessmentHasClient ? 'Sim' : 'Não / pendente',
+                },
+                {
+                  label: 'Assessment ID',
+                  value: attachedAssessment?.id || 'Não criado',
+                },
+                {
+                  label: 'Origem',
+                  value: attachedAssessmentMetadata?.source || 'Não informado',
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 12,
+                    padding: 10,
+                    background: '#fff',
+                  }}
+                >
+                  <strong style={{ display: 'block', fontSize: 12 }}>
+                    {item.label}
+                  </strong>
+                  <span style={{ color: '#667085', fontSize: 13, wordBreak: 'break-word' }}>
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ATTACH_CLIENT_REAL_CONTEXT_PANEL_V1 */}
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este bloco lê cliente/proprietário vinculado via Core Clients.
+            - Não duplica dados pessoais.
+            - Não salva relacionamento.
+            - Não altera client_entities ou client_relationships.
+            - Futuramente deve respeitar permissões, auditoria, LGPD e visibilidade por papel.
+          */}
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: attachedClient ? '#eff6ff' : '#f8fafc',
+              marginBottom: 12,
+            }}
+          >
+            <strong>Cliente / proprietário vinculado</strong>
+
+            <p style={{ margin: '6px 0 12px', color: '#667085', lineHeight: 1.5 }}>
+              {attachedClientError ||
+                attachedClientStatus ||
+                'Verificando vínculo com Core Clients.'}
+            </p>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: 10,
+              }}
+            >
+              {[
+                {
+                  label: 'Nome',
+                  value: attachedClientName,
+                },
+                {
+                  label: 'Documento',
+                  value: attachedClientDocument,
+                },
+                {
+                  label: 'Client ID',
+                  value: attachedClient?.id || attachedAssessment?.client_entity_id || 'Não vinculado',
+                },
+                {
+                  label: 'Relacionamento',
+                  value: attachedClientRelationshipStatus,
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 12,
+                    padding: 10,
+                    background: '#fff',
+                  }}
+                >
+                  <strong style={{ display: 'block', fontSize: 12 }}>
+                    {item.label}
+                  </strong>
+                  <span style={{ color: '#667085', fontSize: 13, wordBreak: 'break-word' }}>
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+              gap: 10,
+            }}
+          >
+            {[
+              {
+                label: 'Listing ID',
+                value: listingId || 'Não informado',
+              },
+              {
+                label: 'Preço',
+                value: formatMoney(attachedListing?.price),
+              },
+              {
+                label: 'Status do anúncio',
+                value: attachedStatus?.label || attachedListing?.listing_status_id || 'Não informado',
+              },
+              {
+                label: 'Contexto comercial',
+                value: attachedBusinessContext?.label || attachedListing?.property_business_context_id || 'Não informado',
+              },
+              {
+                label: 'Asset ID',
+                value: attachedAsset?.id || 'Não informado',
+              },
+              {
+                label: 'Portfolio item',
+                value: attachedPortfolioItem?.id || 'Não informado',
+              },
+            ].map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 12,
+                  padding: 12,
+                  background: '#f8fafc',
+                }}
+              >
+                <strong style={{ display: 'block', fontSize: 12 }}>
+                  {item.label}
+                </strong>
+                <span style={{ color: '#667085', fontSize: 13, wordBreak: 'break-word' }}>
+                  {item.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+
+      {isAttachMode && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 16,
+            background: '#fff',
+            marginBottom: 20,
+          }}
+        >
+          {/* ATTACH_QUICK_ACTIONS_PANEL_V1 */}
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este painel reúne ações rápidas quando o Pipeline Pro está acoplado
+              a um anúncio existente.
+            - Não salva nada.
+            - Não altera listing, asset, cliente, assessment ou portfolio.
+            - Futuramente os botões devem respeitar permissões reais por papel.
+            - O botão de Análise Patrimonial ainda aponta para a página legada,
+              que deverá ser absorvida/evoluída pelo Pipeline Pro ou Dossiê.
+          */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              marginBottom: 12,
+            }}
+          >
+            <div>
+              <strong>Ações rápidas do anúncio acoplado</strong>
+              <p style={{ margin: '4px 0 0', color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                Use estes atalhos para revisar o anúncio, consultar o dossiê ou
+                continuar a evolução profissional sem perder o contexto do Pipeline.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '5px 10px',
+                background: '#2563eb',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 800,
+              }}
+            >
+              modo attach
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              gap: 10,
+              flexWrap: 'wrap',
+            }}
+          >
+            <Link
+              href={listingId ? `/operations/properties/${listingId}` : '/operations/properties/list'}
+              style={{
+                display: 'inline-flex',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #2563eb',
+                background: '#2563eb',
+                color: '#fff',
+                textDecoration: 'none',
+                fontWeight: 800,
+              }}
+            >
+              Abrir Checkup / Dossiê
+            </Link>
+
+            <Link
+              href={listingId ? `/operations/properties/${listingId}/edit` : '/operations/properties/list'}
+              style={{
+                display: 'inline-flex',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #d7dee8',
+                background: '#f8fafc',
+                color: '#344054',
+                textDecoration: 'none',
+                fontWeight: 700,
+              }}
+            >
+              Editar anúncio
+            </Link>
+
+            <Link
+              href={listingId ? `/operations/properties/${listingId}/assessment` : '/operations/properties/list'}
+              style={{
+                display: 'inline-flex',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #d7dee8',
+                background: '#f8fafc',
+                color: '#344054',
+                textDecoration: 'none',
+                fontWeight: 700,
+              }}
+            >
+              Abrir Análise Patrimonial
+            </Link>
+
+            <Link
+              href="/operations/properties/list"
+              style={{
+                display: 'inline-flex',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #d7dee8',
+                background: '#fff',
+                color: '#344054',
+                textDecoration: 'none',
+                fontWeight: 700,
+              }}
+            >
+              Voltar para lista
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* PIPELINE_STEP_SLA_PROGRESS_PANEL_V1 */}
       {/*
