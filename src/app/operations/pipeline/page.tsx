@@ -40,6 +40,7 @@ import Link from 'next/link'
 const phases = [
   {
     title: '1. Atendimento e captacao',
+    route: 'atendimento',
     status: 'Base V1',
     progress: 15,
     description:
@@ -53,6 +54,7 @@ const phases = [
   },
   {
     title: '2. Levantamento do patrimonio',
+    route: 'levantamento',
     status: 'Em desenho',
     progress: 20,
     description:
@@ -66,6 +68,7 @@ const phases = [
   },
   {
     title: '3. Diagnostico e risco',
+    route: 'diagnostico',
     status: 'Em desenho',
     progress: 10,
     description:
@@ -79,6 +82,7 @@ const phases = [
   },
   {
     title: '4. Estrategia comercial',
+    route: 'estrategia',
     status: 'Em desenho',
     progress: 10,
     description:
@@ -92,6 +96,7 @@ const phases = [
   },
   {
     title: '5. Proposta e aprovacao',
+    route: 'proposta',
     status: 'Futuro acoplavel',
     progress: 0,
     description:
@@ -105,6 +110,7 @@ const phases = [
   },
   {
     title: '6. Publicacao parametrizada',
+    route: 'publicacao',
     status: 'Futuro acoplavel',
     progress: 0,
     description:
@@ -118,6 +124,7 @@ const phases = [
   },
   {
     title: '7. Acompanhamento e lifecycle',
+    route: 'acompanhamento',
     status: 'Futuro acoplavel',
     progress: 0,
     description:
@@ -405,20 +412,22 @@ export default function PipelinePage() {
                 }}
               >
                 {phase.pipelines.map((pipeline) => (
-                  <button
+                  <Link
                     key={pipeline}
+                    href={`/operations/pipeline/${phase.route}`}
                     style={{
                       textAlign: 'left',
                       padding: 10,
                       borderRadius: 10,
                       border: '1px solid #d7dee8',
                       background: '#f8fafc',
-                      cursor: 'default',
+                      cursor: 'pointer',
+                      textDecoration: 'none',
+                      color: '#111827',
                     }}
-                    type="button"
                   >
                     {pipeline}
-                  </button>
+                  </Link>
                 ))}
               </div>
             </article>
