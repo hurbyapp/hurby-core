@@ -239,6 +239,111 @@ export default function BrokerPage() {
         {canAccessAgency && <Link href="/agency">Agency</Link>}
       </nav>
 
+      {/* BROKER_PIPELINE_PRO_HERO_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Esta area posiciona o Pipeline Pro como produto principal do ambiente broker.
+        - Pipeline Pro nao e apenas menu; e entrada operacional da captacao profissional.
+        - Nao conectar banco, migrations, RLS, RPC ou services aqui sem auditoria.
+        - Codex pode refinar layout, hierarquia visual, copy e acentuacao mantendo UTF-8.
+        - Manter separacao: Pipeline executa, Dossie consolida, Analise interpreta, Publicacao distribui.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 20,
+          padding: 24,
+          background: '#f8fafc',
+          marginBottom: 22,
+        }}
+      >
+        <p
+          style={{
+            margin: 0,
+            fontSize: 13,
+            color: '#667085',
+            textTransform: 'uppercase',
+            letterSpacing: 0.8,
+          }}
+        >
+          Produto operacional
+        </p>
+
+        <h1 style={{ marginBottom: 10 }}>
+          Pipeline Pro
+        </h1>
+
+        <p
+          style={{
+            maxWidth: 860,
+            color: '#5f6b7a',
+            lineHeight: 1.6,
+            marginBottom: 18,
+          }}
+        >
+          Inicie uma captacao profissional, acompanhe o levantamento do patrimonio,
+          organize diagnostico, estrategia, proposta e publicacao. O objetivo e
+          transformar atendimento solto em processo comercial executavel.
+        </p>
+
+        <div
+          style={{
+            display: 'flex',
+            gap: 12,
+            flexWrap: 'wrap',
+            alignItems: 'center',
+          }}
+        >
+          <Link
+            href="/operations/pipeline/atendimento"
+            style={{
+              display: 'inline-flex',
+              padding: '12px 16px',
+              borderRadius: 12,
+              background: '#2563eb',
+              color: '#fff',
+              textDecoration: 'none',
+              fontWeight: 800,
+            }}
+          >
+            Iniciar Anuncio Placeholder
+          </Link>
+
+          <Link
+            href="/operations/pipeline"
+            style={{
+              display: 'inline-flex',
+              padding: '12px 16px',
+              borderRadius: 12,
+              border: '1px solid #d7dee8',
+              background: '#fff',
+              color: '#344054',
+              textDecoration: 'none',
+              fontWeight: 700,
+            }}
+          >
+            Abrir Pipeline Pro
+          </Link>
+
+          <Link
+            href="/operations/properties/list"
+            style={{
+              display: 'inline-flex',
+              padding: '12px 16px',
+              borderRadius: 12,
+              border: '1px solid #d7dee8',
+              background: '#fff',
+              color: '#344054',
+              textDecoration: 'none',
+              fontWeight: 700,
+            }}
+          >
+            Ver imóveis
+          </Link>
+        </div>
+      </section>
+
+
       <h1>Broker Area</h1>
 
       {!brokerProfile && canAccessAgency && (

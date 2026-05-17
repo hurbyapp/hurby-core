@@ -1,3 +1,37 @@
+
+/*
+=========================================
+HURBY — ORIENTACAO PARA CODEX / EXECUTORES FUTUROS
+
+ESTA AREA ESTA EM FASE DE MODELAGEM DE PRODUTO.
+
+REGRAS CONCEITUAIS:
+- Pipeline Pro nao e ficha.
+- Pipeline Pro e fluxo operacional executavel.
+- Dossie consolida informacoes, historico, decisoes e lifecycle.
+- Analise Patrimonial avalia e gera inteligencia tecnica/comercial.
+- Anuncio Placeholder e item operacional provisório antes do anuncio publico final.
+- Publicacao/Anuncio Distribuivel e camada independente, nao apenas uma etapa comum.
+- Pipeline de Inteligencia e o cerebro que interpreta dados dos pipelines operacionais.
+
+NAO FAZER SEM AUTORIZACAO/AUDITORIA:
+- criar migration;
+- alterar schema;
+- alterar RLS;
+- alterar RPC;
+- alterar services;
+- conectar salvamento real no banco;
+- mudar contrato de dados;
+- transformar os cards em formulario final definitivo.
+
+DIRECAO DE PRODUTO:
+- primeiro organizar jornada, etapas, progresso, pendencias e acoes;
+- depois conectar cada pipeline aos dados reais;
+- manter clareza entre coleta operacional, inteligencia, proposta e publicacao;
+- preservar UTF-8 e evitar correcao ampla de acentuacao por script PowerShell.
+=========================================
+*/
+
 ﻿'use client'
 
 /*
@@ -40,6 +74,9 @@ import Link from 'next/link'
 const phases = [
   {
     title: '1. Atendimento e captacao',
+    layer: 'Operacao',
+    layerColor: '#2563eb',
+    nextAction: 'Registrar oportunidade ou iniciar Anuncio Placeholder',
     route: 'atendimento',
     status: 'Base V1',
     progress: 15,
@@ -54,6 +91,9 @@ const phases = [
   },
   {
     title: '2. Levantamento do patrimonio',
+    layer: 'Operacao',
+    layerColor: '#2563eb',
+    nextAction: 'Levantar dados fisicos, acabamento e evidencias',
     route: 'levantamento',
     status: 'Em desenho',
     progress: 20,
@@ -68,6 +108,9 @@ const phases = [
   },
   {
     title: '3. Diagnostico e risco',
+    layer: 'Operacao',
+    layerColor: '#2563eb',
+    nextAction: 'Organizar risco, documentos, mercado e proprietario',
     route: 'diagnostico',
     status: 'Em desenho',
     progress: 10,
@@ -82,6 +125,9 @@ const phases = [
   },
   {
     title: '4. Inteligencia estrategica',
+    layer: 'Inteligencia',
+    layerColor: '#7c3aed',
+    nextAction: 'Gerar recomendacao profissional e decisao comercial',
     route: 'estrategia',
     status: 'Em desenho',
     progress: 10,
@@ -96,6 +142,9 @@ const phases = [
   },
   {
     title: '5. Proposta e aprovacao',
+    layer: 'Validacao',
+    layerColor: '#f59e0b',
+    nextAction: 'Validar estrategia com agencia/proprietario',
     route: 'proposta',
     status: 'Futuro acoplavel',
     progress: 0,
@@ -110,6 +159,9 @@ const phases = [
   },
   {
     title: 'Publicacao / Anuncio distribuivel',
+    layer: 'Publicacao',
+    layerColor: '#16a34a',
+    nextAction: 'Montar anuncio publico e preparar distribuicao',
     route: 'publicacao',
     status: 'Futuro acoplavel',
     progress: 0,
@@ -124,6 +176,9 @@ const phases = [
   },
   {
     title: '7. Acompanhamento e lifecycle',
+    layer: 'Lifecycle',
+    layerColor: '#7c3aed',
+    nextAction: 'Acompanhar evolucao, ajustes e encerramento',
     route: 'acompanhamento',
     status: 'Futuro acoplavel',
     progress: 0,
@@ -196,13 +251,58 @@ export default function PipelinePage() {
             maxWidth: 880,
             color: '#5f6b7a',
             lineHeight: 1.6,
-            marginBottom: 0,
+            marginBottom: 18,
           }}
         >
           Esta é a entrada operacional do processo profissional. O objetivo é
           conduzir o corretor da primeira conversa com o proprietário até a
           análise, estratégia, proposta, publicação e acompanhamento do imóvel.
         </p>
+
+        {/* START_PLACEHOLDER_CTA_V1 */}
+        <div
+          style={{
+            display: 'flex',
+            gap: 12,
+            flexWrap: 'wrap',
+            alignItems: 'center',
+          }}
+        >
+          <Link
+            href="/operations/pipeline/atendimento"
+            style={{
+              display: 'inline-flex',
+              padding: '12px 16px',
+              borderRadius: 12,
+              background: '#2563eb',
+              color: '#fff',
+              textDecoration: 'none',
+              fontWeight: 800,
+            }}
+          >
+            Iniciar Anúncio Placeholder
+          </Link>
+
+          <Link
+            href="/operations/properties/list"
+            style={{
+              display: 'inline-flex',
+              padding: '12px 16px',
+              borderRadius: 12,
+              border: '1px solid #d7dee8',
+              background: '#fff',
+              color: '#344054',
+              textDecoration: 'none',
+              fontWeight: 700,
+            }}
+          >
+            Ver imóveis existentes
+          </Link>
+
+          <span style={{ color: '#667085', fontSize: 13 }}>
+            O placeholder nasce como entrada operacional antes do anúncio público final.
+          </span>
+        </div>
       </section>
 
       <section
@@ -404,8 +504,80 @@ export default function PipelinePage() {
         </div>
       </section>
 
+      {/* PIPELINE_MAIN_PRODUCT_ORGANIZATION_V1 */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 20,
+          background: '#fff',
+          marginBottom: 22,
+        }}
+      >
+        <h2 style={{ marginTop: 0 }}>Organização operacional do produto</h2>
+
+        <p style={{ color: '#667085', lineHeight: 1.5 }}>
+          O Pipeline Pro é dividido em camadas. Primeiro a operação coleta dados.
+          Depois a inteligência interpreta. Por fim, a publicação materializa o
+          anúncio distribuível. Essa separação evita fichário solto e transforma
+          o processo em método profissional.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: 12,
+          }}
+        >
+          {[
+            {
+              title: '1. Operação',
+              color: '#2563eb',
+              text: 'Atendimento, levantamento, diagnóstico, documentos, mercado, proprietário e evidências.',
+            },
+            {
+              title: '2. Inteligência',
+              color: '#7c3aed',
+              text: 'Interpreta os dados e decide preço, posicionamento, narrativa, proposta e estratégia.',
+            },
+            {
+              title: '3. Publicação',
+              color: '#16a34a',
+              text: 'Transforma a estratégia aprovada em anúncio distribuível para canais, marketplace e rede.',
+            },
+          ].map((layer) => (
+            <article
+              key={layer.title}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 14,
+                padding: 16,
+                background: '#f8fafc',
+              }}
+            >
+              <div
+                style={{
+                  width: 34,
+                  height: 6,
+                  borderRadius: 999,
+                  background: layer.color,
+                  marginBottom: 12,
+                }}
+              />
+
+              <strong>{layer.title}</strong>
+
+              <p style={{ color: '#667085', lineHeight: 1.5, marginBottom: 0 }}>
+                {layer.text}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section id="pipeline-etapas">
-        <h2>Etapas operacionais</h2>
+        <h2>Fluxos e camadas executáveis</h2>
 
         <div
           style={{
@@ -435,19 +607,36 @@ export default function PipelinePage() {
               >
                 <h3 style={{ margin: 0 }}>{phase.title}</h3>
 
-                <span
-                  style={{
-                    fontSize: 12,
-                    border: '1px solid #d7dee8',
-                    borderRadius: 999,
-                    padding: '4px 8px',
-                    color: '#475467',
-                    background: '#f8fafc',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {phase.status}
-                </span>
+                <div style={{ display: 'grid', gap: 6, justifyItems: 'end' }}>
+                  {/* PHASE_PRODUCT_BADGE_V1 */}
+                  <span
+                    style={{
+                      fontSize: 12,
+                      border: '1px solid #d7dee8',
+                      borderRadius: 999,
+                      padding: '4px 8px',
+                      color: '#475467',
+                      background: '#f8fafc',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {phase.status}
+                  </span>
+
+                  <span
+                    style={{
+                      fontSize: 12,
+                      border: `1px solid ${phase.layerColor || '#d7dee8'}`,
+                      borderRadius: 999,
+                      padding: '4px 8px',
+                      color: phase.layerColor || '#475467',
+                      background: '#fff',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {phase.layer}
+                  </span>
+                </div>
               </div>
 
               <div
@@ -471,6 +660,21 @@ export default function PipelinePage() {
               <p style={{ color: '#667085', lineHeight: 1.5 }}>
                 {phase.description}
               </p>
+
+              <div
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 12,
+                  padding: 10,
+                  background: '#f8fafc',
+                  marginBottom: 12,
+                }}
+              >
+                <strong style={{ fontSize: 13 }}>Próxima ação</strong>
+                <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 13 }}>
+                  {phase.nextAction}
+                </p>
+              </div>
 
               <div
                 style={{

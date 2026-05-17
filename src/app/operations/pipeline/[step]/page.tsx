@@ -1,3 +1,37 @@
+
+/*
+=========================================
+HURBY — ORIENTACAO PARA CODEX / EXECUTORES FUTUROS
+
+ESTA AREA ESTA EM FASE DE MODELAGEM DE PRODUTO.
+
+REGRAS CONCEITUAIS:
+- Pipeline Pro nao e ficha.
+- Pipeline Pro e fluxo operacional executavel.
+- Dossie consolida informacoes, historico, decisoes e lifecycle.
+- Analise Patrimonial avalia e gera inteligencia tecnica/comercial.
+- Anuncio Placeholder e item operacional provisório antes do anuncio publico final.
+- Publicacao/Anuncio Distribuivel e camada independente, nao apenas uma etapa comum.
+- Pipeline de Inteligencia e o cerebro que interpreta dados dos pipelines operacionais.
+
+NAO FAZER SEM AUTORIZACAO/AUDITORIA:
+- criar migration;
+- alterar schema;
+- alterar RLS;
+- alterar RPC;
+- alterar services;
+- conectar salvamento real no banco;
+- mudar contrato de dados;
+- transformar os cards em formulario final definitivo.
+
+DIRECAO DE PRODUTO:
+- primeiro organizar jornada, etapas, progresso, pendencias e acoes;
+- depois conectar cada pipeline aos dados reais;
+- manter clareza entre coleta operacional, inteligencia, proposta e publicacao;
+- preservar UTF-8 e evitar correcao ampla de acentuacao por script PowerShell.
+=========================================
+*/
+
 ﻿'use client'
 
 /*
@@ -21,6 +55,7 @@ REGRA:
 */
 
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 
 const steps: Record<string, any> = {
@@ -112,8 +147,29 @@ const steps: Record<string, any> = {
 
 export default function PipelineStepPage() {
   const params = useParams()
+  const [attachContext, setAttachContext] = useState({
+    listingId: '',
+    mode: '',
+  })
+
   const stepKey = String(params.step || '')
   const step = steps[stepKey] || steps.atendimento
+
+  // ATTACH_EXISTING_LISTING_MODE_V1
+  // Quando mode=attach e listingId existir, o Pipeline Pro esta sendo acoplado
+  // a um anuncio/imovel ja existente. Nao deve tratar como captacao do zero.
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
+
+    setAttachContext({
+      listingId: searchParams.get('listingId') || '',
+      mode: searchParams.get('mode') || '',
+    })
+  }, [])
+
+  const listingId = attachContext.listingId
+  const mode = attachContext.mode
+  const isAttachMode = mode === 'attach' && !!listingId
 
   return (
     <main
@@ -166,6 +222,1238 @@ export default function PipelineStepPage() {
           {step.description}
         </p>
       </section>
+
+      {isAttachMode && (
+        <section
+          style={{
+            border: '1px solid #2563eb',
+            borderRadius: 18,
+            padding: 18,
+            background: '#eff6ff',
+            marginBottom: 20,
+          }}
+        >
+          {/* ATTACH_EXISTING_LISTING_BANNER_V1 */}
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este modo representa acoplagem do Pipeline Pro a um anuncio existente.
+            - Nao deve criar uma captacao do zero.
+            - Deve reaproveitar os dados preliminares do anuncio/listingId.
+            - Futuramente carregar listing, asset, cliente vinculado, fotos, preco e dados publicaveis.
+            - Nao implementar persistencia sem revisar service/schema/RLS/RPC.
+            - Codex pode corrigir acentuacao mantendo UTF-8.
+          */}
+          <p
+            style={{
+              margin: 0,
+              fontSize: 13,
+              color: '#1d4ed8',
+              textTransform: 'uppercase',
+              letterSpacing: 0.8,
+              fontWeight: 800,
+            }}
+          >
+            Acoplando Pipeline Pro a anúncio existente
+          </p>
+
+          <h2 style={{ marginBottom: 8 }}>
+            Este fluxo não começa do zero
+          </h2>
+
+          <p style={{ color: '#475467', lineHeight: 1.5, marginBottom: 10 }}>
+            O anúncio já possui dados preliminares. A função desta jornada é
+            profissionalizar a operação: revisar qualidade, complementar
+            levantamento, gerar diagnóstico, inteligência, proposta e publicação
+            parametrizada.
+          </p>
+
+          <div
+            style={{
+              display: 'inline-flex',
+              border: '1px solid #bfdbfe',
+              borderRadius: 999,
+              padding: '6px 10px',
+              background: '#fff',
+              color: '#1d4ed8',
+              fontSize: 13,
+              fontWeight: 700,
+            }}
+          >
+            listingId: {listingId}
+          </div>
+        </section>
+      )}
+
+      {stepKey === 'atendimento' && (
+        <section
+          style={{
+            border: '1px solid #d7dee8',
+            borderRadius: 18,
+            padding: 20,
+            background: '#fff',
+            marginBottom: 20,
+          }}
+        >
+          {/* ATENDIMENTO_CAPTURE_FORM_PREVIEW_V1 */}
+          <h2 style={{ marginTop: 0 }}>Registro rápido da captação</h2>
+
+          <p style={{ color: '#667085', lineHeight: 1.5 }}>
+            Esta área representa a entrada rápida do Anúncio Placeholder. Na versão
+            conectada, estes dados devem criar ou atualizar a captação profissional.
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: 12,
+              marginTop: 16,
+            }}
+          >
+            {[
+              { label: 'Nome interno', placeholder: 'Ex.: Florais - Helio' },
+              { label: 'Nome do proprietario', placeholder: 'Ex.: Helio' },
+              { label: 'Telefone', placeholder: 'Ex.: (65) 99999-9999' },
+              { label: 'Origem do contato', placeholder: 'Ligacao, WhatsApp, indicacao...' },
+              { label: 'Condominio / bairro', placeholder: 'Ex.: Florais da Mata' },
+              { label: 'Tipo preliminar', placeholder: 'Casa em condominio' },
+              { label: 'Data da visita', placeholder: 'Ex.: 18/05' },
+              { label: 'Horario', placeholder: 'Ex.: 15:00' },
+            ].map((field) => (
+              <label
+                key={field.label}
+                style={{
+                  display: 'grid',
+                  gap: 6,
+                  fontSize: 13,
+                  color: '#344054',
+                }}
+              >
+                <strong>{field.label}</strong>
+                <input
+                  disabled
+                  placeholder={field.placeholder}
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 10,
+                    padding: '10px 12px',
+                    background: '#f8fafc',
+                    color: '#667085',
+                  }}
+                />
+              </label>
+            ))}
+          </div>
+
+          <label
+            style={{
+              display: 'grid',
+              gap: 6,
+              fontSize: 13,
+              color: '#344054',
+              marginTop: 12,
+            }}
+          >
+            <strong>Observação inicial</strong>
+            <textarea
+              disabled
+              placeholder="Ex.: Proprietario quer vender casa em condominio para levantar recurso para familia. Visita combinada para amanha."
+              rows={4}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 10,
+                padding: '10px 12px',
+                background: '#f8fafc',
+                color: '#667085',
+                resize: 'vertical',
+              }}
+            />
+          </label>
+
+          <div
+            style={{
+              display: 'flex',
+              gap: 10,
+              flexWrap: 'wrap',
+              marginTop: 16,
+            }}
+          >
+            <button
+              disabled
+              style={{
+                border: '1px solid #2563eb',
+                borderRadius: 10,
+                padding: '10px 14px',
+                background: '#2563eb',
+                color: '#fff',
+                opacity: 0.65,
+                cursor: 'not-allowed',
+              }}
+            >
+              Futuro: criar Anuncio Placeholder
+            </button>
+
+            <button
+              disabled
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 10,
+                padding: '10px 14px',
+                background: '#fff',
+                color: '#667085',
+                cursor: 'not-allowed',
+              }}
+            >
+              Futuro: agendar atendimento
+            </button>
+          </div>
+        </section>
+      )}
+
+      {stepKey === 'levantamento' && (
+        <section
+          style={{
+            border: '1px solid #d7dee8',
+            borderRadius: 18,
+            padding: 20,
+            background: '#fff',
+            marginBottom: 20,
+          }}
+        >
+          {/* LEVANTAMENTO_PROPERTY_SURVEY_PREVIEW_V1 */}
+          <h2 style={{ marginTop: 0 }}>Levantamento do patrimonio</h2>
+
+          <p style={{ color: '#667085', lineHeight: 1.5 }}>
+            Esta etapa organiza a vistoria do imovel por tipo e subtipo. O objetivo
+            nao e preencher ficha solta, mas transformar a visita em leitura
+            profissional, evidencias e base para a inteligencia estrategica.
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: 12,
+              marginTop: 16,
+            }}
+          >
+            {[
+              {
+                title: 'Tipo e subtipo',
+                progress: 20,
+                items: [
+                  'Casa de rua',
+                  'Casa em condominio',
+                  'Apartamento',
+                  'Terreno',
+                  'Comercial',
+                  'Rural',
+                ],
+              },
+              {
+                title: 'Composicao do imovel',
+                progress: 10,
+                items: [
+                  'Quartos e suites',
+                  'Banheiros',
+                  'Vagas',
+                  'Cozinha e areas',
+                  'Piscina',
+                  'Pavimentos',
+                ],
+              },
+              {
+                title: 'Acabamento e padrao',
+                progress: 0,
+                items: [
+                  'Laje / forro',
+                  'Porcelanato / ceramica',
+                  'Esquadrias',
+                  'Bancadas',
+                  'Marcenaria',
+                  'Padrao: popular a luxo',
+                ],
+              },
+              {
+                title: 'Condominio e estrutura',
+                progress: 0,
+                items: [
+                  'Portaria',
+                  'Seguranca',
+                  'Lazer',
+                  'Ruas',
+                  'Taxa',
+                  'Padrao do condominio',
+                ],
+              },
+              {
+                title: 'Fotos e evidencias',
+                progress: 0,
+                items: [
+                  'Fachada',
+                  'Ambientes',
+                  'Area externa',
+                  'Condominio',
+                  'Avarias',
+                  'Documentos futuros',
+                ],
+              },
+              {
+                title: 'Percepcao profissional',
+                progress: 0,
+                items: [
+                  'Pontos fortes',
+                  'Pontos fracos',
+                  'Riscos aparentes',
+                  'Oportunidade',
+                  'Classificacao geral',
+                  'Nota subjetiva',
+                ],
+              },
+            ].map((block) => (
+              <article
+                key={block.title}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 14,
+                  padding: 14,
+                  background: '#f8fafc',
+                }}
+              >
+                <strong>{block.title}</strong>
+
+                <div
+                  style={{
+                    height: 9,
+                    borderRadius: 999,
+                    background: '#e5eaf0',
+                    overflow: 'hidden',
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${block.progress}%`,
+                      height: '100%',
+                      background: '#2563eb',
+                    }}
+                  />
+                </div>
+
+                <ul
+                  style={{
+                    margin: 0,
+                    paddingLeft: 18,
+                    color: '#667085',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {block.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+              marginTop: 16,
+            }}
+          >
+            <strong>Resultado esperado desta etapa</strong>
+
+            <p style={{ color: '#667085', lineHeight: 1.5, marginBottom: 0 }}>
+              Ao concluir o levantamento, o sistema deve ter base suficiente para
+              alimentar diagnostico, riscos, pesquisa de mercado, pontuacao do
+              patrimonio e pipeline de inteligencia.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {stepKey === 'diagnostico' && (
+        <section
+          style={{
+            border: '1px solid #d7dee8',
+            borderRadius: 18,
+            padding: 20,
+            background: '#fff',
+            marginBottom: 20,
+          }}
+        >
+          {/* DIAGNOSTICO_RISK_PREVIEW_V1 */}
+          <h2 style={{ marginTop: 0 }}>Diagnostico, risco e contexto comercial</h2>
+
+          <p style={{ color: '#667085', lineHeight: 1.5 }}>
+            Esta etapa organiza os dados que explicam o risco, a viabilidade e a
+            oportunidade do negocio. Ela prepara a base para o pipeline de
+            inteligencia, sem ainda decidir a estrategia final.
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: 12,
+              marginTop: 16,
+            }}
+          >
+            {[
+              {
+                title: 'Perfil do proprietario',
+                progress: 0,
+                items: [
+                  'Motivo da venda',
+                  'Urgencia',
+                  'Flexibilidade',
+                  'Apego emocional',
+                  'Resistencia a preco',
+                  'Quem decide',
+                ],
+              },
+              {
+                title: 'Financeiro e IPTU',
+                progress: 0,
+                items: [
+                  'Valor pedido',
+                  'Valor minimo',
+                  'IPTU',
+                  'Valor venal declarado no IPTU',
+                  'Condominio',
+                  'Saldo devedor',
+                ],
+              },
+              {
+                title: 'Documentacao',
+                progress: 0,
+                items: [
+                  'Matricula',
+                  'Averbacao',
+                  'Habite-se',
+                  'IPTU quitado',
+                  'Condominio em dia',
+                  'Pendencias',
+                ],
+              },
+              {
+                title: 'Risco operacional',
+                progress: 0,
+                items: [
+                  'Preco fora da realidade',
+                  'Documento pendente',
+                  'Proprietario inflexivel',
+                  'Imovel com avarias',
+                  'Baixa liquidez',
+                  'Risco juridico',
+                ],
+              },
+              {
+                title: 'Pesquisa de mercado',
+                progress: 0,
+                items: [
+                  'Comparaveis',
+                  'Preco por metro',
+                  'Estoque concorrente',
+                  'Tempo anunciado',
+                  'Liquidez da regiao',
+                  'Faixa recomendada',
+                ],
+              },
+              {
+                title: 'Oportunidades',
+                progress: 0,
+                items: [
+                  'Familia',
+                  'Investimento',
+                  'Locacao',
+                  'Temporada',
+                  'Alto padrao',
+                  'Preco competitivo',
+                ],
+              },
+            ].map((block) => (
+              <article
+                key={block.title}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 14,
+                  padding: 14,
+                  background: '#f8fafc',
+                }}
+              >
+                <strong>{block.title}</strong>
+
+                <div
+                  style={{
+                    height: 9,
+                    borderRadius: 999,
+                    background: '#e5eaf0',
+                    overflow: 'hidden',
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${block.progress}%`,
+                      height: '100%',
+                      background: '#2563eb',
+                    }}
+                  />
+                </div>
+
+                <ul
+                  style={{
+                    margin: 0,
+                    paddingLeft: 18,
+                    color: '#667085',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {block.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+              marginTop: 16,
+            }}
+          >
+            <strong>Resultado esperado desta etapa</strong>
+
+            <p style={{ color: '#667085', lineHeight: 1.5, marginBottom: 0 }}>
+              Ao concluir o diagnostico, o sistema deve ter insumos para calcular
+              risco, maturidade comercial, oportunidade, perfil de negociacao e
+              alimentar o pipeline de inteligencia.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {stepKey === 'estrategia' && (
+        <section
+          style={{
+            border: '1px solid #2563eb',
+            borderRadius: 18,
+            padding: 20,
+            background: '#eff6ff',
+            marginBottom: 20,
+          }}
+        >
+          {/* INTELLIGENCE_STRATEGY_PREVIEW_V1 */}
+          <h2 style={{ marginTop: 0 }}>Inteligencia estrategica</h2>
+
+          <p style={{ color: '#475467', lineHeight: 1.5 }}>
+            Esta camada nao coleta dados brutos. Ela interpreta o que os pipelines
+            operacionais entregaram e transforma isso em decisao profissional:
+            preco, posicionamento, distribuicao, proposta e publicacao.
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: 12,
+              marginTop: 16,
+            }}
+          >
+            {[
+              {
+                title: 'Leitura consolidada',
+                progress: 0,
+                items: [
+                  'Qualidade fisica',
+                  'Padrao construtivo',
+                  'Localizacao',
+                  'Risco documental',
+                  'Perfil do proprietario',
+                  'Liquidez',
+                ],
+              },
+              {
+                title: 'Pontuacao do patrimonio',
+                progress: 0,
+                items: [
+                  'Maturidade da analise',
+                  'Nota por subtipo',
+                  'Nota equalizada',
+                  'Nota estrategica',
+                  'Risco comercial',
+                  'Atratividade operacional',
+                ],
+              },
+              {
+                title: 'Decisao de preco',
+                progress: 0,
+                items: [
+                  'Preco pedido',
+                  'Preco recomendado',
+                  'Preco inicial publico',
+                  'Minimo aceitavel',
+                  'Desconto programado',
+                  'Alerta de preco irreal',
+                ],
+              },
+              {
+                title: 'Posicionamento',
+                progress: 0,
+                items: [
+                  'Familia',
+                  'Alto padrao',
+                  'Investimento',
+                  'Temporada',
+                  'Oportunidade',
+                  'Pronto para morar',
+                ],
+              },
+              {
+                title: 'Distribuicao',
+                progress: 0,
+                items: [
+                  'Marketplace',
+                  'Pagina profissional',
+                  'Redes sociais',
+                  'Rede de parceiros',
+                  'Campanha paga',
+                  'Publicacao discreta',
+                ],
+              },
+              {
+                title: 'Recomendacao profissional',
+                progress: 0,
+                items: [
+                  'Argumento ao proprietario',
+                  'Estrategia de negociacao',
+                  'Narrativa do anuncio',
+                  'Pontos fortes',
+                  'Pontos de atencao',
+                  'Proxima decisao',
+                ],
+              },
+            ].map((block) => (
+              <article
+                key={block.title}
+                style={{
+                  border: '1px solid #bfdbfe',
+                  borderRadius: 14,
+                  padding: 14,
+                  background: '#fff',
+                }}
+              >
+                <strong>{block.title}</strong>
+
+                <div
+                  style={{
+                    height: 9,
+                    borderRadius: 999,
+                    background: '#dbeafe',
+                    overflow: 'hidden',
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${block.progress}%`,
+                      height: '100%',
+                      background: '#2563eb',
+                    }}
+                  />
+                </div>
+
+                <ul
+                  style={{
+                    margin: 0,
+                    paddingLeft: 18,
+                    color: '#475467',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {block.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #bfdbfe',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+              marginTop: 16,
+            }}
+          >
+            <strong>Resultado esperado desta camada</strong>
+
+            <p style={{ color: '#475467', lineHeight: 1.5, marginBottom: 0 }}>
+              Ao concluir a inteligencia estrategica, o sistema deve produzir
+              uma recomendacao profissional clara para proposta ao proprietario
+              e para a futura publicacao parametrizada do anuncio.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {stepKey === 'publicacao' && (
+        <section
+          style={{
+            border: '1px solid #16a34a',
+            borderRadius: 18,
+            padding: 20,
+            background: '#f0fdf4',
+            marginBottom: 20,
+          }}
+        >
+          {/* PUBLICATION_DISTRIBUTABLE_AD_PREVIEW_V1 */}
+          <h2 style={{ marginTop: 0 }}>Publicacao / Anuncio distribuivel</h2>
+
+          <p style={{ color: '#475467', lineHeight: 1.5 }}>
+            Esta camada materializa a estrategia aprovada em anuncio profissional.
+            Aqui o foco nao e analisar o imovel, mas montar, parametrizar e preparar
+            a distribuicao do anuncio nos canais definidos.
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: 12,
+              marginTop: 16,
+            }}
+          >
+            {[
+              {
+                title: 'Identidade publica do anuncio',
+                progress: 0,
+                items: [
+                  'Titulo publico',
+                  'Descricao profissional',
+                  'Resumo curto',
+                  'Destaques principais',
+                  'Tags publicas',
+                  'Splashes permitidos',
+                ],
+              },
+              {
+                title: 'Midia e apresentacao',
+                progress: 0,
+                items: [
+                  'Foto de capa',
+                  'Galeria publica',
+                  'Fotos tecnicas ocultas',
+                  'Ordem das fotos',
+                  'Legenda futura',
+                  'Video futuro',
+                ],
+              },
+              {
+                title: 'Preco e condicoes publicas',
+                progress: 0,
+                items: [
+                  'Preco aprovado',
+                  'Condominio',
+                  'IPTU',
+                  'Aceita financiamento',
+                  'Aceita proposta',
+                  'Condicoes publicaveis',
+                ],
+              },
+              {
+                title: 'Canais de distribuicao',
+                progress: 0,
+                items: [
+                  'Marketplace',
+                  'Pagina do corretor',
+                  'Pagina da agencia',
+                  'Redes sociais',
+                  'Rede de parceiros',
+                  'Portais externos futuros',
+                ],
+              },
+              {
+                title: 'Parametros profissionais ocultos',
+                progress: 0,
+                items: [
+                  'Preco minimo interno',
+                  'Margem de negociacao',
+                  'Responsavel',
+                  'Origem da captacao',
+                  'Estrategia ativa',
+                  'Restricoes de visibilidade',
+                ],
+              },
+              {
+                title: 'Status de publicacao',
+                progress: 0,
+                items: [
+                  'Placeholder',
+                  'Rascunho',
+                  'Pronto para publicar',
+                  'Publicado',
+                  'Pausado',
+                  'Encerrado',
+                ],
+              },
+            ].map((block) => (
+              <article
+                key={block.title}
+                style={{
+                  border: '1px solid #bbf7d0',
+                  borderRadius: 14,
+                  padding: 14,
+                  background: '#fff',
+                }}
+              >
+                <strong>{block.title}</strong>
+
+                <div
+                  style={{
+                    height: 9,
+                    borderRadius: 999,
+                    background: '#dcfce7',
+                    overflow: 'hidden',
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${block.progress}%`,
+                      height: '100%',
+                      background: '#16a34a',
+                    }}
+                  />
+                </div>
+
+                <ul
+                  style={{
+                    margin: 0,
+                    paddingLeft: 18,
+                    color: '#475467',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {block.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #bbf7d0',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+              marginTop: 16,
+            }}
+          >
+            <strong>Resultado esperado desta camada</strong>
+
+            <p style={{ color: '#475467', lineHeight: 1.5, marginBottom: 0 }}>
+              Ao concluir a publicacao, o anuncio deixa de ser apenas um
+              placeholder ou rascunho e passa a estar pronto para distribuicao,
+              respeitando a estrategia aprovada e ocultando informacoes sensiveis.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {stepKey === 'proposta' && (
+        <section
+          style={{
+            border: '1px solid #f59e0b',
+            borderRadius: 18,
+            padding: 20,
+            background: '#fffbeb',
+            marginBottom: 20,
+          }}
+        >
+          {/* PROPOSAL_APPROVAL_PREVIEW_V1 */}
+          <h2 style={{ marginTop: 0 }}>Proposta e aprovacao</h2>
+
+          <p style={{ color: '#475467', lineHeight: 1.5 }}>
+            Esta etapa transforma a recomendacao profissional em proposta
+            apresentavel ao proprietario. Aqui entram aprovacao interna, ajustes,
+            aceite, recusa e preparacao futura para contrato.
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: 12,
+              marginTop: 16,
+            }}
+          >
+            {[
+              {
+                title: 'Resumo executivo',
+                progress: 0,
+                items: [
+                  'Diagnostico resumido',
+                  'Pontos fortes',
+                  'Pontos de atencao',
+                  'Oportunidade identificada',
+                  'Risco principal',
+                  'Recomendacao final',
+                ],
+              },
+              {
+                title: 'Preco e condicao recomendada',
+                progress: 0,
+                items: [
+                  'Preco recomendado',
+                  'Preco inicial publico',
+                  'Minimo aceitavel',
+                  'Margem de negociacao',
+                  'Desconto programado',
+                  'Condicoes negociaveis',
+                ],
+              },
+              {
+                title: 'Plano de comercializacao',
+                progress: 0,
+                items: [
+                  'Posicionamento',
+                  'Publico-alvo',
+                  'Canais sugeridos',
+                  'Campanha',
+                  'Rede de parceiros',
+                  'Formato do anuncio',
+                ],
+              },
+              {
+                title: 'Aprovacao interna',
+                progress: 0,
+                items: [
+                  'Corretor responsavel',
+                  'Agencia/coordenacao',
+                  'Especialista convidado',
+                  'Aprovado',
+                  'Devolvido para ajuste',
+                  'Comentario de revisao',
+                ],
+              },
+              {
+                title: 'Retorno do proprietario',
+                progress: 0,
+                items: [
+                  'Proposta enviada',
+                  'Proprietario aprovou',
+                  'Proprietario recusou',
+                  'Pediu ajuste',
+                  'Aceitou com ressalvas',
+                  'Aguardando resposta',
+                ],
+              },
+              {
+                title: 'Acoplagem futura com contrato',
+                progress: 0,
+                items: [
+                  'Autorizacao de venda',
+                  'Exclusividade',
+                  'Nao exclusividade',
+                  'Intermediacao',
+                  'Administracao futura',
+                  'Contrato como core separado',
+                ],
+              },
+            ].map((block) => (
+              <article
+                key={block.title}
+                style={{
+                  border: '1px solid #fde68a',
+                  borderRadius: 14,
+                  padding: 14,
+                  background: '#fff',
+                }}
+              >
+                <strong>{block.title}</strong>
+
+                <div
+                  style={{
+                    height: 9,
+                    borderRadius: 999,
+                    background: '#fef3c7',
+                    overflow: 'hidden',
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${block.progress}%`,
+                      height: '100%',
+                      background: '#f59e0b',
+                    }}
+                  />
+                </div>
+
+                <ul
+                  style={{
+                    margin: 0,
+                    paddingLeft: 18,
+                    color: '#475467',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {block.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #fde68a',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+              marginTop: 16,
+            }}
+          >
+            <strong>Resultado esperado desta etapa</strong>
+
+            <p style={{ color: '#475467', lineHeight: 1.5, marginBottom: 0 }}>
+              Ao concluir esta etapa, a estrategia profissional fica validada
+              para seguir para publicacao parametrizada ou volta para ajuste caso
+              proprietario/agencia nao aprove.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {stepKey === 'acompanhamento' && (
+        <section
+          style={{
+            border: '1px solid #7c3aed',
+            borderRadius: 18,
+            padding: 20,
+            background: '#f5f3ff',
+            marginBottom: 20,
+          }}
+        >
+          {/* FOLLOWUP_LIFECYCLE_PREVIEW_V1 */}
+          {/* 
+            ORIENTACAO PARA CODEX / PROXIMOS EXECUTORES:
+            - Esta etapa nao deve virar Core Leads agora.
+            - Esta etapa nao deve virar Comunicador agora.
+            - Esta etapa nao deve virar Contratos agora.
+            - Aqui ficam apenas pontos de acoplagem futura.
+            - O objetivo e mostrar que o anuncio publicado tera continuidade operacional.
+            - Futuramente integrar com leads, visitas, propostas, mensagens, contratos, encerramento e dossie.
+            - Codex pode corrigir acentuacao e portugues diretamente no arquivo, mantendo UTF-8.
+            - Nao alterar schema, services, RPC, RLS ou migrations nesta tela sem auditoria.
+          */}
+          <h2 style={{ marginTop: 0 }}>Acompanhamento e lifecycle</h2>
+
+          <p style={{ color: '#475467', lineHeight: 1.5 }}>
+            Esta camada representa o que acontece depois da publicacao. O anuncio
+            deixa de ser apenas uma peca publicada e passa a ser acompanhado como
+            uma operacao viva: leads, visitas, propostas, ajustes, decisao final e
+            historico no Dossie.
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: 12,
+              marginTop: 16,
+            }}
+          >
+            {[
+              {
+                title: 'Leads futuros',
+                progress: 0,
+                items: [
+                  'Contatos recebidos',
+                  'Origem do lead',
+                  'Interesse declarado',
+                  'Qualificacao futura',
+                  'Desbloqueio futuro',
+                  'Core Leads separado',
+                ],
+              },
+              {
+                title: 'Visitas e atendimentos',
+                progress: 0,
+                items: [
+                  'Visita agendada',
+                  'Visita realizada',
+                  'Feedback do interessado',
+                  'Objeções',
+                  'Retorno pendente',
+                  'Proxima acao',
+                ],
+              },
+              {
+                title: 'Propostas recebidas',
+                progress: 0,
+                items: [
+                  'Valor ofertado',
+                  'Condição de pagamento',
+                  'Permuta',
+                  'Financiamento',
+                  'Contraproposta',
+                  'Status da negociação',
+                ],
+              },
+              {
+                title: 'Ajustes do anúncio',
+                progress: 0,
+                items: [
+                  'Ajuste de preço',
+                  'Troca de foto',
+                  'Nova descrição',
+                  'Mudança de destaque',
+                  'Reforço de campanha',
+                  'Revisão de estratégia',
+                ],
+              },
+              {
+                title: 'Contratos e formalização futura',
+                progress: 0,
+                items: [
+                  'Autorização',
+                  'Intermediação',
+                  'Exclusividade',
+                  'Compra e venda',
+                  'Locação',
+                  'Core Contratos separado',
+                ],
+              },
+              {
+                title: 'Encerramento',
+                progress: 0,
+                items: [
+                  'Vendido',
+                  'Alugado',
+                  'Pausado',
+                  'Arquivado',
+                  'Perdido',
+                  'Retirado do ar',
+                ],
+              },
+              {
+                title: 'Dossie e memoria operacional',
+                progress: 0,
+                items: [
+                  'Historico de decisões',
+                  'Mudanças de preço',
+                  'Propostas',
+                  'Eventos importantes',
+                  'Notas privadas',
+                  'Lifecycle preservado',
+                ],
+              },
+              {
+                title: 'Governança futura',
+                progress: 0,
+                items: [
+                  'Denúncias',
+                  'Auditoria',
+                  'Rastreabilidade',
+                  'Retenção',
+                  'LGPD',
+                  'Proteção jurídica',
+                ],
+              },
+            ].map((block) => (
+              <article
+                key={block.title}
+                style={{
+                  border: '1px solid #ddd6fe',
+                  borderRadius: 14,
+                  padding: 14,
+                  background: '#fff',
+                }}
+              >
+                <strong>{block.title}</strong>
+
+                <div
+                  style={{
+                    height: 9,
+                    borderRadius: 999,
+                    background: '#ede9fe',
+                    overflow: 'hidden',
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${block.progress}%`,
+                      height: '100%',
+                      background: '#7c3aed',
+                    }}
+                  />
+                </div>
+
+                <ul
+                  style={{
+                    margin: 0,
+                    paddingLeft: 18,
+                    color: '#475467',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {block.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #ddd6fe',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+              marginTop: 16,
+            }}
+          >
+            <strong>Resultado esperado desta camada</strong>
+
+            <p style={{ color: '#475467', lineHeight: 1.5, marginBottom: 0 }}>
+              Ao concluir o lifecycle, o sistema deve preservar a memoria
+              operacional do imovel, permitindo entender o que foi publicado,
+              ajustado, negociado, recusado, vendido, alugado, arquivado ou
+              encerrado.
+            </p>
+          </div>
+        </section>
+      )}
 
       <section
         style={{

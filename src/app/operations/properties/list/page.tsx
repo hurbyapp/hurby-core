@@ -12,7 +12,7 @@ quando houver foto publica vinculada ao anuncio.
 
 REGRA DE PRODUTO:
 - Anuncio e peca publica/comercial.
-- Ficha profissional e fluxo separado.
+- Acoplar Pipeline Pro e fluxo separado.
 - Esta pagina nao deve exibir dados sensiveis da ficha.
 - Thumbnail usa fotos publicas do anuncio.
 
@@ -236,6 +236,192 @@ export default function PropertyListPage() {
         <Link href="/statement">Extrato AXE</Link>
       </nav>
 
+      {/* PROPERTY_LIST_PIPELINE_ATTACH_NOTE_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Esta lista nao deve virar lista detalhada do Pipeline Pro.
+        - A lista mostra imóveis/anúncios existentes na carteira.
+        - O Pipeline Pro pode ser acoplado futuramente a um anúncio já existente.
+        - Isso permite melhorar anúncio básico, revisar estratégia, abrir dossiê e profissionalizar gestão.
+        - Não conectar banco, migrations, RPC, RLS ou services aqui sem auditoria.
+        - Codex pode corrigir acentuação e refinar layout mantendo UTF-8.
+
+        PROPERTY_LIST_BUTTON_SEMANTICS_V1
+
+        PROPERTY_LIST_ATTACH_PIPELINE_ACTION_V1
+        Ajuste de produto:
+        - O antigo botão "Ficha profissional" deve ser tratado como legado.
+        - O novo conceito é "Acoplar Pipeline Pro".
+        - Ao acoplar, o anúncio existente não recomeça do zero.
+        - O Pipeline Pro deve iniciar em estágio mais avançado, aproveitando dados preliminares já cadastrados no anúncio.
+        - Futuro ideal: rota com listingId/contexto, exemplo:
+          /operations/pipeline/atendimento?listingId=<id>&mode=attach
+        - Não implementar persistência sem revisar schema/service/RLS.
+
+        Semantica futura dos botoes:
+        1. Abrir Checkup:
+           Deve evoluir para Dossie/Checkup de qualidade do anuncio.
+           Avalia montagem do anuncio, dados estruturais, cliente vinculado,
+           portfolio, anuncio chaveado, fotos, dimensoes, extensoes, peso,
+           qualidade das imagens, vinculos e, quando for Anuncio Pro, tambem
+           resumo executivo, estrategia, indicadores de levantamento, documentacao
+           e conteudo consolidado do Pipeline Pro.
+
+        2. Editar anuncio:
+           Deve permanecer como edicao do anuncio publico/profissional.
+           Corrige descricao, fotos, preco, dados publicaveis, distribuicao,
+           parcerias, balcao de negocios, turbinamento com Axe, indexacao e redes.
+           Nao deve virar Pipeline Pro.
+
+        3. Acoplar Pipeline Pro:
+           Nome atual legado.
+           Deve virar "Acoplar Pipeline Pro" ou equivalente.
+           Deve iniciar o Pipeline Pro em fase mais avancada quando o anuncio
+           ja possui dados preliminares. A ficha longa isolada deve deixar de ser
+           a experiencia principal.
+
+        4. Diagnostico automatico Hurby:
+           Futuramente o Diagnostico/Risco ou Inteligencia Estrategica deve usar
+           levantamentos automaticos: media interna do ecossistema, media externa
+           quando houver integracao com portais, media do portfolio da agencia/
+           corretor, tempo medio de vida de anuncio por perfil/faixa de preco,
+           indicadores de liquidez e ferramentas internas de pesquisa de mercado.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 20,
+          background: '#f8fafc',
+          marginBottom: 20,
+        }}
+      >
+        <p
+          style={{
+            margin: 0,
+            fontSize: 13,
+            color: '#667085',
+            textTransform: 'uppercase',
+            letterSpacing: 0.8,
+          }}
+        >
+          Evolução profissional da carteira
+        </p>
+
+        <h2 style={{ marginBottom: 10 }}>
+          Anúncios existentes também podem evoluir
+        </h2>
+
+        <p
+          style={{
+            maxWidth: 860,
+            color: '#5f6b7a',
+            lineHeight: 1.6,
+            marginBottom: 16,
+          }}
+        >
+          Esta lista mostra imóveis e anúncios já existentes na carteira. Alguns nasceram
+          pelo formulário básico, outros podem nascer pelo Pipeline Pro. O objetivo
+          aqui não é repetir a esteira, mas permitir que qualquer anúncio existente
+          possa evoluir: melhorar qualidade, revisar dados, acoplar Pipeline Pro,
+          abrir Dossiê, ajustar publicação e profissionalizar a gestão.
+        </p>
+
+        <div
+          style={{
+            display: 'flex',
+            gap: 10,
+            flexWrap: 'wrap',
+          }}
+        >
+          <a
+            href="/operations/pipeline"
+            style={{
+              display: 'inline-flex',
+              padding: '10px 14px',
+              borderRadius: 10,
+              background: '#2563eb',
+              color: '#fff',
+              textDecoration: 'none',
+              fontWeight: 800,
+            }}
+          >
+            Abrir Pipeline Pro
+          </a>
+
+          <a
+            href="/operations/pipeline/atendimento"
+            style={{
+              display: 'inline-flex',
+              padding: '10px 14px',
+              borderRadius: 10,
+              border: '1px solid #d7dee8',
+              background: '#fff',
+              color: '#344054',
+              textDecoration: 'none',
+              fontWeight: 700,
+            }}
+          >
+            Iniciar Anúncio Placeholder
+          </a>
+        </div>
+      </section>
+
+      {/* PROPERTY_LIST_VISIBLE_BUTTON_GUIDE_V1 */}
+      <section
+        style={{
+          border: '1px solid #d7dee8',
+          borderRadius: 16,
+          padding: 16,
+          background: '#fff',
+          marginBottom: 20,
+        }}
+      >
+        <h3 style={{ marginTop: 0 }}>Como trabalhar anúncios existentes</h3>
+
+        <p style={{ color: '#667085', lineHeight: 1.5, marginBottom: 14 }}>
+          Esta lista não substitui o Pipeline Pro. Ela mantém os imóveis e anúncios
+          no radar da carteira. A partir daqui, o profissional pode avaliar a
+          qualidade do anúncio, editar a publicação ou acoplar o Pipeline Pro para
+          transformar um anúncio básico em operação profissional.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+            gap: 10,
+          }}
+        >
+          <div style={{ border: '1px solid #d7dee8', borderRadius: 12, padding: 12, background: '#f8fafc' }}>
+            <strong>Abrir Checkup / Dossiê</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.4 }}>
+              Avalia a qualidade geral do anúncio/imóvel, dados estruturais,
+              cliente vinculado, fotos, histórico, estratégia e informações
+              consolidadas.
+            </p>
+          </div>
+
+          <div style={{ border: '1px solid #d7dee8', borderRadius: 12, padding: 12, background: '#f8fafc' }}>
+            <strong>Editar anúncio</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.4 }}>
+              Corrige a publicação: descrição, fotos, preço, dados publicáveis,
+              distribuição, parcerias, indexação, redes e recursos profissionais.
+            </p>
+          </div>
+
+          <div style={{ border: '1px solid #2563eb', borderRadius: 12, padding: 12, background: '#eff6ff' }}>
+            <strong>Acoplar Pipeline Pro</strong>
+            <p style={{ marginBottom: 0, color: '#475467', fontSize: 13, lineHeight: 1.4 }}>
+              Substitui a antiga Pipeline Pro. Inicia o Pipeline Pro em fase
+              mais avançada quando o anúncio já possui dados preliminares.
+            </p>
+          </div>
+        </div>
+      </section>
+
+
+
       <h1>Lista de imoveis</h1>
 
       <p>
@@ -243,7 +429,7 @@ export default function PropertyListPage() {
       </p>
 
       <p className="muted">
-        A foto exibida no card vem da galeria publica do anuncio. A ficha profissional fica separada.
+        A foto exibida no card vem da galeria publica do anuncio. A Pipeline Pro fica separada.
       </p>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -322,9 +508,9 @@ export default function PropertyListPage() {
 
                 <Link
                   className="button-link"
-                  href={`/operations/properties/${listing.id}/assessment`}
+                  href={`/operations/pipeline/atendimento?listingId=${listing.id}&mode=attach`}
                 >
-                  Ficha profissional
+                  Acoplar Pipeline Pro
                 </Link>
               </p>
             </div>
