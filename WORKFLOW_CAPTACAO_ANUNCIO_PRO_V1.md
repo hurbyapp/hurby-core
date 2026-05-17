@@ -804,3 +804,39 @@ Todo novo campo deve pertencer a uma fase do workflow:
 - acoplagem futura.
 
 A prioridade agora é transformar páginas soltas em fluxo profissional executável.
+
+
+## 24. Anúncio Placeholder
+
+O Anúncio Placeholder é um item operacional provisório que pode aparecer na lista de imóveis/anúncios antes do anúncio público final estar pronto.
+
+Ele não substitui o Pipeline Pro.
+
+Função:
+- manter o imóvel no radar da equipe;
+- sinalizar que existe uma captação em andamento;
+- criar expectativa operacional;
+- permitir acesso rápido ao Pipeline Pro, Dossiê ou Análise;
+- não replicar todas as etapas do pipeline na lista;
+- não ser tratado como anúncio público final.
+
+Campos conceituais:
+- nome interno;
+- título público;
+- status operacional;
+- status de publicação;
+- responsável;
+- origem;
+- vínculo com Pipeline Pro;
+- vínculo com Dossiê;
+- vínculo com Análise Patrimonial.
+
+Exemplo:
+Nome interno: Florais - Hélio.
+Título público: ainda não definido.
+Status: placeholder em construção.
+Publicação: não publicado.
+
+Regra:
+Nome interno é para operação/equipe.
+Título público é para venda/publicação.

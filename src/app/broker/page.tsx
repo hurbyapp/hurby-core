@@ -231,6 +231,7 @@ export default function BrokerPage() {
         <Link href="/broker">Broker</Link>
         <Link href="/account">Minha conta</Link>
         <Link href="/account/profile">Editar cadastro</Link>
+        <Link href="/operations/pipeline">Pipeline Pro</Link>
         <Link href="/operations/properties">Core Imobiliario</Link>
         <Link href="/operations/properties/new">Cadastrar imovel</Link>
         <Link href="/operations/properties/list">Listar imoveis</Link>
@@ -285,6 +286,9 @@ export default function BrokerPage() {
         <p>Acesso rapido aos modulos operacionais disponiveis para teste.</p>
 
         <ul>
+          <li>
+            <Link href="/operations/pipeline">Pipeline Pro</Link>
+          </li>
           <li>
             <Link href="/operations/properties">Core Imobiliario</Link>
           </li>
