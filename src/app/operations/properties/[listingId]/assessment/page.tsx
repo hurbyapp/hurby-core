@@ -2,39 +2,82 @@
 
 /*
 =========================================================
-HURBY — CORE_PROPERTIES_FORM_V1
-ARQUIVO:
-src/app/operations/properties/[listingId]/assessment/page.tsx
+HURBY — CORE_PROPERTIES_FORM_V1 / ANÁLISE PATRIMONIAL V1
 
-RESPONSABILIDADE:
-Criar e editar a Ficha Profissional de Captacao e Avaliacao
-do Imovel vinculada a um anuncio existente.
+NOTA DE ORIENTAÇÃO PARA PRÓXIMO EXECUTOR / CODEX
 
-REGRA DE PRODUTO:
-- Anuncio e peca publica/comercial.
-- Ficha profissional e documento tecnico interno/adicional.
-- Esta pagina nao substitui o formulario do anuncio.
-- Fotos tecnicas da ficha devem ter estrutura propria futura.
-- Fotos publicas do anuncio ficam em property_listing_media.
+CONTEXTO DO PRODUTO:
+- Esta tela faz parte da base V1 da Análise Patrimonial.
+- Análise Patrimonial não é anúncio público.
+- Análise Patrimonial não é o Dossiê completo do imóvel.
+- "Dossiê do Imóvel" deve ficar reservado para o lifecycle/histórico amplo:
+  captação, anúncio, propostas, comunicação, contratos, administração,
+  locação, cobrança, ocorrências, revisões, aprovações e eventos futuros.
+- A Análise Patrimonial é a ferramenta de avaliação criteriosa do patrimônio:
+  captação, entrevista, vistoria, documentação, risco, preço, potencial,
+  classificação e direcionamento estratégico.
 
-PODE ALTERAR:
-- portugues, acentuacao e comunicacao com usuario
-- layout visual
-- accordions
-- organizacao das secoes
-- responsividade
-- componentes
+OBJETIVO DESTA V1:
+- Corrigir base funcional.
+- Organizar fluxo e leitura.
+- Separar anúncio, patrimônio, proprietário, avaliação, documentação,
+  entrevista, estratégia, resumos e notas privadas.
+- Preparar a base para evoluções futuras sem implementar todos os cores agora.
 
-MANTER UTF-8.
-NAO ALTERAR SEM MISSAO ESPECIFICA:
-- contratos da propertyService
-- nomes tecnicos dos JSONB
-- regras LGPD
-- RPCs
-- ledger/AXE
-- marketplace/leads/contracts
+NÃO IMPLEMENTAR AQUI SEM MISSÃO ESPECÍFICA:
+- Core Comunicador / Chat.
+- IA estratégica.
+- Core Score global.
+- Core Parcerias.
+- Proposta formal completa ao proprietário.
+- Calendário/agendamento.
+- Push/app.
+- Marketplace/leads avançado.
+- Contratos.
+- Lifecycle completo do Dossiê do Imóvel.
+
+ACOPLAGENS FUTURAS PREVISTAS:
+- IA futura deve usar dados estruturados da Análise Patrimonial para sugerir
+  preço, posicionamento, risco, proposta e narrativa comercial.
+- Comunicador futuro deve ser core próprio, plugável ao patrimônio/anúncio.
+- Código público do anúncio/patrimônio deve ser único global, curto e pesquisável,
+  diferente do UUID interno.
+- Nota Patrimonial deve ser distinta do Score global:
+  pode ter nota por dimensão, subcategoria, categoria, finalidade,
+  equalização e atratividade operacional.
+
+REGRA DE ARQUITETURA:
+- Não duplicar dados de cliente/proprietário fora do Core Clients.
+- Não transformar metadata provisória em contrato definitivo sem auditoria.
+- Não alterar RPCs, RLS, migrations, services ou contratos de dados sem
+  diagnóstico explícito e autorização.
+- Não misturar dados públicos do anúncio com dados privados da análise.
+- Fotos públicas do anúncio e fotos técnicas da análise devem ser tratadas
+  separadamente em evolução futura.
+
+ORIENTAÇÃO PARA COMPONENTIZAÇÃO FUTURA:
+- Esta página ainda está monolítica por segurança da missão atual.
+- Próxima etapa recomendada:
+  1. extrair Header/Toolbar;
+  2. extrair Summary/Context;
+  3. extrair ModuleNav;
+  4. extrair OwnerLinkBlock;
+  5. extrair módulos por domínio:
+     BaseCommon, PriceStrategy, TypeSpecificModule,
+     CommercialReading, TechnicalAssessment,
+     OwnerInterview, DocumentationFinancial,
+     CommercialProposal, ControlledSummaries, PrivateNotes;
+  6. criar componentes reutilizáveis:
+     FieldCard, SelectField, TextAreaField, FieldGuide, SaveModuleButton;
+  7. manter contratos atuais antes de qualquer refatoração.
+
+CUIDADO:
+- A missão atual é estabilizar a V1, não reconstruir todos os cores.
+- Se surgir dependência real de Chat, IA, Parcerias, Score global ou Cliente completo,
+  pausar e gerar handoff para missão/core específico.
 =========================================================
 */
+
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -303,6 +346,7 @@ export default function PropertyAssessmentPage() {
   const [houseNotes, setHouseNotes] = useState('')
 
   const [status, setStatus] = useState('')
+  const [propertyType, setPropertyType] = useState<any>(null)
 
   useEffect(() => {
     const init = async () => {
@@ -326,7 +370,20 @@ export default function PropertyAssessmentPage() {
         return
       }
 
-      setListing(listingResponse.data)
+      const listingData = listingResponse.data
+      setListing(listingData)
+
+      const propertyTypeId = listingData?.property_assets?.property_type_id
+
+      if (propertyTypeId) {
+        const propertyTypeResponse = await supabase
+          .from('property_type')
+          .select('id, slug, label')
+          .eq('id', propertyTypeId)
+          .maybeSingle()
+
+        setPropertyType(propertyTypeResponse.data || null)
+      }
 
       const assessmentData = assessmentResponse.data || null
       setAssessment(assessmentData)
@@ -571,6 +628,59 @@ export default function PropertyAssessmentPage() {
     init()
   }, [listingId])
 
+  const propertyTypeSlug = String(propertyType?.slug || '').toLowerCase()
+  const propertyTypeLabel = String(propertyType?.label || '').toLowerCase()
+  const propertyTypeText = `${propertyTypeSlug} ${propertyTypeLabel}`
+
+  const shouldShowTypeModule = (moduleKey: string) => {
+    if (!propertyTypeText.trim()) {
+      return false
+    }
+
+    const isApartment =
+      propertyTypeText.includes('apart') ||
+      propertyTypeText.includes('studio') ||
+      propertyTypeText.includes('loft') ||
+      propertyTypeText.includes('kitnet') ||
+      propertyTypeText.includes('flat')
+
+    const isHouse =
+      propertyTypeText.includes('casa') ||
+      propertyTypeText.includes('house') ||
+      propertyTypeText.includes('sobrado')
+
+    const isLand =
+      propertyTypeText.includes('terreno') ||
+      propertyTypeText.includes('lote') ||
+      propertyTypeText.includes('land')
+
+    const isCommercial =
+      propertyTypeText.includes('comercial') ||
+      propertyTypeText.includes('loja') ||
+      propertyTypeText.includes('sala') ||
+      propertyTypeText.includes('galp') ||
+      propertyTypeText.includes('barrac') ||
+      propertyTypeText.includes('commercial') ||
+      propertyTypeText.includes('warehouse')
+
+    const isRural =
+      propertyTypeText.includes('rural') ||
+      propertyTypeText.includes('chacara') ||
+      propertyTypeText.includes('chácara') ||
+      propertyTypeText.includes('sitio') ||
+      propertyTypeText.includes('sítio') ||
+      propertyTypeText.includes('fazenda') ||
+      propertyTypeText.includes('farm')
+
+    if (moduleKey === 'apartment') return isApartment
+    if (moduleKey === 'house') return isHouse
+    if (moduleKey === 'land') return isLand
+    if (moduleKey === 'commercial') return isCommercial
+    if (moduleKey === 'rural') return isRural
+
+    return true
+  }
+
   const handleSave = async () => {
     if (!listing?.property_assets?.id) {
       setStatus('Asset do imovel nao encontrado.')
@@ -613,7 +723,7 @@ export default function PropertyAssessmentPage() {
         clientRelationshipId = ownerResponse.data?.client_relationship?.id || null
       }
 
-      setStatus('Salvando ficha profissional...')
+      setStatus('Salvando análise patrimonial...')
 
       const moneyOrNull = (value: string) => {
         const normalized = value.replace(',', '.').trim()
@@ -703,7 +813,7 @@ export default function PropertyAssessmentPage() {
         is_free_assessment: assessment?.is_free_assessment ?? true,
 
         monetization_metadata: assessment?.monetization_metadata || {
-          commercial_product: 'Ficha Profissional de Captacao e Avaliacao do Imovel',
+          commercial_product: 'Análise Patrimonial do Imóvel',
           future_charge_model: 'axe_or_package',
         },
 
@@ -904,7 +1014,7 @@ export default function PropertyAssessmentPage() {
       })
 
       if (response.error) {
-        setStatus(response.error.message || 'Erro ao salvar ficha.')
+        setStatus(response.error.message || 'Erro ao salvar análise.')
         setSaving(false)
         return
       }
@@ -912,19 +1022,19 @@ export default function PropertyAssessmentPage() {
       setAssessment(response.data)
 
       if (!assessment) {
-        setStatus(clientEntityId ? 'Proprietario vinculado. Documento Profissional liberado para preenchimento.' : 'Documento Profissional preliminar criado sem proprietario vinculado. Voce pode vincular o cliente depois.')
+        setStatus(clientEntityId ? 'Proprietário vinculado. Análise Patrimonial liberada para preenchimento.' : 'Análise Patrimonial preliminar criada sem proprietário vinculado. Você pode vincular o cliente depois.')
         setSaving(false)
         return
       }
 
-      setStatus('Documento Profissional salvo. Redirecionando para o checkup...')
+      setStatus('Análise Patrimonial salva. Redirecionando para o checkup...')
 
       setTimeout(() => {
         window.location.href = `/operations/properties/${listingId}`
       }, 700)
     } catch (error) {
       console.error(error)
-      setStatus('Erro interno ao salvar ficha.')
+      setStatus('Erro interno ao salvar análise.')
       setSaving(false)
     }
   }
@@ -1236,6 +1346,248 @@ export default function PropertyAssessmentPage() {
           font-weight: 700;
         }
 
+
+        /* FORCE_LAYOUT_ANALISE_PATRIMONIAL_V1 */
+        .assessment-page {
+          font-family: 'Google Sans', 'Product Sans', Inter, Arial, sans-serif;
+        }
+
+        .assessment-flow-panel {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+          margin: 16px 0 20px;
+        }
+
+        .assessment-flow-panel > div {
+          background: #ffffff;
+          border: 1px solid #dbeafe;
+          border-radius: 18px;
+          padding: 14px;
+          box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
+        }
+
+        .assessment-flow-panel strong {
+          display: block;
+          color: #1e3a8a;
+          font-size: 13px;
+          margin-bottom: 5px;
+        }
+
+        .assessment-flow-panel span {
+          display: block;
+          color: #475569;
+          font-size: 12px;
+          line-height: 1.45;
+        }
+
+        .assessment-page > hr {
+          display: none !important;
+        }
+
+        .assessment-page > h2 {
+          margin: 30px 0 14px !important;
+          padding: 18px 20px !important;
+          border: 1px solid #cbd5e1 !important;
+          border-left: 6px solid #2563eb !important;
+          border-radius: 20px !important;
+          background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07) !important;
+          font-size: 21px !important;
+        }
+
+        .assessment-page > h2 + .back-to-top {
+          margin: -4px 0 12px !important;
+        }
+
+        .assessment-page > h2 + .back-to-top + p,
+        .assessment-page > h2 + .back-to-top + p + p,
+        .assessment-page > h2 + p,
+        .assessment-page > h2 + p + p {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 14px;
+          padding: 12px 14px;
+          color: #475569;
+          line-height: 1.5;
+        }
+
+        .assessment-page label {
+          display: inline-block !important;
+          vertical-align: top !important;
+          width: calc(50% - 10px) !important;
+          min-height: 116px !important;
+          box-sizing: border-box !important;
+          background: #ffffff !important;
+          border: 1px solid #dbe3ec !important;
+          border-radius: 18px !important;
+          padding: 14px !important;
+          margin: 8px 8px 8px 0 !important;
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.045) !important;
+        }
+
+        .assessment-page label:has(textarea) {
+          width: calc(100% - 8px) !important;
+        }
+
+        .assessment-page label:hover {
+          border-color: #bfdbfe !important;
+          box-shadow: 0 10px 26px rgba(37, 99, 235, 0.09) !important;
+        }
+
+        .assessment-page label > br {
+          display: none !important;
+        }
+
+        .assessment-page > br,
+        .assessment-page label + br {
+          display: none !important;
+        }
+
+        .assessment-page input,
+        .assessment-page textarea,
+        .assessment-page select {
+          margin-top: 8px !important;
+        }
+
+        .assessment-page textarea {
+          min-height: 126px !important;
+        }
+
+        .assessment-page .field-guide {
+          border-top: 1px solid #eef2f7;
+          padding-top: 9px;
+          margin-top: 10px;
+        }
+
+        .assessment-page .analysis-note,
+        .assessment-page .sensitive-note {
+          display: block;
+          width: calc(100% - 8px);
+          box-sizing: border-box;
+          margin: 12px 0 16px;
+        }
+
+        .module-nav {
+          position: sticky;
+          top: 10px;
+          z-index: 10;
+          border-color: #bfdbfe !important;
+        }
+
+        .assessment-action-bar {
+          position: sticky;
+          bottom: 12px;
+          z-index: 10;
+          border-color: #bfdbfe !important;
+        }
+
+
+        /* OWNER_LINK_PLACEHOLDER_V1 */
+        .owner-link-placeholder-v1 {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          background: #fff7ed;
+          border: 1px solid #fed7aa;
+          border-radius: 20px;
+          padding: 16px;
+          margin: 14px 0 18px;
+          box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
+        }
+
+        .owner-link-placeholder-v1 strong {
+          display: block;
+          color: #9a3412;
+          font-size: 16px;
+          margin: 2px 0 4px;
+        }
+
+        .owner-link-placeholder-v1 p {
+          margin: 0;
+          color: #7c2d12;
+          font-size: 13px;
+          line-height: 1.45;
+        }
+
+        .owner-kicker {
+          display: inline-block;
+          color: #c2410c;
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .owner-link-button {
+          border: 1px solid #fdba74;
+          background: #ffedd5;
+          color: #9a3412;
+          border-radius: 999px;
+          padding: 9px 14px;
+          font-size: 12px;
+          font-weight: 900;
+          white-space: nowrap;
+        }
+
+        .owner-link-button:disabled {
+          opacity: 0.75;
+          cursor: not-allowed;
+        }
+
+
+        /* TOP_INDICATORS_ANALISE_PATRIMONIAL_V1 */
+        .top-indicators-v1 {
+          display: grid;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 10px;
+          margin: 14px 0 18px;
+        }
+
+        .top-indicator-card {
+          background: #ffffff;
+          border: 1px solid #dbe3ec;
+          border-radius: 16px;
+          padding: 12px;
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.045);
+        }
+
+        .top-indicator-card span {
+          display: block;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 0.07em;
+          text-transform: uppercase;
+          color: #64748b;
+          margin-bottom: 4px;
+        }
+
+        .top-indicator-card strong {
+          display: block;
+          color: #172033;
+          font-size: 13px;
+          line-height: 1.25;
+        }
+
+        .top-indicator-warning {
+          border-color: #fed7aa;
+          background: #fff7ed;
+        }
+
+        .top-indicator-warning strong {
+          color: #9a3412;
+        }
+
+        .top-indicator-ok {
+          border-color: #bbf7d0;
+          background: #f0fdf4;
+        }
+
+        .top-indicator-ok strong {
+          color: #166534;
+        }
+
         @media (max-width: 820px) {
           .assessment-page {
             padding: 18px;
@@ -1266,10 +1618,10 @@ export default function PropertyAssessmentPage() {
 
       <section id="topo-documento" className="assessment-hero">
         <div>
-          <p className="assessment-eyebrow">Documento Profissional do Imovel</p>
-          <h1>Ficha Profissional de Captacao e Avaliacao</h1>
+          <p className="assessment-eyebrow">Análise Patrimonial</p>
+          <h1>Análise Patrimonial do Imóvel</h1>
           <p>
-            Registro tecnico e comercial interno para apoiar captacao, vistoria, precificacao,
+            Registro técnico e comercial interno para apoiar captacao, vistoria, precificacao,
             riscos, estrategia de negociacao e proximos passos do broker.
           </p>
         </div>
@@ -1281,8 +1633,41 @@ export default function PropertyAssessmentPage() {
         </div>
       </section>
 
+      <section className="owner-link-placeholder-v1">
+        <div>
+          <span className="owner-kicker">Proprietario</span>
+          <strong>Nao vinculado</strong>
+          <p>
+            Este patrimonio ainda nao possui proprietario vinculado no Core Clients.
+            Futuramente este bloco deve buscar por CPF/CNPJ, localizar cliente existente
+            ou abrir cadastro minimo antes de liberar fluxo completo.
+          </p>
+        </div>
+        <button type="button" className="owner-link-button" disabled>
+          Vincular proprietario
+        </button>
+      </section>
+
+
       <style>{`
         @media print {
+          /* PRINT_HIDE_FIELD_GUIDES_FORCE_V1 */
+          .field-guide {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: 0 !important;
+          }
+
+          label {
+            min-height: auto !important;
+          }
+
           body {
             background: #fff !important;
           }
@@ -1315,16 +1700,16 @@ export default function PropertyAssessmentPage() {
         }
       `}</style>
 
-      <nav className="module-nav no-print" aria-label="Navegacao do Documento Profissional">
+      <nav className="module-nav no-print" aria-label="Navegacao da Análise Patrimonial">
         <a href="#owner-link">Proprietario</a>
         <a href="#document-control">Controle</a>
         <a href="#base-common">Base Comum</a>
         <a href="#price-strategy">Preco</a>
-        <a href="#house-module">Casa</a>
-        <a href="#apartment-module">Apartamento</a>
-        <a href="#land-module">Terreno</a>
-        <a href="#commercial-module">Comercial</a>
-        <a href="#rural-module">Rural</a>
+        {shouldShowTypeModule('house') && <a href="#house-module">Casa</a>}
+        {shouldShowTypeModule('apartment') && <a href="#apartment-module">Apartamento</a>}
+        {shouldShowTypeModule('land') && <a href="#land-module">Terreno</a>}
+        {shouldShowTypeModule('commercial') && <a href="#commercial-module">Comercial</a>}
+        {shouldShowTypeModule('rural') && <a href="#rural-module">Rural</a>}
         <a href="#commercial-reading">Leitura comercial</a>
         <a href="#commercial-proposal-v1">Proposta comercial</a>
         <a href="#controlled-summaries-v1">Resumos</a>
@@ -1356,9 +1741,9 @@ export default function PropertyAssessmentPage() {
       </div>
 
       <section className="assessment-card">
-        <h2>O que e esta ficha?</h2>
+        <h2>O que e esta análise?</h2>
         <p>
-          Esta ficha e um documento tecnico interno do profissional ou da imobiliaria.
+          A Análise Patrimonial é uma ferramenta técnica interna do profissional ou da imobiliária.
           Ela nao e o anuncio publico do imovel.
         </p>
         <p>
@@ -1367,21 +1752,21 @@ export default function PropertyAssessmentPage() {
         </p>
         <p>
           Proprietario e parceiros devem ver apenas resumos controlados quando permitido.
-          Notas privadas e dados sensiveis nao devem ser expostos.
+          Notas privadas, preço mínimo, riscos sensíveis e dados pessoais não devem ser expostos.
         </p>
       </section>
 
       <section className="assessment-linked-summary">
         <div className="summary-item">
-          <span className="summary-label">Anuncio vinculado</span>
-          <span className="summary-value">{listing?.title || 'Sem titulo'}</span>
+          <span className="summary-label">Anúncio vinculado</span>
+          <span className="summary-value">{listing?.title || 'Sem título'}</span>
         </div>
         <div className="summary-item">
           <span className="summary-label">Listing ID</span>
           <span className="summary-value">{listingId}</span>
         </div>
         <div className="summary-item">
-          <span className="summary-label">Status do documento</span>
+          <span className="summary-label">Status da análise</span>
           <span className="summary-value">{assessment ? assessmentStatus : 'Preliminar pendente'}</span>
         </div>
       </section>
@@ -1389,9 +1774,9 @@ export default function PropertyAssessmentPage() {
       {!assessment && (
         <>
           <hr />
-          <h2 id="owner-link">1. Proprietario da ficha</h2>
+          <h2 id="owner-link">1. Proprietario da análise</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
-          <p>Opcional nesta etapa. Informe CPF ou CNPJ se quiser vincular o proprietario agora, ou crie o documento preliminar e vincule depois.</p>
+          <p>Opcional nesta etapa. Informe CPF ou CNPJ se quiser vincular o proprietario agora, ou crie a análise preliminar e vincule depois.</p>
 
           <label>Nome<br /><input value={ownerName} onChange={(e) => setOwnerName(e.target.value)} style={{ width: '100%' }} /></label>
           <br /><br />
@@ -1406,7 +1791,7 @@ export default function PropertyAssessmentPage() {
           <label>WhatsApp<br /><input value={ownerWhatsapp} onChange={(e) => setOwnerWhatsapp(e.target.value)} /></label>
           <br /><br />
           <label>Observacoes da captacao<br /><textarea value={ownerNotes} onChange={(e) => setOwnerNotes(e.target.value)} rows={3} style={{ width: '100%' }} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao da Análise Patrimonial.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
       </label>
         </>
       )}
@@ -1419,7 +1804,7 @@ export default function PropertyAssessmentPage() {
             <h2>Antes de liberar o documento</h2>
 
             <p>
-              O Documento Profissional pode nascer como levantamento preliminar sem proprietario vinculado.
+              A Análise Patrimonial pode nascer como levantamento preliminar sem proprietário vinculado.
               Pessoa, cliente ou proprietario nao pode ser duplicado fora do Core Clients.
             </p>
 
@@ -1434,7 +1819,7 @@ export default function PropertyAssessmentPage() {
           </section>
 
           <button onClick={handleSave} disabled={saving}>
-            {saving ? 'Salvando...' : 'Criar Documento Profissional'}
+            {saving ? 'Salvando...' : 'Criar Análise Patrimonial'}
           </button>
 
           <br /><br />
@@ -1448,11 +1833,11 @@ export default function PropertyAssessmentPage() {
 
           <hr />
 
-          <h2 id="document-control">2. Controle da ficha</h2>
+          <h2 id="document-control">2. Controle da análise</h2>
       <a className="back-to-top no-print" href="#topo-documento">↑ Voltar ao topo</a>
 
       <label>
-        Status da ficha
+        Status da análise
         <br />
         <select value={assessmentStatus} onChange={(e) => setAssessmentStatus(e.target.value as ProfessionalAssessmentStatus)}>
           <option value="draft">Rascunho</option>
@@ -1462,13 +1847,13 @@ export default function PropertyAssessmentPage() {
           <option value="rejected">Rejeitada</option>
           <option value="archived">Arquivada</option>
         </select>
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao da Análise Patrimonial.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
       </label>
 
       <br /><br />
 
       <label>
-        Finalidade da ficha
+        Finalidade da análise
         <br />
         <select value={assessmentPurpose} onChange={(e) => setAssessmentPurpose(e.target.value as ProfessionalAssessmentPurpose)}>
           <option value="general">Geral</option>
@@ -1476,11 +1861,13 @@ export default function PropertyAssessmentPage() {
           <option value="rental">Locacao</option>
           <option value="rental_management">Locacao com gestao/admin</option>
         </select>
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao da Análise Patrimonial.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
       </label>
 
       <br /><br />
 
+
+      <section className="assessment-section assessment-section-base-common">
 
       <hr />
 
@@ -1499,7 +1886,7 @@ export default function PropertyAssessmentPage() {
           <option value="proposal_preparation">Preparacao para proposta</option>
           <option value="contract_preparation">Preparacao para contrato</option>
         </select>
-        <div className="field-guide"><strong>O que e:</strong> classificar a finalidade operacional da ficha.<br /><strong>Como avaliar:</strong> use levantamento preliminar quando ainda faltam dados; use vistoria/revisao quando ja existe analise mais firme.</div>
+        <div className="field-guide"><strong>O que e:</strong> classificar a finalidade operacional da análise.<br /><strong>Como avaliar:</strong> use levantamento preliminar quando ainda faltam dados; use vistoria/revisao quando ja existe analise mais firme.</div>
       </label>
 
       <br /><br />
@@ -1662,7 +2049,6 @@ export default function PropertyAssessmentPage() {
         </select>
         <div className="field-guide"><strong>O que e:</strong> avaliar pendencias financeiras conhecidas.<br /><strong>Como avaliar:</strong> use risco relevante quando houver divida, financiamento, IPTU, condominio ou informacao conflitante.</div>
       </label>
-
       <hr />
 
       <h2 id="price-strategy">4. Estrategia de preco interna</h2>
@@ -1692,6 +2078,8 @@ export default function PropertyAssessmentPage() {
         <div className="field-guide"><strong>O que e:</strong> valor que o proprietario deseja receber ou anunciar.<br /><strong>Como avaliar:</strong> registre o valor declarado, sem misturar com preco recomendado pelo profissional.</div>
       </label>
 
+      {shouldShowTypeModule('house') && (
+        <>
       <hr />
 
       <h2 id="house-module">5. Modulo Casa V1</h2>
@@ -1908,9 +2296,14 @@ export default function PropertyAssessmentPage() {
 
       <label>Observacoes especificas da casa<br />
         <textarea value={houseNotes} onChange={(e) => setHouseNotes(e.target.value)} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao da Análise Patrimonial.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
       </label>
 
+        </>
+      )}
+
+      {shouldShowTypeModule('apartment') && (
+        <>
       <hr />
 
       <h2 id="apartment-module">6. Modulo Apartamento / Studio / Loft / Kitnet V1</h2>
@@ -2109,9 +2502,14 @@ export default function PropertyAssessmentPage() {
 
       <label>Observacoes especificas da unidade<br />
         <textarea value={apartmentNotes} onChange={(e) => setApartmentNotes(e.target.value)} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao da Análise Patrimonial.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
       </label>
 
+        </>
+      )}
+
+      {shouldShowTypeModule('land') && (
+        <>
       <hr />
 
       <h2 id="land-module">7. Modulo Terreno / Lote V1</h2>
@@ -2286,9 +2684,14 @@ export default function PropertyAssessmentPage() {
 
       <label>Observacoes especificas do terreno<br />
         <textarea value={landNotes} onChange={(e) => setLandNotes(e.target.value)} />
-        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao do Documento Profissional.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
+        <div className="field-guide"><strong>O que e:</strong> criterio de avaliacao da Análise Patrimonial.<br /><strong>Como avaliar:</strong> escolha com base em evidencia. Quando nao houver comprovacao, use a confirmar, pendente ou nao verificado.</div>
       </label>
 
+        </>
+      )}
+
+      {shouldShowTypeModule('commercial') && (
+        <>
       <hr />
 
             <h2 id="commercial-module">8. Modulo Comercial V1</h2>
@@ -2490,6 +2893,11 @@ export default function PropertyAssessmentPage() {
         <div className="field-guide"><strong>O que e:</strong> observacoes livres sobre uso, risco, adaptacao ou oportunidade comercial.<br /><strong>Como avaliar:</strong> registre pontos que nao cabem nos campos estruturados.</div>
       </label>
 
+        </>
+      )}
+
+      {shouldShowTypeModule('rural') && (
+        <>
       <hr />
 
             <h2 id="rural-module">9. Modulo Rural V1</h2>
@@ -2716,6 +3124,8 @@ export default function PropertyAssessmentPage() {
         <div className="field-guide"><strong>O que e:</strong> observacoes livres sobre acesso, agua, benfeitorias, producao, risco ou oportunidade rural.<br /><strong>Como avaliar:</strong> registre informacoes importantes que nao cabem nos campos estruturados.</div>
       </label>
 
+        </>
+      )}
       <hr />
 
       <h2 id="commercial-reading">10. Leitura comercial e proximos passos</h2>
@@ -2815,7 +3225,6 @@ export default function PropertyAssessmentPage() {
       <label><input type="checkbox" checked={hideExactAddressForPartners} onChange={(e) => setHideExactAddressForPartners(e.target.checked)} /> Ocultar endereco exato para parceiros</label>
       <br />
       <label><input type="checkbox" checked={ownerCanViewSummary} onChange={(e) => setOwnerCanViewSummary(e.target.checked)} /> Proprietario pode ver resumo controlado</label>
-
       <hr />
 
       <h2 id="technical-assessment-v1">Avaliacao Tecnica V1</h2>
@@ -2978,7 +3387,6 @@ export default function PropertyAssessmentPage() {
         <textarea value={technicalAssessmentNotesV1} onChange={(e) => setTechnicalAssessmentNotesV1(e.target.value)} />
         <div className="field-guide"><strong>O que e:</strong> resumo livre da avaliacao tecnica.<br /><strong>Como avaliar:</strong> registre raciocinio profissional, ressalvas e pontos que nao entraram nos campos estruturados.</div>
       </label>
-
       <hr />
 <h2 id="owner-interview-v1">Entrevista com proprietario V1</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
@@ -3131,7 +3539,6 @@ export default function PropertyAssessmentPage() {
         <textarea value={ownerInterviewNotesV1} onChange={(e) => setOwnerInterviewNotesV1(e.target.value)} />
         <div className="field-guide"><strong>O que e:</strong> resumo profissional da conversa com o proprietario.<br /><strong>Como avaliar:</strong> escreva informacoes uteis para retomar a negociacao sem depender de memoria.</div>
       </label>
-
       <hr />
 
 
@@ -3259,7 +3666,7 @@ export default function PropertyAssessmentPage() {
           <option value="critical">Critico</option>
           <option value="not_evaluated">Nao avaliado</option>
         </select>
-        <div className="field-guide"><strong>O que e:</strong> classificacao geral do risco documental da ficha.<br /><strong>Como avaliar:</strong> alto ou critico quando faltar documento essencial, houver divergencia, restricao ou duvida de titularidade.</div>
+        <div className="field-guide"><strong>O que e:</strong> classificacao geral do risco documental da análise.<br /><strong>Como avaliar:</strong> alto ou critico quando faltar documento essencial, houver divergencia, restricao ou duvida de titularidade.</div>
       </label>
 
       <br /><br />
@@ -3304,11 +3711,10 @@ export default function PropertyAssessmentPage() {
         <textarea value={financialNotesV1} onChange={(e) => setFinancialNotesV1(e.target.value)} />
         <div className="field-guide"><strong>O que e:</strong> observacoes livres sobre preco, debitos, financiamento e custos.<br /><strong>Como avaliar:</strong> registre valores informados, duvidas, necessidade de comprovacao e impacto na negociacao.</div>
       </label>
-
       <hr />
 <h2 id="commercial-proposal-v1">Estrategia Comercial e Proposta Comercial V1</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
-      <p className="analysis-note">Como avaliar: transforme a ficha tecnica em decisao comercial. A proposta deve orientar preco, publicacao, negociacao, argumento para o proprietario e proxima acao pratica.</p>
+      <p className="analysis-note">Como avaliar: transforme a análise tecnica em decisao comercial. A proposta deve orientar preco, publicacao, negociacao, argumento para o proprietario e proxima acao pratica.</p>
 
       <label>Diagnostico comercial do imovel<br />
         <select value={proposalCommercialDiagnosis} onChange={(e) => setProposalCommercialDiagnosis(e.target.value)}>
@@ -3335,7 +3741,7 @@ export default function PropertyAssessmentPage() {
           <option value="income_property">Renda/locacao</option>
           <option value="needs_repositioning">Precisa reposicionamento</option>
         </select>
-        <div className="field-guide"><strong>O que e:</strong> narrativa comercial que deve guiar anuncio, atendimento e argumentacao.<br /><strong>Como avaliar:</strong> escolha o enquadramento que melhor vende o imovel sem prometer algo que a ficha nao sustenta.</div>
+        <div className="field-guide"><strong>O que e:</strong> narrativa comercial que deve guiar anuncio, atendimento e argumentacao.<br /><strong>Como avaliar:</strong> escolha o enquadramento que melhor vende o imovel sem prometer algo que a análise nao sustenta.</div>
       </label>
 
       <br /><br />
@@ -3417,7 +3823,6 @@ export default function PropertyAssessmentPage() {
         <textarea value={proposalInternalNotes} onChange={(e) => setProposalInternalNotes(e.target.value)} />
         <div className="field-guide"><strong>O que e:</strong> observacoes internas da estrategia comercial.<br /><strong>Como avaliar:</strong> registre raciocinio, combinado verbal, margem, duvidas e alertas para retomada futura.</div>
       </label>
-
       <hr />
 <h2 id="controlled-summaries-v1">Resumos Controlados V1</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
@@ -3432,7 +3837,7 @@ export default function PropertyAssessmentPage() {
           <option value="ready_public">Pronto para anuncio publico</option>
           <option value="blocked_by_risk">Bloqueado por risco</option>
         </select>
-        <div className="field-guide"><strong>O que e:</strong> maturidade dos resumos gerados a partir da ficha.<br /><strong>Como avaliar:</strong> se ainda existem pendencias documentais, tecnicas ou financeiras, mantenha como rascunho ou precisa de revisao.</div>
+        <div className="field-guide"><strong>O que e:</strong> maturidade dos resumos gerados a partir da análise.<br /><strong>Como avaliar:</strong> se ainda existem pendencias documentais, tecnicas ou financeiras, mantenha como rascunho ou precisa de revisao.</div>
       </label>
 
       <br /><br />
@@ -3516,9 +3921,8 @@ export default function PropertyAssessmentPage() {
 
       <label>Disclaimer / ressalva controlada<br />
         <textarea value={controlledRiskDisclaimerV1} onChange={(e) => setControlledRiskDisclaimerV1(e.target.value)} />
-        <div className="field-guide"><strong>O que e:</strong> ressalva para evitar conclusoes indevidas sobre documentos, estrutura ou regularidade.<br /><strong>Como avaliar:</strong> use quando a ficha tiver base visual, verbal ou preliminar e ainda depender de confirmacao documental ou especialista.</div>
+        <div className="field-guide"><strong>O que e:</strong> ressalva para evitar conclusoes indevidas sobre documentos, estrutura ou regularidade.<br /><strong>Como avaliar:</strong> use quando a análise tiver base visual, verbal ou preliminar e ainda depender de confirmacao documental ou especialista.</div>
       </label>
-
       <hr />
 <h2 id="private-notes-v1">Notas Privadas V1</h2>
       <a className="back-to-top no-print" href="#topo-documento">Voltar ao topo</a>
@@ -3624,11 +4028,13 @@ export default function PropertyAssessmentPage() {
       <hr />
 <div className="assessment-action-bar no-print">
         <button onClick={handleSave} disabled={saving}>
-          {saving ? 'Salvando...' : 'Salvar ficha profissional'}
+          {saving ? 'Salvando...' : 'Salvar análise patrimonial'}
         </button>
 
         {status && <span className="assessment-status">{status}</span>}
       </div>
+      </section>
+
         </>
       )}
     </main>
