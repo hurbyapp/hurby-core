@@ -81,7 +81,7 @@ const phases = [
     ],
   },
   {
-    title: '4. Estrategia comercial',
+    title: '4. Inteligencia estrategica',
     route: 'estrategia',
     status: 'Em desenho',
     progress: 10,
@@ -333,6 +333,58 @@ export default function PipelinePage() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 20,
+          background: '#fff',
+          marginBottom: 22,
+        }}
+      >
+        {/* PIPELINE_INTELLIGENCE_LAYER_NOTE_V1 */}
+        <h2 style={{ marginTop: 0 }}>Camadas do processo</h2>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: 12,
+          }}
+        >
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#f8fafc',
+            }}
+          >
+            <strong>Pipelines operacionais</strong>
+            <p style={{ marginBottom: 0, color: '#667085', lineHeight: 1.5 }}>
+              Coletam e organizam dados: atendimento, levantamento, documentos,
+              geografia, mercado, perfil do proprietario, evidencias e riscos.
+            </p>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #2563eb',
+              borderRadius: 14,
+              padding: 14,
+              background: '#eff6ff',
+            }}
+          >
+            <strong>Pipeline de inteligencia</strong>
+            <p style={{ marginBottom: 0, color: '#475467', lineHeight: 1.5 }}>
+              Atua como cerebro do processo. Interpreta os dados dos pipelines
+              inferiores e gera decisoes de preco, posicionamento, anuncio,
+              distribuicao, proposta e publicacao.
+            </p>
+          </div>
         </div>
       </section>
 
