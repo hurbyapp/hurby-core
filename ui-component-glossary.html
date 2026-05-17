@@ -1,0 +1,874 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hurby UI Component Glossary</title>
+
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --border: #d7dee8;
+      --text: #111827;
+      --muted: #667085;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --amber: #f59e0b;
+      --purple: #7c3aed;
+      --red: #dc2626;
+      --radius: 16px;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --font: 'Google Sans', 'Product Sans', Inter, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    code {
+      background: #eef2f6;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .doc-hero {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      background: linear-gradient(135deg, #ffffff, #eff6ff);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .component-section {
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px;
+      background: var(--surface);
+      margin-bottom: 22px;
+    }
+
+    .component-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    .component-title small {
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: var(--surface);
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      background: var(--surface-soft);
+    }
+
+    .callout {
+      border-left: 5px solid var(--blue);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: #eff6ff;
+    }
+
+    .alert {
+      border: 1px solid #fecaca;
+      border-radius: 14px;
+      padding: 14px;
+      background: #fef2f2;
+    }
+
+    .banner {
+      border: 1px solid #bfdbfe;
+      border-radius: 18px;
+      padding: 18px;
+      background: #eff6ff;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      background: var(--surface);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .btn-success {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    .badge {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 12px;
+      color: #475467;
+      background: var(--surface-soft);
+    }
+
+    .badge-blue {
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: #344054;
+    }
+
+    input, select, textarea {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: var(--font);
+      background: var(--surface);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 10px 14px;
+      background: var(--surface-soft);
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .accordion-header {
+      padding: 12px 14px;
+      font-weight: 800;
+      background: var(--surface-soft);
+    }
+
+    .accordion-body {
+      padding: 14px;
+    }
+
+    .stepper {
+      display: grid;
+      gap: 10px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      background: #e5eaf0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 62%;
+      height: 100%;
+      background: var(--blue);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 12px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: var(--surface-soft);
+    }
+
+    .sidebar-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 16px;
+    }
+
+    .sidebar {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      background: var(--surface-soft);
+    }
+
+    .empty-state {
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+      padding: 32px;
+      background: var(--surface-soft);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+      border-left: 3px solid var(--border);
+      padding-left: 16px;
+    }
+
+    .timeline-item {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: var(--surface);
+    }
+
+    .modal-preview {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      max-width: 520px;
+    }
+
+    .drawer-preview {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      background: var(--surface-soft);
+      max-width: 360px;
+      min-height: 220px;
+    }
+
+    @media (max-width: 780px) {
+      .sidebar-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <section class="doc-hero">
+      <span class="badge badge-blue">Glossário visual Hurby</span>
+      <h1>Componentes de interface usados em SaaS e marketplace</h1>
+      <p>
+        Este arquivo serve para você aprender nomes técnicos e direcionar melhor
+        o Codex, o designer ou o executor. Exemplo: em vez de dizer “box azul”,
+        você pode dizer “card”, “panel”, “callout”, “hero”, “toolbar” ou
+        “section”.
+      </p>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>1. Section</h2>
+          <small>Nome técnico: <code>&lt;section&gt;</code></small>
+        </div>
+        <span class="badge">Bloco estrutural</span>
+      </div>
+
+      <p>
+        Uma section é uma área do corpo da página. Pode conter cards, textos,
+        formulários, tabelas ou qualquer conjunto de elementos.
+      </p>
+
+      <section class="panel">
+        <strong>Exemplo de section</strong>
+        <p>Usada para separar uma parte da página, como “Pipeline Pro”, “Lista de imóveis” ou “Diagnóstico”.</p>
+      </section>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>2. Container</h2>
+          <small>Nome técnico: <code>container</code></small>
+        </div>
+        <span class="badge">Limite de largura</span>
+      </div>
+
+      <p>
+        Container é a estrutura que segura o conteúdo centralizado com largura máxima.
+        Normalmente envolve a página inteira ou grandes blocos.
+      </p>
+
+      <div class="panel">
+        <strong>Exemplo de container</strong>
+        <p>Usado para não deixar o conteúdo colado nas bordas nem largo demais.</p>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>3. Card</h2>
+          <small>Nome técnico: <code>card</code></small>
+        </div>
+        <span class="badge">Cartão de conteúdo</span>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <span class="badge badge-blue">Anúncio</span>
+          <h3>Florais - Hélio</h3>
+          <p>Card usado para representar um imóvel, anúncio, etapa ou resumo.</p>
+          <a class="btn btn-primary" href="#">Acoplar Pipeline Pro</a>
+        </article>
+
+        <article class="card">
+          <span class="badge">Pipeline</span>
+          <h3>Levantamento</h3>
+          <p>Card de etapa com chamada para ação.</p>
+          <div class="progress-track"><div class="progress-bar"></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>4. Panel</h2>
+          <small>Nome técnico: <code>panel</code></small>
+        </div>
+        <span class="badge">Painel informativo</span>
+      </div>
+
+      <div class="panel">
+        <strong>Painel neutro</strong>
+        <p>Bom para agrupar informações, instruções ou resumo de contexto.</p>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>5. Hero</h2>
+          <small>Nome técnico: <code>hero section</code></small>
+        </div>
+        <span class="badge">Topo de impacto</span>
+      </div>
+
+      <div class="doc-hero">
+        <span class="badge badge-blue">Produto operacional</span>
+        <h2>Pipeline Pro</h2>
+        <p>Hero é o bloco principal de abertura da página. Vende o produto e apresenta as ações principais.</p>
+        <div class="button-row">
+          <a class="btn btn-primary" href="#">Iniciar Anúncio Placeholder</a>
+          <a class="btn" href="#">Ver imóveis</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>6. Banner</h2>
+          <small>Nome técnico: <code>banner</code></small>
+        </div>
+        <span class="badge">Mensagem destacada</span>
+      </div>
+
+      <div class="banner">
+        <strong>Acoplando Pipeline Pro a anúncio existente</strong>
+        <p>Banner é usado para destacar um estado, aviso ou modo especial da tela.</p>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>7. Callout</h2>
+          <small>Nome técnico: <code>callout</code></small>
+        </div>
+        <span class="badge">Nota orientativa</span>
+      </div>
+
+      <div class="callout">
+        <strong>Nota de produto</strong>
+        <p>Callout é uma observação destacada, normalmente com borda lateral colorida.</p>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>8. Alert</h2>
+          <small>Nome técnico: <code>alert</code></small>
+        </div>
+        <span class="badge">Aviso/risco</span>
+      </div>
+
+      <div class="alert">
+        <strong>Atenção</strong>
+        <p>Alert serve para risco, erro, pendência crítica ou aviso operacional.</p>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>9. Toolbar</h2>
+          <small>Nome técnico: <code>toolbar</code></small>
+        </div>
+        <span class="badge">Barra de ações</span>
+      </div>
+
+      <div class="toolbar">
+        <strong>Lista de imóveis</strong>
+        <div class="button-row">
+          <a class="btn" href="#">Filtro</a>
+          <a class="btn" href="#">Ordenar</a>
+          <a class="btn btn-primary" href="#">Novo anúncio</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>10. Button Group</h2>
+          <small>Nome técnico: <code>button group</code></small>
+        </div>
+        <span class="badge">Grupo de botões</span>
+      </div>
+
+      <div class="button-row">
+        <a class="btn btn-primary" href="#">Ação principal</a>
+        <a class="btn" href="#">Ação secundária</a>
+        <a class="btn btn-success" href="#">Confirmar</a>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>11. Badge / Chip</h2>
+          <small>Nome técnico: <code>badge</code> ou <code>chip</code></small>
+        </div>
+        <span class="badge">Status pequeno</span>
+      </div>
+
+      <div class="button-row">
+        <span class="badge">Rascunho</span>
+        <span class="badge badge-blue">Pipeline Pro</span>
+        <span class="badge">Publicado</span>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>12. Form Group</h2>
+          <small>Nome técnico: <code>form group</code></small>
+        </div>
+        <span class="badge">Campos de formulário</span>
+      </div>
+
+      <div class="form-grid">
+        <label>
+          <strong>Nome interno</strong>
+          <input placeholder="Florais - Hélio" />
+        </label>
+
+        <label>
+          <strong>Tipo preliminar</strong>
+          <select>
+            <option>Casa em condomínio</option>
+            <option>Apartamento</option>
+            <option>Terreno</option>
+          </select>
+        </label>
+
+        <label>
+          <strong>Observação</strong>
+          <textarea rows="3" placeholder="Observação inicial da captação"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>13. Tabs</h2>
+          <small>Nome técnico: <code>tabs</code></small>
+        </div>
+        <span class="badge">Abas</span>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">Resumo</div>
+        <div class="tab">Diagnóstico</div>
+        <div class="tab">Estratégia</div>
+        <div class="tab">Publicação</div>
+      </div>
+
+      <div class="panel">
+        Conteúdo da aba selecionada.
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>14. Accordion</h2>
+          <small>Nome técnico: <code>accordion</code></small>
+        </div>
+        <span class="badge">Blocos abre/fecha</span>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Composição do imóvel</div>
+        <div class="accordion-body">Quartos, suítes, banheiros, vagas, área gourmet.</div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Acabamento e padrão</div>
+        <div class="accordion-body">Laje, porcelanato, esquadrias, bancadas e padrão construtivo.</div>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>15. Stepper</h2>
+          <small>Nome técnico: <code>stepper</code></small>
+        </div>
+        <span class="badge">Etapas sequenciais</span>
+      </div>
+
+      <div class="stepper">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div>
+            <strong>Atendimento</strong>
+            <p>Registrar captação inicial.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div>
+            <strong>Levantamento</strong>
+            <p>Coletar dados físicos, fotos e evidências.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>16. Progress Bar</h2>
+          <small>Nome técnico: <code>progress bar</code></small>
+        </div>
+        <span class="badge">Progresso</span>
+      </div>
+
+      <p>Usada para mostrar avanço de etapa, preenchimento ou maturidade.</p>
+      <div class="progress-track"><div class="progress-bar"></div></div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>17. Table</h2>
+          <small>Nome técnico: <code>table</code></small>
+        </div>
+        <span class="badge">Tabela</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Imóvel</th>
+            <th>Status</th>
+            <th>Responsável</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Florais - Hélio</td>
+            <td><span class="badge badge-blue">Placeholder</span></td>
+            <td>Corretor</td>
+            <td><a class="btn btn-primary" href="#">Abrir</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>18. Sidebar Layout</h2>
+          <small>Nome técnico: <code>sidebar layout</code></small>
+        </div>
+        <span class="badge">Layout com menu lateral</span>
+      </div>
+
+      <div class="sidebar-layout">
+        <aside class="sidebar">
+          <strong>Menu lateral</strong>
+          <p>Filtros, navegação ou contexto fixo.</p>
+        </aside>
+
+        <div class="panel">
+          <strong>Conteúdo principal</strong>
+          <p>Área principal da página.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>19. Empty State</h2>
+          <small>Nome técnico: <code>empty state</code></small>
+        </div>
+        <span class="badge">Tela vazia</span>
+      </div>
+
+      <div class="empty-state">
+        <h3>Nenhum anúncio encontrado</h3>
+        <p>Use empty state quando não houver dados ainda.</p>
+        <a class="btn btn-primary" href="#">Criar primeiro anúncio</a>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>20. Timeline</h2>
+          <small>Nome técnico: <code>timeline</code></small>
+        </div>
+        <span class="badge">Histórico</span>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <strong>Captação criada</strong>
+          <p>O imóvel entrou no pipeline.</p>
+        </div>
+
+        <div class="timeline-item">
+          <strong>Preço revisado</strong>
+          <p>Estratégia de preço ajustada.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>21. Modal</h2>
+          <small>Nome técnico: <code>modal</code></small>
+        </div>
+        <span class="badge">Janela central</span>
+      </div>
+
+      <div class="modal-preview">
+        <h3>Confirmar publicação</h3>
+        <p>Modal aparece sobre a tela para confirmar uma ação importante.</p>
+        <div class="button-row">
+          <a class="btn" href="#">Cancelar</a>
+          <a class="btn btn-primary" href="#">Confirmar</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>22. Drawer</h2>
+          <small>Nome técnico: <code>drawer</code></small>
+        </div>
+        <span class="badge">Painel lateral</span>
+      </div>
+
+      <div class="drawer-preview">
+        <h3>Filtros avançados</h3>
+        <p>Drawer é um painel lateral que desliza para dentro da tela.</p>
+        <label>
+          <strong>Status</strong>
+          <select>
+            <option>Publicado</option>
+            <option>Rascunho</option>
+            <option>Placeholder</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="component-section">
+      <div class="component-title">
+        <div>
+          <h2>Como pedir com linguagem técnica</h2>
+          <small>Exemplos prontos</small>
+        </div>
+        <span class="badge badge-blue">Prompts úteis</span>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <strong>Exemplo 1</strong>
+          <p>
+            “Transforme esse box em um <code>card</code> neutro, com borda leve,
+            fundo branco, padding de 16px e botão primário azul.”
+          </p>
+        </div>
+
+        <div class="card">
+          <strong>Exemplo 2</strong>
+          <p>
+            “Crie uma <code>hero section</code> no topo com título, subtítulo,
+            CTA primário e CTA secundário.”
+          </p>
+        </div>
+
+        <div class="card">
+          <strong>Exemplo 3</strong>
+          <p>
+            “Organize esses campos em <code>form groups</code> dentro de um
+            <code>grid responsivo</code>.”
+          </p>
+        </div>
+
+        <div class="card">
+          <strong>Exemplo 4</strong>
+          <p>
+            “Troque essa lista por um <code>accordion</code> com seções
+            expansíveis por etapa.”
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -145,6 +145,27 @@ const steps: Record<string, any> = {
   },
 }
 
+// PIPELINE_STEP_ORDER_V1
+const stepOrder = [
+  'atendimento',
+  'levantamento',
+  'diagnostico',
+  'estrategia',
+  'proposta',
+  'publicacao',
+  'acompanhamento',
+]
+
+const stepLabels: Record<string, string> = {
+  atendimento: 'Atendimento',
+  levantamento: 'Levantamento',
+  diagnostico: 'Diagnóstico',
+  estrategia: 'Inteligência',
+  proposta: 'Proposta',
+  publicacao: 'Publicação',
+  acompanhamento: 'Lifecycle',
+}
+
 export default function PipelineStepPage() {
   const params = useParams()
   const [attachContext, setAttachContext] = useState({
@@ -171,6 +192,19 @@ export default function PipelineStepPage() {
   const mode = attachContext.mode
   const isAttachMode = mode === 'attach' && !!listingId
 
+  // PIPELINE_PREV_NEXT_CONTEXT_V1
+  const currentStepIndex = stepOrder.indexOf(stepKey)
+  const previousStep = currentStepIndex > 0 ? stepOrder[currentStepIndex - 1] : ''
+  const nextStep =
+    currentStepIndex >= 0 && currentStepIndex < stepOrder.length - 1
+      ? stepOrder[currentStepIndex + 1]
+      : ''
+
+  const buildStepHref = (targetStep: string) =>
+    isAttachMode
+      ? `/operations/pipeline/${targetStep}?listingId=${listingId}&mode=attach`
+      : `/operations/pipeline/${targetStep}`
+
   return (
     <main
       style={{
@@ -194,6 +228,106 @@ export default function PipelineStepPage() {
         <Link href="/operations/pipeline">Pipeline Pro</Link>
         <Link href="/operations/properties/list">Listar imoveis</Link>
       </nav>
+
+      {/* PIPELINE_STEP_NAVIGATION_RAIL_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Esta trilha permite navegar entre as etapas do Pipeline Pro.
+        - Nao e lista definitiva de banco.
+        - Nao cria persistencia, workflow engine, status real ou bloqueio de etapa.
+        - Futuramente deve refletir progresso real, pendencias, bloqueios e permissao de avanço.
+        - Codex pode refinar acentuacao, layout, responsividade e microcopy mantendo UTF-8.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 16,
+          background: '#fff',
+          marginBottom: 20,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 12,
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            marginBottom: 12,
+          }}
+        >
+          <div>
+            <strong>Trilha do Pipeline Pro</strong>
+            <p style={{ margin: '4px 0 0', color: '#667085', fontSize: 13 }}>
+              Navegue entre as camadas do fluxo sem perder o contexto da operação.
+            </p>
+          </div>
+
+          <Link
+            href="/operations/pipeline"
+            style={{
+              display: 'inline-flex',
+              padding: '8px 12px',
+              borderRadius: 10,
+              border: '1px solid #d7dee8',
+              background: '#f8fafc',
+              color: '#344054',
+              textDecoration: 'none',
+              fontWeight: 700,
+              fontSize: 13,
+            }}
+          >
+            Ver visão geral
+          </Link>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: 8,
+          }}
+        >
+          {[
+            { key: 'atendimento', label: 'Atendimento', layer: 'Operação' },
+            { key: 'levantamento', label: 'Levantamento', layer: 'Operação' },
+            { key: 'diagnostico', label: 'Diagnóstico', layer: 'Operação' },
+            { key: 'estrategia', label: 'Inteligência', layer: 'Cérebro' },
+            { key: 'proposta', label: 'Proposta', layer: 'Validação' },
+            { key: 'publicacao', label: 'Publicação', layer: 'Distribuição' },
+            { key: 'acompanhamento', label: 'Lifecycle', layer: 'Continuidade' },
+          ].map((item) => {
+            const active = item.key === stepKey
+
+            return (
+              <Link
+                key={item.key}
+                href={listingId && mode === 'attach'
+                  ? `/operations/pipeline/${item.key}?listingId=${listingId}&mode=attach`
+                  : `/operations/pipeline/${item.key}`
+                }
+                style={{
+                  border: active ? '1px solid #2563eb' : '1px solid #d7dee8',
+                  borderRadius: 12,
+                  padding: 10,
+                  background: active ? '#eff6ff' : '#f8fafc',
+                  color: active ? '#1d4ed8' : '#344054',
+                  textDecoration: 'none',
+                }}
+              >
+                <strong style={{ display: 'block', fontSize: 13 }}>
+                  {item.label}
+                </strong>
+                <span style={{ fontSize: 12, color: active ? '#1d4ed8' : '#667085' }}>
+                  {item.layer}
+                </span>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
+
 
       <section
         style={{
@@ -222,6 +356,330 @@ export default function PipelineStepPage() {
           {step.description}
         </p>
       </section>
+
+      
+
+
+      {/* PIPELINE_STEP_SLA_PROGRESS_PANEL_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Este painel e visual/conceitual nesta V1.
+        - Futuramente deve usar datas reais: abertura do processo, aceite,
+          reagendamento, data/hora da vistoria e SLA por modulo.
+        - Prazo do levantamento pode contar a partir da data/hora da vistoria.
+        - Modulos podem ser preenchidos fora de ordem.
+        - Campos marcados como "nao se aplica" nao devem reduzir progresso.
+        - Modulos podem ser encerrados com justificativa quando houver impossibilidade.
+        - Inteligencia deve liberar com maturidade minima ou encerramento formal dos essenciais.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 16,
+          background: '#fff',
+          marginBottom: 20,
+        }}
+      >
+        <h2 style={{ marginTop: 0 }}>Prazo, progresso e conclusão</h2>
+
+        <p style={{ color: '#667085', lineHeight: 1.5 }}>
+          Cada módulo deve ter senso de urgência, progresso próprio e possibilidade
+          de conclusão mesmo quando algum dado não puder ser levantado, desde que
+          exista justificativa.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 12,
+          }}
+        >
+          {[
+            {
+              title: 'Prazo operacional',
+              value:
+                stepKey === 'levantamento'
+                  ? '12h após vistoria'
+                  : stepKey === 'atendimento'
+                    ? '24h para movimentar'
+                    : stepKey === 'estrategia'
+                      ? 'Após maturidade mínima'
+                      : 'Prazo por contexto',
+              badge: 'SLA',
+              color: '#2563eb',
+            },
+            {
+              title: 'Progresso do módulo',
+              value:
+                stepKey === 'estrategia'
+                  ? 'Libera com base mínima'
+                  : 'Sobe conforme dados são preenchidos',
+              badge: 'Progresso',
+              color: '#16a34a',
+            },
+            {
+              title: 'Não se aplica',
+              value: 'Itens irrelevantes não devem prejudicar a barra de evolução.',
+              badge: 'N/A',
+              color: '#7c3aed',
+            },
+            {
+              title: 'Conclusão parcial',
+              value: 'Pode encerrar módulo com justificativa quando faltar acesso ou documento.',
+              badge: 'Justificar',
+              color: '#f59e0b',
+            },
+          ].map((item) => (
+            <article
+              key={item.title}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 14,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  borderRadius: 999,
+                  padding: '4px 8px',
+                  background: item.color,
+                  color: '#fff',
+                  fontSize: 12,
+                  fontWeight: 800,
+                  marginBottom: 10,
+                }}
+              >
+                {item.badge}
+              </span>
+
+              <strong style={{ display: 'block' }}>{item.title}</strong>
+
+              <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                {item.value}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        <div
+          style={{
+            border: '1px solid #d7dee8',
+            borderRadius: 14,
+            padding: 14,
+            background: '#f8fafc',
+            marginTop: 12,
+          }}
+        >
+          <strong>Critério futuro de liberação da inteligência</strong>
+
+          <p style={{ color: '#667085', lineHeight: 1.5, marginBottom: 0 }}>
+            A inteligência estratégica não deve ser acionada por qualquer dado
+            superficial. Ela deve depender de maturidade mínima dos módulos
+            essenciais, por exemplo 60%, ou encerramento formal com justificativa
+            do que não foi possível levantar.
+          </p>
+        </div>
+      </section>
+
+      {/* PIPELINE_MODULE_PERMISSION_PANEL_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Este painel representa permissao operacional por modulo.
+        - Nesta V1 e apenas visual/conceitual.
+        - Futuramente deve vir do backend: usuario logado, papel, agencia,
+          responsavel principal, responsavel do modulo, participantes convidados,
+          permissao de visualizacao e permissao de edicao.
+        - Regra de produto: participantes autorizados podem consultar o processo,
+          mas so editam os modulos sob sua responsabilidade.
+        - Corretores externos ao processo nao acessam pipeline confidencial.
+        - Proprietario nao acessa esta tela interna.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 16,
+          background: '#fff',
+          marginBottom: 20,
+        }}
+      >
+        <h2 style={{ marginTop: 0 }}>Permissões e responsabilidade do módulo</h2>
+
+        <p style={{ color: '#667085', lineHeight: 1.5 }}>
+          Esta etapa pode ter responsável diferente do corretor principal. A regra
+          futura deve permitir consulta ampla aos participantes autorizados, mas
+          edição apenas para quem recebeu responsabilidade sobre o módulo.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 12,
+          }}
+        >
+          {[
+            {
+              title: 'Responsável principal',
+              value: isAttachMode ? 'Corretor do anúncio existente' : 'Corretor designado',
+              badge: 'Conduz',
+              color: '#2563eb',
+            },
+            {
+              title: 'Responsável deste módulo',
+              value:
+                stepKey === 'diagnostico'
+                  ? 'Suporte documental / administrativo'
+                  : stepKey === 'levantamento'
+                    ? 'Corretor / vistoriador'
+                    : stepKey === 'estrategia'
+                      ? 'Inteligência / coordenação'
+                      : stepKey === 'proposta'
+                        ? 'Corretor / gestor'
+                        : stepKey === 'publicacao'
+                          ? 'Responsável do anúncio'
+                          : 'Corretor responsável',
+              badge: 'Edita',
+              color: '#16a34a',
+            },
+            {
+              title: 'Supervisão',
+              value: 'Dono, sócio, coordenador ou secretaria autorizada',
+              badge: 'Consulta',
+              color: '#7c3aed',
+            },
+            {
+              title: 'Edição futura',
+              value: 'Somente responsável do módulo ou gestor autorizado',
+              badge: 'Restrita',
+              color: '#f59e0b',
+            },
+          ].map((item) => (
+            <article
+              key={item.title}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 14,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  borderRadius: 999,
+                  padding: '4px 8px',
+                  background: item.color,
+                  color: '#fff',
+                  fontSize: 12,
+                  fontWeight: 800,
+                  marginBottom: 10,
+                }}
+              >
+                {item.badge}
+              </span>
+
+              <strong style={{ display: 'block' }}>{item.title}</strong>
+
+              <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                {item.value}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* PIPELINE_OPERATION_CONTEXT_PANEL_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Este painel mostra o contexto operacional da etapa.
+        - Por enquanto e apenas visual.
+        - Futuramente deve carregar dados reais do anuncio/listingId, cliente, responsavel, status, progresso e pendencias.
+        - Nao conectar backend sem revisar services, schema, RLS e contrato de dados.
+        - Codex pode corrigir acentuacao e refinar microcopy mantendo UTF-8.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 16,
+          background: '#fff',
+          marginBottom: 20,
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 12,
+          }}
+        >
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#f8fafc',
+            }}
+          >
+            <strong>Contexto da jornada</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+              {isAttachMode
+                ? 'Pipeline Pro acoplado a um anúncio existente.'
+                : 'Nova jornada para iniciar um Anúncio Placeholder.'}
+            </p>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#f8fafc',
+            }}
+          >
+            <strong>Origem</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+              {isAttachMode
+                ? `Anúncio existente: ${listingId}`
+                : 'Captação nova ainda sem anúncio público final.'}
+            </p>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#f8fafc',
+            }}
+          >
+            <strong>Função desta tela</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+              Organizar a etapa atual sem gravar dados reais nesta V1 visual.
+            </p>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#f8fafc',
+            }}
+          >
+            <strong>Próximo estágio futuro</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+              Conectar esta jornada ao backend, progresso real, Dossiê e publicação.
+            </p>
+          </div>
+        </div>
+      </section>
+
 
       {isAttachMode && (
         <section
@@ -1509,6 +1967,101 @@ export default function PipelineStepPage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+      {/* PIPELINE_STEP_FOOTER_NAV_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Estes botoes sao navegacao visual da V1.
+        - Nao representam desbloqueio real de etapa.
+        - Futuramente devem considerar progresso, pendencias obrigatorias,
+          permissao, validacoes e status real do backend.
+        - Preservar listingId/mode=attach quando o Pipeline Pro estiver acoplado
+          a um anuncio existente.
+      */}
+      <section
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: 12,
+          flexWrap: 'wrap',
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 16,
+          background: '#fff',
+          marginTop: 20,
+        }}
+      >
+        <div>
+          {previousStep ? (
+            <Link
+              href={buildStepHref(previousStep)}
+              style={{
+                display: 'inline-flex',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #d7dee8',
+                background: '#f8fafc',
+                color: '#344054',
+                textDecoration: 'none',
+                fontWeight: 700,
+              }}
+            >
+              Voltar para {stepLabels[previousStep]}
+            </Link>
+          ) : (
+            <Link
+              href="/operations/pipeline"
+              style={{
+                display: 'inline-flex',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #d7dee8',
+                background: '#f8fafc',
+                color: '#344054',
+                textDecoration: 'none',
+                fontWeight: 700,
+              }}
+            >
+              Voltar para visão geral
+            </Link>
+          )}
+        </div>
+
+        <div>
+          {nextStep ? (
+            <Link
+              href={buildStepHref(nextStep)}
+              style={{
+                display: 'inline-flex',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #2563eb',
+                background: '#2563eb',
+                color: '#fff',
+                textDecoration: 'none',
+                fontWeight: 800,
+              }}
+            >
+              Avançar para {stepLabels[nextStep]}
+            </Link>
+          ) : (
+            <Link
+              href="/operations/pipeline"
+              style={{
+                display: 'inline-flex',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #16a34a',
+                background: '#16a34a',
+                color: '#fff',
+                textDecoration: 'none',
+                fontWeight: 800,
+              }}
+            >
+              Concluir visão do fluxo
+            </Link>
+          )}
         </div>
       </section>
     </main>

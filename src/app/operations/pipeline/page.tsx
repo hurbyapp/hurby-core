@@ -74,6 +74,14 @@ import Link from 'next/link'
 const phases = [
   {
     title: '1. Atendimento e captacao',
+    owner: 'Corretor/Atendimento',
+    deadline: '24h para movimentar',
+    urgency: 'Alta',
+    done: 'Aberto',
+    maturity: 'Entrada',
+    maturityColor: '#2563eb',
+    access: 'Liberada',
+    accessColor: '#16a34a',
     layer: 'Operacao',
     layerColor: '#2563eb',
     nextAction: 'Registrar oportunidade ou iniciar Anuncio Placeholder',
@@ -91,6 +99,14 @@ const phases = [
   },
   {
     title: '2. Levantamento do patrimonio',
+    owner: 'Corretor ou vistoriador',
+    deadline: '12h após vistoria',
+    urgency: 'Alta',
+    done: 'Em execução',
+    maturity: 'Operacional',
+    maturityColor: '#2563eb',
+    access: 'Liberada',
+    accessColor: '#16a34a',
     layer: 'Operacao',
     layerColor: '#2563eb',
     nextAction: 'Levantar dados fisicos, acabamento e evidencias',
@@ -108,6 +124,10 @@ const phases = [
   },
   {
     title: '3. Diagnostico e risco',
+    owner: 'Suporte documental',
+    deadline: 'Prazo operacional',
+    urgency: 'Média',
+    done: 'Pendente',
     layer: 'Operacao',
     layerColor: '#2563eb',
     nextAction: 'Organizar risco, documentos, mercado e proprietario',
@@ -125,6 +145,14 @@ const phases = [
   },
   {
     title: '4. Inteligencia estrategica',
+    owner: 'Inteligência/coordenação',
+    deadline: 'Após base mínima',
+    urgency: 'Condicional',
+    done: 'Bloqueada',
+    maturity: 'Cérebro',
+    maturityColor: '#7c3aed',
+    access: 'Dependente de dados',
+    accessColor: '#f59e0b',
     layer: 'Inteligencia',
     layerColor: '#7c3aed',
     nextAction: 'Gerar recomendacao profissional e decisao comercial',
@@ -142,6 +170,14 @@ const phases = [
   },
   {
     title: '5. Proposta e aprovacao',
+    owner: 'Corretor/gestor',
+    deadline: 'Após inteligência',
+    urgency: 'Condicional',
+    done: 'Futura',
+    maturity: 'Validação',
+    maturityColor: '#f59e0b',
+    access: 'Futura regra',
+    accessColor: '#667085',
     layer: 'Validacao',
     layerColor: '#f59e0b',
     nextAction: 'Validar estrategia com agencia/proprietario',
@@ -159,6 +195,14 @@ const phases = [
   },
   {
     title: 'Publicacao / Anuncio distribuivel',
+    owner: 'Responsável do anúncio',
+    deadline: 'Após aprovação',
+    urgency: 'Condicional',
+    done: 'Futura',
+    maturity: 'Publicação',
+    maturityColor: '#16a34a',
+    access: 'Futura regra',
+    accessColor: '#667085',
     layer: 'Publicacao',
     layerColor: '#16a34a',
     nextAction: 'Montar anuncio publico e preparar distribuicao',
@@ -176,6 +220,14 @@ const phases = [
   },
   {
     title: '7. Acompanhamento e lifecycle',
+    owner: 'Operação comercial',
+    deadline: 'Durante anúncio ativo',
+    urgency: 'Contínua',
+    done: 'Futura',
+    maturity: 'Lifecycle',
+    maturityColor: '#7c3aed',
+    access: 'Futura regra',
+    accessColor: '#667085',
     layer: 'Lifecycle',
     layerColor: '#7c3aed',
     nextAction: 'Acompanhar evolucao, ajustes e encerramento',
@@ -504,7 +556,133 @@ export default function PipelinePage() {
         </div>
       </section>
 
-      {/* PIPELINE_MAIN_PRODUCT_ORGANIZATION_V1 */}
+      
+      {/* PIPELINE_GOVERNANCE_MODEL_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+
+        MODELO OPERACIONAL DO PIPELINE PRO:
+        - O Pipeline Pro nasce quando atendimento/corretor/agencia abre formalmente uma captacao.
+        - A primeira ligacao do proprietario nao e necessariamente controlavel.
+        - O controle operacional nasce quando o atendimento registra o processo, agenda vistoria ou designa responsavel.
+        - Em imobiliaria/agencia, pode haver rodizio interno de atendimento/captacao.
+        - O corretor designado deve poder aceitar, recusar ou renegociar horario.
+        - Se recusar, o processo pode ir para o proximo profissional do rodizio.
+        - Se renegociar horario, o prazo operacional deve recalcular a partir do novo agendamento.
+        - O prazo do levantamento pode contar a partir da data/hora da vistoria.
+        - Exemplo conceitual: 12h apos vistoria para completar levantamento patrimonial.
+        - Autosave futuro deve permitir preenchimento em campo, celular ou escritorio.
+        - Módulos podem ser preenchidos fora de ordem.
+        - Cada campo/módulo pode ter "não se aplica" para não prejudicar progresso.
+        - Módulo pode ser encerrado por impossibilidade justificada.
+        - Inteligência só deve liberar após maturidade mínima ou encerramento formal dos módulos essenciais.
+
+        VISIBILIDADE:
+        - Corretor responsável vê e conduz todo o processo.
+        - Atendimento/secretaria pode consultar, mas não editar tudo.
+        - Dono/sócio/coordenador da imobiliária pode supervisionar e cobrar.
+        - Responsável de módulo edita apenas o módulo dele.
+        - Participantes convidados podem visualizar o todo e contribuir no escopo autorizado.
+        - Corretores fora do processo veem apenas o Anúncio Placeholder e sinais mínimos, não o pipeline confidencial.
+        - Proprietário não vê o processo interno; recebe proposta/apresentação final adequada.
+
+        COMISSÕES / RATEIO:
+        - Não implementar percentuais agora.
+        - Futuro módulo de comissão/configuração/contratos deve tratar regras por agência.
+        - Participação convidada pode impactar rateio, mas isso será parametrizável.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 20,
+          background: '#fff',
+          marginBottom: 22,
+        }}
+      >
+        <h2 style={{ marginTop: 0 }}>Governança operacional do Pipeline</h2>
+
+        <p style={{ color: '#667085', lineHeight: 1.5 }}>
+          O Pipeline Pro deve controlar quem conduz, quem apenas acompanha, quem
+          edita cada módulo, qual prazo está correndo e quando a inteligência pode
+          entrar. Nesta V1, esta estrutura é visual e conceitual.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: 12,
+            marginTop: 14,
+          }}
+        >
+          {[
+            {
+              title: 'Responsável principal',
+              badge: 'Conduz o fluxo',
+              text: 'Corretor definido pelo atendimento, rodízio interno ou captação direta.',
+            },
+            {
+              title: 'Responsável por módulo',
+              badge: 'Edita módulo',
+              text: 'Suporte documental, coordenador, vistoriador, especialista ou outro corretor convidado.',
+            },
+            {
+              title: 'Supervisão da agência',
+              badge: 'Consulta e cobra',
+              text: 'Dono, sócio, gestor, secretaria ou administrativo autorizado acompanha prazos e pendências.',
+            },
+            {
+              title: 'Visibilidade externa',
+              badge: 'Restrita',
+              text: 'Corretores fora do processo veem apenas placeholder/sinais mínimos. Proprietário vê só proposta final.',
+            },
+            {
+              title: 'Prazos e urgência',
+              badge: 'SLA visual',
+              text: 'Aceite, recusa, reagendamento, contador após vistoria e alertas de atraso.',
+            },
+            {
+              title: 'Liberação da inteligência',
+              badge: 'Condicional',
+              text: 'Só ativa com maturidade mínima ou módulos essenciais encerrados com justificativa.',
+            },
+          ].map((item) => (
+            <article
+              key={item.title}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 14,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  borderRadius: 999,
+                  padding: '4px 8px',
+                  background: '#2563eb',
+                  color: '#fff',
+                  fontSize: 12,
+                  fontWeight: 800,
+                  marginBottom: 10,
+                }}
+              >
+                {item.badge}
+              </span>
+
+              <strong style={{ display: 'block' }}>{item.title}</strong>
+
+              <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                {item.text}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+{/* PIPELINE_MAIN_PRODUCT_ORGANIZATION_V1 */}
       <section
         style={{
           border: '1px solid #dbe3ea',
@@ -577,7 +755,35 @@ export default function PipelinePage() {
       </section>
 
       <section id="pipeline-etapas">
+        {/* PIPELINE_PHASE_STATUS_NOTE_V1 */}
         <h2>Fluxos e camadas executáveis</h2>
+
+        <div
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 14,
+            padding: 14,
+            background: '#f8fafc',
+            marginBottom: 16,
+          }}
+        >
+          <strong>Status das camadas</strong>
+          <p style={{ marginBottom: 0, color: '#667085', lineHeight: 1.5 }}>
+            Nesta V1, os status são visuais e orientativos. No backend futuro,
+            cada etapa deverá considerar progresso real, pendências obrigatórias,
+            permissões, dados mínimos, responsável por módulo, prazo operacional,
+            urgência, conclusão com justificativa e liberação condicional.
+          </p>
+
+          {/* PIPELINE_RESPONSIBILITY_SLA_NOTE_V1 */}
+          <p style={{ margin: '10px 0 0', color: '#667085', lineHeight: 1.5 }}>
+            O corretor responsável pode acompanhar tudo, mas módulos específicos
+            podem ser executados por suporte documental, coordenador, administrativo
+            ou outro profissional da agência. A camada de inteligência só deve
+            entrar quando a base operacional estiver concluída ou formalmente
+            encerrada por impossibilidade.
+          </p>
+        </div>
 
         <div
           style={{
@@ -629,12 +835,41 @@ export default function PipelinePage() {
                       border: `1px solid ${phase.layerColor || '#d7dee8'}`,
                       borderRadius: 999,
                       padding: '4px 8px',
-                      color: phase.layerColor || '#475467',
-                      background: '#fff',
+                      background: phase.layerColor || '#475467',
+                      color: '#fff',
                       whiteSpace: 'nowrap',
                     }}
                   >
                     {phase.layer}
+                  </span>
+
+                  {/* PIPELINE_PHASE_ACCESS_BADGES_V1 | PIPELINE_SOLID_BADGES_V1 */}
+                  <span
+                    style={{
+                      fontSize: 12,
+                      border: `1px solid ${phase.maturityColor || '#d7dee8'}`,
+                      borderRadius: 999,
+                      padding: '4px 8px',
+                                            background: phase.layerColor || '#475467',
+                      color: '#fff',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {phase.maturity}
+                  </span>
+
+                  <span
+                    style={{
+                      fontSize: 12,
+                      border: `1px solid ${phase.accessColor || '#d7dee8'}`,
+                      borderRadius: 999,
+                      padding: '4px 8px',
+                                            background: phase.layerColor || '#475467',
+                      color: '#fff',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {phase.access}
                   </span>
                 </div>
               </div>
@@ -674,6 +909,78 @@ export default function PipelinePage() {
                 <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 13 }}>
                   {phase.nextAction}
                 </p>
+              </div>
+
+              {/* PIPELINE_PHASE_OPERATION_META_V1 */}
+              {/*
+                ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+                - Estes dados sao visuais nesta V1.
+                - Futuramente devem vir do backend: responsavel, setor, prazo,
+                  SLA, urgencia, progresso real, permissao de edicao e conclusao.
+                - Cada modulo pode ter responsavel diferente do corretor principal.
+                - Participantes podem visualizar tudo, mas editar apenas modulo
+                  sob sua responsabilidade.
+                - Inteligencia deve ativar apenas quando modulos essenciais forem
+                  concluidos ou encerrados com justificativa.
+              */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                  gap: 8,
+                  marginBottom: 12,
+                }}
+              >
+                <div
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 10,
+                    padding: 10,
+                    background: '#fff',
+                  }}
+                >
+                  <strong style={{ display: 'block', fontSize: 12 }}>Responsável</strong>
+                  <span style={{ color: '#667085', fontSize: 12 }}>{phase.owner}</span>
+                </div>
+
+                <div
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 10,
+                    padding: 10,
+                    background: '#fff',
+                  }}
+                >
+                  <strong style={{ display: 'block', fontSize: 12 }}>Prazo</strong>
+                  <span style={{ color: '#667085', fontSize: 12 }}>{phase.deadline}</span>
+                </div>
+
+                <div
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 10,
+                    padding: 10,
+                    background: '#fff',
+                  }}
+                >
+                  <strong style={{ display: 'block', fontSize: 12 }}>Urgência</strong>
+                  <span style={{ color: '#667085', fontSize: 12 }}>{phase.urgency}</span>
+                </div>
+
+                <div
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 10,
+                    padding: 10,
+                    background: '#fff',
+                  }}
+                >
+                  <strong style={{ display: 'block', fontSize: 12 }}>Status</strong>
+                  <span style={{ color: '#667085', fontSize: 12 }}>
+                    {phase.done === 'Em execução' ? '◔ ' : phase.done === 'Aberto' ? '○ ' : phase.done === 'Bloqueada' ? '⛔ ' : phase.done === 'Pendente' ? '△ ' : '□ '}
+                    {phase.done}
+                  </span>
+                </div>
               </div>
 
               <div

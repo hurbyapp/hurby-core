@@ -249,8 +249,16 @@ export default function PropertyListPage() {
         PROPERTY_LIST_BUTTON_SEMANTICS_V1
 
         PROPERTY_LIST_ATTACH_PIPELINE_ACTION_V1
+
+        ACOPLAR_PIPELINE_BLUE_ACTION_V1
+        Diretriz visual:
+        - O botão Acoplar Pipeline Pro deve ter destaque visual de ação principal.
+        - Preferência atual: azul.
+        - Ele substitui a antiga ficha profissional.
+        - Não deve abrir ficha longa isolada.
+        - Deve conduzir o usuário para Pipeline Pro em modo attach quando houver listingId.
         Ajuste de produto:
-        - O antigo botão "Ficha profissional" deve ser tratado como legado.
+        - O antigo botão "Acoplar Pipeline Pro" deve ser tratado como legado.
         - O novo conceito é "Acoplar Pipeline Pro".
         - Ao acoplar, o anúncio existente não recomeça do zero.
         - O Pipeline Pro deve iniciar em estágio mais avançado, aproveitando dados preliminares já cadastrados no anúncio.
@@ -355,9 +363,9 @@ export default function PropertyListPage() {
               display: 'inline-flex',
               padding: '10px 14px',
               borderRadius: 10,
-              border: '1px solid #d7dee8',
-              background: '#fff',
-              color: '#344054',
+              border: '1px solid #2563eb',
+              background: '#2563eb',
+              color: '#fff',
               textDecoration: 'none',
               fontWeight: 700,
             }}
@@ -370,7 +378,7 @@ export default function PropertyListPage() {
       {/* PROPERTY_LIST_VISIBLE_BUTTON_GUIDE_V1 */}
       <section
         style={{
-          border: '1px solid #d7dee8',
+          border: '1px solid #2563eb',
           borderRadius: 16,
           padding: 16,
           background: '#fff',
@@ -393,7 +401,7 @@ export default function PropertyListPage() {
             gap: 10,
           }}
         >
-          <div style={{ border: '1px solid #d7dee8', borderRadius: 12, padding: 12, background: '#f8fafc' }}>
+          <div style={{ border: '1px solid #2563eb', borderRadius: 12, padding: 12, background: '#f8fafc' }}>
             <strong>Abrir Checkup / Dossiê</strong>
             <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.4 }}>
               Avalia a qualidade geral do anúncio/imóvel, dados estruturais,
@@ -402,7 +410,7 @@ export default function PropertyListPage() {
             </p>
           </div>
 
-          <div style={{ border: '1px solid #d7dee8', borderRadius: 12, padding: 12, background: '#f8fafc' }}>
+          <div style={{ border: '1px solid #2563eb', borderRadius: 12, padding: 12, background: '#f8fafc' }}>
             <strong>Editar anúncio</strong>
             <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.4 }}>
               Corrige a publicação: descrição, fotos, preço, dados publicáveis,
@@ -412,7 +420,8 @@ export default function PropertyListPage() {
 
           <div style={{ border: '1px solid #2563eb', borderRadius: 12, padding: 12, background: '#eff6ff' }}>
             <strong>Acoplar Pipeline Pro</strong>
-            <p style={{ marginBottom: 0, color: '#475467', fontSize: 13, lineHeight: 1.4 }}>
+            {/* ACOPLAR_PIPELINE_BUTTON_VISUAL_NOTE_V1 */}
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.4 }}>
               Substitui a antiga Pipeline Pro. Inicia o Pipeline Pro em fase
               mais avançada quando o anúncio já possui dados preliminares.
             </p>
@@ -509,9 +518,19 @@ export default function PropertyListPage() {
                 <Link
                   className="button-link"
                   href={`/operations/pipeline/atendimento?listingId=${listing.id}&mode=attach`}
-                >
-                  Acoplar Pipeline Pro
-                </Link>
+                 style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '8px 12px',
+                borderRadius: 8,
+                border: '1px solid #2563eb',
+                background: '#2563eb',
+                color: '#fff',
+                textDecoration: 'none',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}>Acoplar Pipeline Pro</Link>
               </p>
             </div>
           </div>
