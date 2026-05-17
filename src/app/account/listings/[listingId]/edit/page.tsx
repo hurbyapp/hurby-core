@@ -297,9 +297,15 @@ export default function EditMarketplaceListingPage() {
       <section style={{ border: '1px solid #ddd', padding: 20, borderRadius: 12, marginBottom: 20 }}>
         <h2>Apresentacao</h2>
 
-        <input placeholder="Titulo do anuncio" value={form.title} onChange={(e) => update('title', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Titulo do anuncio
+          <input placeholder="Titulo do anuncio" value={form.title} onChange={(e) => update('title', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
 
-        <textarea placeholder="Descricao comercial" value={form.description} onChange={(e) => update('description', e.target.value)} style={{ width: '100%', padding: 12, minHeight: 100, marginBottom: 12 }} />
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Descricao comercial
+          <textarea placeholder="Descricao comercial" value={form.description} onChange={(e) => update('description', e.target.value)} style={{ width: '100%', padding: 12, minHeight: 100, marginTop: 6 }} />
+        </label>
 
         <select value={form.property_business_context_slug} onChange={(e) => update('property_business_context_slug', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }}>
           {businessContexts.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
@@ -317,21 +323,51 @@ export default function EditMarketplaceListingPage() {
       <section style={{ border: '1px solid #ddd', padding: 20, borderRadius: 12, marginBottom: 20 }}>
         <h2>Valores</h2>
 
-        <input placeholder="Valor principal" type="number" value={form.price} onChange={(e) => update('price', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Valor do condominio" type="number" value={form.condo_fee} onChange={(e) => update('condo_fee', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Valor do IPTU" type="number" value={form.iptu_value} onChange={(e) => update('iptu_value', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Valor principal
+          <input placeholder="Valor principal" type="number" value={form.price} onChange={(e) => update('price', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Valor do condominio
+          <input placeholder="Valor do condominio" type="number" value={form.condo_fee} onChange={(e) => update('condo_fee', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Valor do IPTU
+          <input placeholder="Valor do IPTU" type="number" value={form.iptu_value} onChange={(e) => update('iptu_value', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
       </section>
 
       <section style={{ border: '1px solid #ddd', padding: 20, borderRadius: 12, marginBottom: 20 }}>
         <h2>Endereco</h2>
 
-        <input placeholder="CEP" value={form.zip_code} onChange={(e) => update('zip_code', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Rua / Logradouro" value={form.street} onChange={(e) => update('street', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Numero" value={form.number} onChange={(e) => update('number', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Complemento" value={form.complement} onChange={(e) => update('complement', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Bairro" value={form.neighborhood} onChange={(e) => update('neighborhood', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Cidade" value={form.city} onChange={(e) => update('city', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="UF" maxLength={2} value={form.state} onChange={(e) => update('state', e.target.value.toUpperCase())} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          CEP
+          <input placeholder="CEP" value={form.zip_code} onChange={(e) => update('zip_code', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Rua / Logradouro
+          <input placeholder="Rua / Logradouro" value={form.street} onChange={(e) => update('street', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Numero
+          <input placeholder="Numero" value={form.number} onChange={(e) => update('number', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Complemento
+          <input placeholder="Complemento" value={form.complement} onChange={(e) => update('complement', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Bairro
+          <input placeholder="Bairro" value={form.neighborhood} onChange={(e) => update('neighborhood', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Cidade
+          <input placeholder="Cidade" value={form.city} onChange={(e) => update('city', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          UF
+          <input placeholder="UF" maxLength={2} value={form.state} onChange={(e) => update('state', e.target.value.toUpperCase())} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
 
         <label style={{ display: 'flex', gap: 8 }}>
           <input type="checkbox" checked={form.hide_public_number} onChange={(e) => update('hide_public_number', e.target.checked)} />
@@ -342,16 +378,40 @@ export default function EditMarketplaceListingPage() {
       <section style={{ border: '1px solid #ddd', padding: 20, borderRadius: 12, marginBottom: 20 }}>
         <h2>Caracteristicas</h2>
 
-        <input placeholder="Nome do condominio" value={form.condominium_name} onChange={(e) => update('condominium_name', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Nome do edificio" value={form.building_name} onChange={(e) => update('building_name', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Nome do condominio
+          <input placeholder="Nome do condominio" value={form.condominium_name} onChange={(e) => update('condominium_name', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Nome do edificio
+          <input placeholder="Nome do edificio" value={form.building_name} onChange={(e) => update('building_name', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
 
-        <input placeholder="Quartos" type="number" value={form.bedrooms} onChange={(e) => update('bedrooms', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Suites" type="number" value={form.suites} onChange={(e) => update('suites', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Banheiros" type="number" value={form.bathrooms} onChange={(e) => update('bathrooms', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Vagas" type="number" value={form.garage_spaces} onChange={(e) => update('garage_spaces', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Quartos
+          <input placeholder="Quartos" type="number" value={form.bedrooms} onChange={(e) => update('bedrooms', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Suites
+          <input placeholder="Suites" type="number" value={form.suites} onChange={(e) => update('suites', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Banheiros
+          <input placeholder="Banheiros" type="number" value={form.bathrooms} onChange={(e) => update('bathrooms', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Vagas
+          <input placeholder="Vagas" type="number" value={form.garage_spaces} onChange={(e) => update('garage_spaces', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
 
-        <input placeholder="Area privativa/construida" type="number" value={form.private_area} onChange={(e) => update('private_area', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Area total/terreno" type="number" value={form.total_area} onChange={(e) => update('total_area', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Area privativa/construida
+          <input placeholder="Area privativa/construida" type="number" value={form.private_area} onChange={(e) => update('private_area', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Area total/terreno
+          <input placeholder="Area total/terreno" type="number" value={form.total_area} onChange={(e) => update('total_area', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
 
         <select value={form.sun_position} onChange={(e) => update('sun_position', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }}>
           <option value="">Posicao solar nao informada</option>
@@ -383,8 +443,14 @@ export default function EditMarketplaceListingPage() {
           <option value="false">Nao</option>
         </select>
 
-        <input placeholder="Andar do apartamento" type="number" value={form.floor_number} onChange={(e) => update('floor_number', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
-        <input placeholder="Total de andares" type="number" value={form.total_floors} onChange={(e) => update('total_floors', e.target.value)} style={{ width: '100%', padding: 12, marginBottom: 12 }} />
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Andar do apartamento
+          <input placeholder="Andar do apartamento" type="number" value={form.floor_number} onChange={(e) => update('floor_number', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Total de andares
+          <input placeholder="Total de andares" type="number" value={form.total_floors} onChange={(e) => update('total_floors', e.target.value)} style={{ width: '100%', padding: 12, marginTop: 6 }} />
+        </label>
       </section>
 
       <button onClick={handleSubmit} disabled={saving} style={{ width: '100%', padding: 12 }}>

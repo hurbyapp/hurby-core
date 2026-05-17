@@ -57,7 +57,15 @@ import {
   getPropertyTypes,
   updatePropertyAsset,
   updatePropertyListing,
+  upsertPropertyAssetFeaturesByAssetId,
 } from '@/lib/services/propertyService'
+
+function normalizeOptionalNumber(value: string) {
+  if (!String(value || '').trim()) return null
+  const normalized = Number(String(value).replace(',', '.'))
+  if (Number.isNaN(normalized)) return null
+  return normalized
+}
 
 function normalizeBrazilianPrice(value: string) {
   if (!value.trim()) return null
@@ -136,6 +144,21 @@ export default function EditPropertyPage() {
     businessContextId,
     setBusinessContextId,
   ] = useState('')
+  const [bedrooms, setBedrooms] = useState('')
+  const [suites, setSuites] = useState('')
+  const [bathrooms, setBathrooms] = useState('')
+  const [garageSpaces, setGarageSpaces] = useState('')
+  const [privateArea, setPrivateArea] = useState('')
+  const [totalArea, setTotalArea] = useState('')
+  const [builtYear, setBuiltYear] = useState('')
+  const [floorNumber, setFloorNumber] = useState('')
+  const [totalFloors, setTotalFloors] = useState('')
+  const [sunPosition, setSunPosition] = useState('')
+  const [hasElevator, setHasElevator] = useState(false)
+  const [isFurnished, setIsFurnished] = useState(false)
+  const [hasPrivatePool, setHasPrivatePool] = useState(false)
+
+
 
   const [status, setStatus] =
     useState('')
@@ -240,7 +263,26 @@ export default function EditPropertyPage() {
           ?.operational_model_id || ''
       )
 
-      setLoading(false)
+      
+
+      // OPERATIONS_EDIT_LOAD_FEATURES_V1
+      const rawFeatures = listingData?.property_assets?.property_asset_features
+      const assetFeatures = Array.isArray(rawFeatures) ? rawFeatures[0] : rawFeatures
+
+      setBedrooms(assetFeatures?.bedrooms ?? '')
+      setSuites(assetFeatures?.suites ?? '')
+      setBathrooms(assetFeatures?.bathrooms ?? '')
+      setGarageSpaces(assetFeatures?.garage_spaces ?? '')
+      setPrivateArea(assetFeatures?.private_area ?? '')
+      setTotalArea(assetFeatures?.total_area ?? '')
+      setBuiltYear(assetFeatures?.built_year ?? '')
+      setFloorNumber(assetFeatures?.floor_number ?? '')
+      setTotalFloors(assetFeatures?.total_floors ?? '')
+      setSunPosition(assetFeatures?.sun_position || '')
+      setHasElevator(!!assetFeatures?.has_elevator)
+      setIsFurnished(!!(assetFeatures?.is_furnished ?? assetFeatures?.furnished))
+      setHasPrivatePool(!!assetFeatures?.has_private_pool)
+setLoading(false)
     }
 
     init()
@@ -310,6 +352,35 @@ export default function EditPropertyPage() {
 
         setSaving(false)
 
+        return
+      }
+
+      // OPERATIONS_EDIT_SAVE_FEATURES_V1
+      setStatus('Salvando caracteristicas...')
+
+      const featuresResponse = await upsertPropertyAssetFeaturesByAssetId(
+        listing.property_assets.id,
+        {
+          bedrooms: normalizeOptionalNumber(bedrooms),
+          suites: normalizeOptionalNumber(suites),
+          bathrooms: normalizeOptionalNumber(bathrooms),
+          garage_spaces: normalizeOptionalNumber(garageSpaces),
+          private_area: normalizeOptionalNumber(privateArea),
+          total_area: normalizeOptionalNumber(totalArea),
+          built_year: normalizeOptionalNumber(builtYear),
+          floor_number: normalizeOptionalNumber(floorNumber),
+          total_floors: normalizeOptionalNumber(totalFloors),
+          has_elevator: hasElevator,
+          is_furnished: isFurnished,
+          furnished: isFurnished,
+          has_private_pool: hasPrivatePool,
+          sun_position: sunPosition || null,
+        }
+      )
+
+      if (featuresResponse.error) {
+        setStatus(featuresResponse.error.message || 'Erro ao salvar caracteristicas.')
+        setSaving(false)
         return
       }
 
@@ -530,7 +601,92 @@ export default function EditPropertyPage() {
       <br />
       <br />
 
-      <button
+      
+      {/* OPERATIONS_EDIT_FEATURES_BLOCK_V1 */}
+      <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, margin: '20px 0' }}>
+        <h2>Caracteristicas fisicas</h2>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Quartos
+          <br />
+          <input placeholder="Ex: 3" value={bedrooms} onChange={(e) => setBedrooms(e.target.value)} />
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Suites
+          <br />
+          <input placeholder="Ex: 1" value={suites} onChange={(e) => setSuites(e.target.value)} />
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Banheiros
+          <br />
+          <input placeholder="Ex: 2" value={bathrooms} onChange={(e) => setBathrooms(e.target.value)} />
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Vagas
+          <br />
+          <input placeholder="Ex: 2" value={garageSpaces} onChange={(e) => setGarageSpaces(e.target.value)} />
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Area privativa/construida
+          <br />
+          <input placeholder="Ex: 85" value={privateArea} onChange={(e) => setPrivateArea(e.target.value)} />
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Area total/terreno
+          <br />
+          <input placeholder="Ex: 300" value={totalArea} onChange={(e) => setTotalArea(e.target.value)} />
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Ano de construcao
+          <br />
+          <input placeholder="Ex: 2018" value={builtYear} onChange={(e) => setBuiltYear(e.target.value)} />
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Andar
+          <br />
+          <input placeholder="Ex: 8" value={floorNumber} onChange={(e) => setFloorNumber(e.target.value)} />
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Total de andares
+          <br />
+          <input placeholder="Ex: 20" value={totalFloors} onChange={(e) => setTotalFloors(e.target.value)} />
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          Posicao solar
+          <br />
+          <select value={sunPosition} onChange={(e) => setSunPosition(e.target.value)}>
+            <option value="">Nao informada</option>
+            <option value="morning">Sol da manha</option>
+            <option value="afternoon">Sol da tarde</option>
+          </select>
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          <input type="checkbox" checked={hasElevator} onChange={(e) => setHasElevator(e.target.checked)} />
+          {' '}Possui elevador
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          <input type="checkbox" checked={isFurnished} onChange={(e) => setIsFurnished(e.target.checked)} />
+          {' '}Mobiliado
+        </label>
+
+        <label style={{ display: 'block', marginBottom: 12 }}>
+          <input type="checkbox" checked={hasPrivatePool} onChange={(e) => setHasPrivatePool(e.target.checked)} />
+          {' '}Piscina privativa
+        </label>
+      </section>
+
+<button
         onClick={handleSave}
         disabled={saving}
       >
