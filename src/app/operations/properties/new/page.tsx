@@ -1,3 +1,20 @@
+/*
+HURBY_FORM_OFFICIAL_REFERENCE_V2
+
+Referencia visual/conceitual oficial em evolucao:
+- raiz do projeto: formFinalRevisadoTecnicoV2.html
+
+Orientacao para Codex/executor:
+- Este HTML e referencia de UX, fluxo e design do formulario basico oficial de anuncio.
+- Nao substituir esta page automaticamente pelo HTML cru.
+- Nao alterar services, schema, RPCs, RLS, payloads ou regras de negocio sem auditoria previa.
+- O formulario oficial ainda recebera novos atributos, regras condicionais e componentizacao futura.
+- Quando evoluir esta page, usar o HTML como bussola visual e de jornada:
+  selecao por tipo, fluxo em etapas, sidebar contextual, preview/vitrine, fotos, descricao rica, localizacao, preco e contato.
+- Manter UTF-8. Evitar correcao ampla de acentuacao por script PowerShell.
+- Futuro: componentizar dentro do design system Hurby antes de aplicar o refinamento visual global.
+*/
+
 'use client'
 
 /*

@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hurby | Criar anúncio</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800;900&display=swap');
+
+    :root {
+      --text: #0f1720; --muted: #66717d; --soft: #f4f5f6; --soft2: #eef0f2;
+      --line: #e3e6ea; --dark: #101820; --blue: #155dfc; --blue-soft: #eaf1ff;
+      --brand: #27483b; --accent: #f5a623; --danger: #d92d20; --success: #13734b;
+      --side: #f7f8fa; --side-width: 410px; --sidebar-reserve: 380px;
+    }
+
+    * { box-sizing: border-box; }
+    html { overflow-y: scroll; scroll-behavior: smooth; }
+    body { margin: 0; min-height: 100vh; font-family: 'Google Sans', 'Product Sans', 'Nunito Sans', sans-serif; background: #fff; color: var(--text); overflow-x: hidden; }
+    button, input, textarea { font-family: inherit; }
+
+    .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 65px; background: linear-gradient(to bottom, rgba(255, 255, 255, 1) 15%, rgba(255, 255, 255, 0)); z-index: 50; display: flex; align-items: flex-start; padding: 20px 40px 0; pointer-events: none; }
+    .brand { font-size: 26px; font-weight: 800; letter-spacing: -0.05em; color: var(--brand); pointer-events: auto; }
+    .brand span { color: var(--accent); }
+
+    .layout { min-height: 100vh; padding: 86px 40px 160px; display: flex; justify-content: center; transition: padding-right .24s cubic-bezier(0.4, 0, 0.2, 1) 0s; will-change: padding-right; }
+    body.sidebar-open .layout { padding-right: var(--sidebar-reserve); transition: padding-right .18s cubic-bezier(0.4, 0, 0.2, 1) .18s; }
+    
+    .left-inner { width: 100%; max-width: 760px; margin: 0 auto; transition: max-width .3s cubic-bezier(0.4, 0, 0.2, 1), margin .3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    .step { display: none; }
+    .step.active { display: block; animation: fade .25s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .question { margin: 0 0 42px; font-size: 36px; line-height: 1.1; font-weight: 700; letter-spacing: -0.04em; color: var(--text); }
+    .intro-copy { margin: 0 0 42px; }
+    .intro-title { margin: 0 0 10px; font-size: 44px; line-height: 1.02; font-weight: 850; letter-spacing: -0.04em; color: var(--text); }
+    .intro-subtitle, .question-helper { margin: 0; color: var(--muted); font-size: 18px; line-height: 1.45; font-weight: 650; }
+    .question-helper { margin: -28px 0 34px; max-width: 620px; }
+
+    .mosaic { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: 115px; gap: 12px; }
+    .card { border: 0; background: var(--soft); color: var(--text); border-radius: 18px; padding: 22px; cursor: pointer; text-align: left; transition: .16s ease; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 6px; min-width: 0; pointer-events: auto; }
+    .card:hover { background: var(--soft2); transform: translateY(-2px); }
+    .card.selected { background: var(--blue); color: #fff; box-shadow: 0 10px 20px rgba(21, 93, 252, 0.2); }
+    .card strong { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .card .desc { font-size: 13px; font-weight: 600; opacity: 0.7; line-height: 1.3; }
+    .span-3 { grid-column: span 3; } .span-2 { grid-column: span 2; }
+
+    .field-stack { display: grid; gap: 20px; pointer-events: auto; }
+    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .field { display: grid; gap: 8px; position: relative; }
+    
+    .field-header { display: flex; justify-content: space-between; align-items: flex-end; }
+    .field label { font-size: 15px; font-weight: 700; color: #202b36; margin:0;}
+    .field-tools { display: flex; gap: 12px; align-items: center; }
+    .counter { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .counter.error { color: var(--danger); }
+    .motivation { font-size: 13px; color: var(--blue); font-weight: 600; font-style: italic; }
+
+    .field-input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+    .title-input { padding-right: 130px !important; }
+    .btn-ai { position: absolute; right: 8px; background: var(--blue-soft); color: var(--blue); border: none; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; z-index: 10; }
+    .btn-ai:hover { background: #d0e1ff; transform: scale(1.02); }
+    
+    .field input { width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; font-size: 17px; outline: none; background: #fff; color: var(--text); transition: .16s ease; }
+    .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(21, 93, 252, .10); }
+    
+    .editor-container { border: 1px solid var(--line); border-radius: 14px; background: #fff; overflow: hidden; transition: .16s ease; }
+    .editor-container:focus-within { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(21, 93, 252, .10); }
+    .editor-toolbar { background: var(--side); padding: 8px 12px; display: flex; gap: 6px; border-bottom: 1px solid var(--line); align-items: center; flex-wrap: wrap; position: relative; }
+    .btn-tool { background: #fff; border: 1px solid var(--line); border-radius: 6px; width: 32px; height: 32px; display: grid; place-items: center; cursor: pointer; font-weight: 700; color: var(--dark); transition: .15s; font-size: 14px; }
+    .btn-tool:hover { background: var(--soft2); }
+    .btn-clear { margin-left: 10px; color: var(--danger); }
+    .btn-ai-tool { margin-left: auto; background: var(--blue-soft); color: var(--blue); border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .btn-ai-tool:hover { background: #d0e1ff; }
+    
+    .editor-area { padding: 16px 18px; min-height: 180px; outline: none; font-size: 16px; line-height: 1.6; color: var(--text); }
+    .editor-area h3 { margin: 0 0 10px; font-size: 20px; color: var(--brand); }
+    .editor-area ul { margin: 0 0 10px; padding-left: 20px; }
+    
+    #descEditor .placeholder-red { color: var(--danger); text-transform: uppercase; font-weight: 800; background: #fff1f1; padding: 0 4px; border-radius: 4px; }
+    
+    .emoji-picker { position: absolute; top: 45px; left: 160px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 20; }
+    .emoji-picker button { background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; border-radius: 8px; transition: .2s; }
+    .emoji-picker button:hover { background: var(--soft2); transform: scale(1.1); }
+    .emoji-picker.hidden { display: none; }
+
+    .max-text { font-size: 54px !important; height: 90px !important; font-weight: 800; text-align: center; letter-spacing: -1px; }
+    .max-text::placeholder { color: #d0d5dc; font-weight: 600; }
+
+    .dropzone { border: 2px dashed #d5dbe1; background: #fafbfc; border-radius: 20px; padding: 30px 26px; cursor: pointer; transition: .16s ease; text-align: center; display: grid; place-items: center; gap: 8px; }
+    .dropzone:hover, .dropzone.dragging { border-color: var(--blue); background: var(--blue-soft); }
+    .dropzone .dropzone-icon { display: block; color: var(--blue); font-size: 38px; line-height: 1; filter: drop-shadow(0 8px 12px rgba(21, 93, 252, .14)); }
+    .dropzone strong { display: block; font-size: 18px; font-weight: 700; margin-bottom: 7px; color: var(--blue); }
+    .dropzone span { display: block; color: var(--muted); font-size: 14px; line-height: 1.4; }
+    .hidden-input { display: none; }
+
+    .circle-group, .pill-group, .feature-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .circle-group { gap: 6px; }
+    .circle, .pill, .feature { border: 0; background: rgba(21, 93, 252, 0.12); color: #0a2e7a; cursor: pointer; transition: .15s ease; font-weight: 700; pointer-events: auto; }
+    .circle { width: 44px; height: 44px; border-radius: 999px; display: grid; place-items: center; font-size: 16px; }
+    .pill { border-radius: 999px; padding: 14px 20px; font-size: 14px; }
+    .feature { border-radius: 14px; padding: 14px 18px; font-size: 14px; text-align: left; }
+    .circle:hover, .pill:hover, .feature:hover { background: rgba(21, 93, 252, 0.2); }
+    .circle.selected, .pill.selected, .feature.selected { background: var(--blue); color: #fff; box-shadow: 0 4px 12px rgba(21, 93, 252, 0.3); }
+
+    .side { position: fixed; right: 0; top: 0; width: var(--side-width); height: 100vh; background: var(--side); border-left: 1px solid var(--line); padding: 0 0 140px 0; z-index: 60; transform: translateX(100%); transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden;}
+    .side::-webkit-scrollbar { width: 6px; } .side::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; }
+    .side.open { transform: translateX(0); }
+    
+    .side-emoji-wrap { position: relative; height: 126px; display: grid; place-items: center; margin-bottom: 0; margin-top: 8px; }
+    .side-graphic-bg { position: absolute; width: 108px; height: 108px; background: var(--blue-soft); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; z-index: 1; animation: morph 8s ease-in-out infinite; }
+    @keyframes morph { 0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; } 34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; } 67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; } }
+    
+    .comp-emoji { position: relative; display: inline-block; z-index: 2; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); transform: scale(1); }
+    
+    .side-property-label { display: none; }
+    .side-property-label span { display: inline-block; color: #fff; font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; padding: 6px 18px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); transition: background 0.3s ease; }
+
+    .side-content { display: flex; flex-direction: column; gap: 12px; padding: 4px 24px 0; }
+    .side-block { padding-top: 10px; border-top: 1px solid var(--line); }
+    .side-block:first-child { padding-top: 0; border-top: none; }
+    .side-block h3 { margin: 0 0 10px; font-size: 15px; font-weight: 800; letter-spacing: 0; text-transform: none; color: #202b36;}
+    
+    .dense-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .dense-grid input { padding: 10px 12px; font-size: 13px; border-radius: 8px; border: 1px solid var(--line); background: #fff; width: 100%; outline: none; transition: .15s;}
+    .dense-grid input:focus { border-color: var(--blue); }
+    .side input:not([type="checkbox"]) { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--text); outline: none; padding: 13px 14px; font-size: 14px; font-weight: 650; transition: border-color .16s ease, box-shadow .16s ease, background .16s ease; }
+    .side input:not([type="checkbox"])::placeholder { color: #9aa3ad; font-weight: 600; }
+    .side input:not([type="checkbox"]):focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(21, 93, 252, .10); }
+    .side input:not([type="checkbox"]):disabled { background: #edf0f3; color: #8b96a1; }
+    .side-form { display: flex; flex-direction: column; gap: 10px; }
+    .side-row { display: grid; gap: 8px; }
+    .side-row.address-main { grid-template-columns: minmax(0, 7fr) minmax(76px, 3fr); }
+    .side-row.city-uf { grid-template-columns: minmax(0, 3fr) minmax(64px, 1fr); }
+    .side-note { border-radius: 12px; padding: 10px 12px; background: #fff; color: var(--muted); border: 1px solid var(--line); font-size: 12px; line-height: 1.35; font-weight: 700; }
+    .side-note.loading { color: var(--blue); background: var(--blue-soft); border-color: #d4e2ff; }
+    .side-note.success { color: var(--success); background: #e8f6ef; border-color: #ccebdc; }
+    .side-note.error { color: var(--danger); background: #fff1f1; border-color: #ffd4d4; }
+    .side-note strong { color: var(--blue); }
+    .cep-number-callout { display: flex; align-items: flex-start; gap: 8px; border: 2px solid var(--blue); background: var(--blue-soft); color: #0a2e7a; border-radius: 14px; padding: 11px 12px; font-size: 12px; line-height: 1.35; font-weight: 800; box-shadow: 0 10px 22px rgba(21, 93, 252, .10); }
+    .cep-number-callout strong { color: var(--blue); }
+    .dense-pill { padding: 8px 12px; font-size: 12px; }
+    .side-empty { height: calc(100vh - 300px); display: grid; place-items: center; text-align: center; color: var(--muted); font-size: 16px; line-height: 1.45; }
+    .checkbox-lbl { font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px; margin-top:8px; cursor:pointer; font-weight:600;}
+
+    /* PÁGINA FINAL DE REVISÃO */
+    .olx-container { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 32px; pointer-events: auto; width: 100%; }
+    .olx-main { display: flex; flex-direction: column; gap: 24px; }
+    .olx-gallery-shell { display: grid; gap: 10px; }
+    .olx-gallery { position: relative; height: 420px; border-radius: 14px; background-color: #27483b; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 20px; color: #fff; font-weight: 800; font-size: 18px; overflow: hidden; }
+    .olx-gallery::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.42), rgba(0,0,0,.04) 45%, rgba(0,0,0,.16)); pointer-events: none; }
+    .gallery-caption, .gallery-count, .gallery-nav, .favorite-btn, .gallery-empty-icon { position: relative; z-index: 2; }
+    .gallery-empty-icon { font-size: 56px; margin-right: 12px; }
+    .gallery-count { position: absolute; right: 18px; bottom: 18px; background: rgba(16, 24, 32, .78); color: #fff; border-radius: 999px; padding: 8px 12px; font-size: 13px; font-weight: 800; backdrop-filter: blur(8px); }
+    .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 999px; border: 0; background: rgba(255,255,255,.92); color: var(--dark); display: grid; place-items: center; font-size: 24px; line-height: 1; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,.16); }
+    .gallery-nav.prev { left: 16px; }
+    .gallery-nav.next { right: 16px; }
+    .gallery-thumbs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+    .gallery-thumb { height: 72px; border: 2px solid transparent; border-radius: 10px; background: var(--soft); background-size: cover; background-position: center; cursor: pointer; overflow: hidden; display: grid; place-items: center; color: var(--muted); font-size: 20px; transition: .16s ease; }
+    .gallery-thumb:hover { transform: translateY(-1px); border-color: #cdd7e3; }
+    .gallery-thumb.active { border-color: var(--blue); box-shadow: 0 8px 18px rgba(21, 93, 252, .18); }
+    .listing-tagbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .listing-tag { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; }
+    .listing-tag.highlight { color: #fff; background: linear-gradient(135deg, #155dfc, #0f5e3d); box-shadow: 0 10px 24px rgba(21, 93, 252, .22); }
+    .listing-tag.new { color: #5a3300; background: #ffe6a8; }
+    .listing-tag.safe { color: var(--brand); background: #e8f6ef; }
+    .listing-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+    .olx-title { font-size: 30px; font-weight: 750; color: var(--text); margin: 0; line-height: 1.15; letter-spacing: -0.03em; }
+    .favorite-btn { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--dark); display: grid; place-items: center; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,.08); transition: .16s ease; }
+    .favorite-btn:hover, .favorite-btn.active { color: #d92d20; transform: translateY(-1px); }
+    .favorite-btn svg { width: 22px; height: 22px; stroke-width: 2.3; fill: none; }
+    .favorite-btn.active svg { fill: currentColor; }
+    .rev-location { display: flex; align-items: flex-start; gap: 9px; border: 1px solid var(--line); border-radius: 14px; background: #fff; padding: 13px 14px; color: #2f3a45; font-size: 15px; font-weight: 750; line-height: 1.4; box-shadow: 0 6px 18px rgba(0,0,0,.035); }
+    .rev-location svg { width: 19px; height: 19px; flex: 0 0 19px; color: var(--blue); margin-top: 1px; }
+    .olx-icons { display: flex; gap: 24px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 20px 0; margin-top: 10px; }
+    .olx-icon-item { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-size: 16px; font-weight: 700; color: var(--text); }
+    .olx-icon-item svg { width: 24px; height: 24px; color: var(--muted); stroke-width: 1.5; }
+    .olx-icon-item span { font-size: 13px; font-weight: 400; color: var(--muted); }
+    .olx-desc-box h3 { font-size: 20px; font-weight: 600; margin: 0 0 16px; }
+    .olx-desc-box p, .olx-desc-box div { font-size: 15px; color: #4a4a4a; line-height: 1.6; margin: 0; }
+    .olx-diferenciais { padding: 24px 0; border-top: 1px solid var(--line); margin-top: 10px; }
+    .olx-diferenciais h3 { font-size: 20px; font-weight: 600; margin: 0 0 20px; color: var(--brand); }
+    .cloud-tags { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: baseline; }
+    .listing-info-panel { border-top: 1px solid var(--line); padding-top: 24px; }
+    .listing-info-panel h3 { font-size: 20px; font-weight: 650; margin: 0 0 16px; color: var(--brand); }
+    .listing-detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .listing-detail-item { border: 1px solid var(--line); border-radius: 12px; padding: 13px; background: #fff; min-height: 78px; }
+    .listing-detail-item span { display: block; color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 7px; }
+    .listing-detail-item strong { display: block; color: var(--text); font-size: 15px; font-weight: 800; line-height: 1.3; }
+    .olx-sidebar-right { display: flex; flex-direction: column; gap: 16px; }
+    .olx-box { border: 1px solid var(--line); border-radius: 12px; padding: 24px; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+    .olx-box .price { font-size: 32px; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: -0.04em;}
+    .olx-box .tag-venda { font-size: 13px; color: var(--muted); margin-bottom: 24px; display: block; }
+    .olx-fake-btn { width: 100%; border: 1px solid var(--dark); border-radius: 999px; padding: 14px; font-size: 16px; font-weight: 700; text-align: center; background: #fff; cursor: not-allowed; }
+    .olx-pro { text-align: center; }
+    .olx-pro span { display: block; font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;}
+    .olx-pro strong { display: block; font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .olx-map-box { border-top: 1px solid var(--line); padding-top: 24px; }
+    .olx-map-box h3 { font-size: 20px; font-weight: 600; margin: 0 0 12px; color: var(--brand); }
+    .map-frame-wrap { position: relative; height: 260px; border-radius: 14px; overflow: hidden; background: var(--soft); border: 1px solid var(--line); }
+    .map-frame-wrap iframe { width: 100%; height: 100%; border: 0; display: block; filter: saturate(.9); }
+    .map-hint { margin-top: 10px; color: var(--muted); font-size: 13px; font-weight: 650; line-height: 1.4; }
+    .similar-section { border-top: 1px solid var(--line); padding-top: 24px; }
+    .similar-section h3 { font-size: 20px; font-weight: 650; margin: 0 0 14px; color: var(--brand); }
+    .similar-carousel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .similar-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 8px 22px rgba(0,0,0,.04); }
+    .similar-media { height: 96px; background: linear-gradient(135deg, #27483b, #155dfc); display: flex; align-items: flex-end; padding: 10px; color: #fff; font-size: 12px; font-weight: 900; }
+    .similar-body { padding: 12px; }
+    .similar-body strong { display: block; font-size: 14px; line-height: 1.25; margin-bottom: 8px; color: var(--text); }
+    .similar-body span { display: block; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .contact-preview { text-align: left; }
+    .contact-preview .contact-kicker { display: block; color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+    .contact-preview .masked-phone { font-size: 22px; font-weight: 850; letter-spacing: .02em; color: var(--text); margin: 4px 0 12px; }
+    .contact-preview .contact-note { color: var(--muted); font-size: 13px; line-height: 1.4; font-weight: 650; margin: 0 0 14px; }
+    .unlock-phone-btn { width: 100%; border: 0; border-radius: 999px; padding: 13px 14px; background: var(--blue); color: #fff; font-size: 14px; font-weight: 800; cursor: pointer; transition: .2s ease; }
+    .unlock-phone-btn:hover { background: #0d48cc; transform: translateY(-1px); }
+    .phone-stat { margin-top: 10px; color: var(--brand); background: #e8f6ef; border-radius: 10px; padding: 9px 10px; font-size: 12px; line-height: 1.35; font-weight: 800; }
+    .contact-modal-field { margin: 18px 0 12px; text-align: left; }
+    .contact-modal-field label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--muted); font-weight: 800; }
+    .contact-modal-field input { width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; font-size: 17px; font-weight: 800; outline: none; }
+    .contact-modal-field input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(21, 93, 252, .10); }
+    .contact-modal-error { color: var(--danger); font-size: 13px; font-weight: 800; margin-top: 8px; }
+    .contact-term { color: var(--muted); font-size: 12px; line-height: 1.45; font-weight: 650; text-align: left; background: var(--soft); border-radius: 12px; padding: 12px; }
+
+    .bottom-gradient { position: fixed; bottom: 0; left: 0; right: 0; height: 90px; background: linear-gradient(to top, rgba(255,255,255,1) 15%, rgba(255,255,255,0)); z-index: 55; pointer-events: none; }
+
+    .floating-broker {
+        position: fixed; left: 44px; top: 76px; transform: translateY(-8px) scale(.96); width: min(330px, calc(100vw - 56px));
+        background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(14px);
+        padding: 18px; border-radius: 22px 22px 22px 8px;
+        box-shadow: 0 18px 45px rgba(16, 24, 32, 0.14); z-index: 45;
+        border: 1px solid rgba(39, 72, 59, 0.12); pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+        opacity: 0; visibility: hidden;
+    }
+    .floating-broker.visible { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    .floating-broker::before {
+        content: "Pitaco do Hurby ✨"; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 900; color: var(--blue); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .06em; background: var(--blue-soft); padding: 6px 10px; border-radius: 999px;
+    }
+    .floating-broker::after {
+        content: ""; position: absolute; left: 18px; top: -8px; width: 16px; height: 16px; background: rgba(255, 255, 255, 0.96); border-left: 1px solid rgba(39, 72, 59, 0.12); border-top: 1px solid rgba(39, 72, 59, 0.12); transform: rotate(45deg);
+    }
+    .floating-broker-text { font-size: 15px; line-height: 1.45; color: var(--text); font-weight: 700; letter-spacing: 0; }
+    .floating-broker-text strong { color: var(--brand); }
+
+    .actions { position: fixed; left: 0; right: 0; bottom: 30px; background: transparent; border: none; z-index: 70; display: flex; justify-content: center; pointer-events: none; }
+    .actions-inner { width: 100%; max-width: 1400px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; }
+    .action-left { flex: 1; display: flex; align-items: center; pointer-events: none; }
+    .action-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 20px; pointer-events: none; }
+    .action-center { flex: 2; display: flex; justify-content: center; align-items: center; pointer-events: none; position: relative; }
+    
+    .progress-container { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 260px; pointer-events: auto; transition: opacity .3s ease; transform: translateY(15px); }
+    .progress-container.hidden { opacity: 0; pointer-events: none; }
+    .progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; transition: .3s ease;}
+    .bar { height: 6px; border-radius: 999px; background: var(--line); }
+    .bar.active { background: var(--blue); }
+    .progress-text-human { font-size: 13px; font-weight: 700; color: var(--dark); text-align: center; transition: .3s ease;} 
+
+    .btn-arrow { pointer-events: auto; width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center; border: none; cursor: pointer; transition: .2s ease; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+    .btn-arrow.back { background: #fff; color: var(--dark); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.05); }
+    .btn-arrow.back:hover { background: var(--soft2); transform: scale(1.05); }
+    .btn-arrow.next { background: var(--dark); color: #fff; }
+    .btn-arrow.next:hover { background: var(--blue); transform: scale(1.05); }
+    .btn-arrow.publish-mode { width: auto; border-radius: 999px; padding: 0 30px; font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; background: var(--success); }
+    .btn-arrow.publish-mode:hover { background: #0f5e3d; }
+    .draft-btn { pointer-events: auto; background: #fff; color: var(--dark); border: 1px solid var(--line); border-radius: 999px; padding: 14px 26px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,.05); transition: .2s ease; }
+    .draft-btn:hover { background: var(--soft2); }
+
+    .error-bubble {
+        position: absolute; background: #fff; color: var(--text); padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 14px; box-shadow: 0 8px 25px rgba(0,0,0, 0.15); border: 2px solid var(--accent); z-index: 100; pointer-events: none; transform: translate(-50%, -100%); margin-top: -6px; animation: popBubble .3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; display: flex; align-items: center; gap: 6px;
+    }
+    .error-bubble::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-width: 8px 8px 0; border-style: solid; border-color: var(--accent) transparent transparent transparent; }
+    .error-bubble::before { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); border-width: 6px 6px 0; border-style: solid; border-color: #fff transparent transparent transparent; z-index: 1; }
+    @keyframes popBubble { 0% { opacity: 0; transform: translate(-50%, -80%) scale(0.8); } 100% { opacity: 1; transform: translate(-50%, -100%) scale(1); } }
+
+    .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 1; transition: opacity .25s ease; pointer-events: auto; }
+    .modal-overlay.hidden { opacity: 0; pointer-events: none; }
+    .modal-content { background: #fff; padding: 40px 50px; border-radius: 32px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.08); border: 1px solid var(--line); transform: translateY(0) scale(1); transition: all .3s cubic-bezier(0.4, 0, 0.2, 1); max-width: 480px; }
+    .modal-overlay.hidden .modal-content { transform: translateY(20px) scale(0.95); }
+    .modal-title { font-size: 32px; color: var(--blue); margin: 0 0 16px; font-weight: 800; letter-spacing: -0.04em; }
+    .modal-desc { font-size: 17px; color: var(--dark); margin: 0 0 30px; line-height: 1.4; font-weight: 600; }
+    .btn-stack { display: flex; flex-direction: column; gap: 12px; }
+    .btn-vamos { background: var(--dark); color: #fff; border: none; border-radius: 999px; padding: 16px; font-size: 17px; font-weight: 800; cursor: pointer; transition: .2s ease; width: 100%; }
+    .btn-vamos:hover { background: var(--blue); transform: translateY(-2px); }
+    .btn-skip { background: transparent; color: var(--muted); border: none; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 10px;}
+    .btn-skip:hover { color: var(--dark); }
+
+    .success { text-align: center; max-width: 560px; margin: 0 auto; }
+    .success-icon { width: 88px; height: 88px; border-radius: 999px; background: #e8f6ef; color: var(--success); display: grid; place-items: center; margin: 0 auto 24px; font-size: 40px; font-weight: 800; }
+    .success h2 { margin: 0; font-size: 38px; letter-spacing: -0.05em; font-weight: 700;}
+
+    @media (max-width: 1100px) {
+      .floating-broker { display: none; }
+    }
+
+    @media (max-width: 980px) {
+      .top-bar { padding: 20px 20px 0; height: auto; background: none; }
+      .layout { padding: 90px 20px 180px; justify-content: center; }
+      body.sidebar-open .layout { padding-right: 20px; }
+      body.sidebar-open .left-inner { margin-right: auto; }
+      .side { position: static; width: 100%; height: auto; transform: none; border-left: 0; padding: 0 0 60px; overflow: visible; display: none; }
+      .side.open { display: block; }
+      .olx-container { grid-template-columns: 1fr; }
+      .olx-gallery { height: 320px; }
+      .gallery-thumbs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .listing-detail-grid, .similar-carousel { grid-template-columns: 1fr; }
+      .listing-title-row { align-items: center; }
+      .actions-inner { padding: 0 20px; flex-wrap: wrap; justify-content: center; gap: 20px;}
+      .action-left, .action-right { flex: initial; }
+      .action-center { order: -1; flex: 100%; transform: none; } 
+      .max-text { font-size: 38px !important; }
+      .bottom-gradient { display: none; } 
+    }
+  </style>
+</head>
+<body>
+  
+  <header class="top-bar"><div class="brand">Hurby</div></header>
+
+  <main class="layout">
+    <section class="left-inner" id="leftInner">
+      <section class="step active" id="step1">
+        <div class="intro-copy">
+          <h1 class="intro-title">Vamos te ajudar a fechar negócio!</h1>
+          <p class="intro-subtitle">O que você gostaria de anunciar?</p>
+        </div>
+        <div class="mosaic">
+          <button class="card span-3" type="button" data-select="propertyType" data-value="Casa"><strong>Casa</strong><span class="desc">Um lar de rua ou em condomínio</span></button>
+          <button class="card span-3" type="button" data-select="propertyType" data-value="Apartamento"><strong>Apartamento</strong><span class="desc">Uma unidade em prédio ou condomínio</span></button>
+          <button class="card span-2" type="button" data-select="propertyType" data-value="Studio / Loft"><strong>Studio / Loft</strong><span class="desc">Um espaço integrado e prático</span></button>
+          <button class="card span-2" type="button" data-select="propertyType" data-value="Kitnet"><strong>Kitnet</strong><span class="desc">Um cantinho compacto e funcional</span></button>
+          <button class="card span-2" type="button" data-select="propertyType" data-value="Terreno"><strong>Terreno</strong><span class="desc">Um lote pronto para virar projeto</span></button>
+          <button class="card span-3" type="button" data-select="propertyType" data-value="Comercial"><strong>Comercial</strong><span class="desc">Um ponto para negócios acontecerem</span></button>
+          <button class="card span-3" type="button" data-select="propertyType" data-value="Rural"><strong>Rural</strong><span class="desc">Um sítio, fazenda ou refúgio produtivo</span></button>
+        </div>
+      </section>
+
+      <section class="step" id="step2">
+        <h1 class="question">Conta pra gente como é esse imóvel</h1>
+        <p class="question-helper">Algumas respostas rápidas já deixam o anúncio bem mais claro para quem está procurando.</p>
+        <div id="characteristicsMain"></div>
+      </section>
+
+      <section class="step" id="step3">
+        <h1 class="question">Agora vamos dar cara de vitrine</h1>
+        <p class="question-helper">Um bom título e boas fotos fazem a pessoa parar, olhar e querer saber mais.</p>
+        <div class="field-stack" id="step3Fields">
+          <div class="field" id="wrap-title">
+            <div class="field-header">
+              <label>Como vamos chamar esse anúncio?</label>
+              <div class="field-tools"><span class="counter" id="titleCount">0/90</span></div>
+            </div>
+            <div class="field-input-wrapper">
+                <input class="title-input" data-input="title" placeholder="Ex: Casa com 3 quartos no Jardim Itália" maxlength="90"/>
+                <button type="button" class="btn-ai" onclick="suggestText('title')">✨ Me dá uma ideia</button>
+            </div>
+          </div>
+          <label class="dropzone" id="dropzone" for="photos">
+            <span class="dropzone-icon" aria-hidden="true">📷</span>
+            <strong>Manda as fotos por aqui.</strong>
+            <span>Arraste ou clique para escolher até 22 imagens (JPG, PNG ou WEBP).</span>
+            <input class="hidden-input" id="photos" type="file" multiple accept="image/*" />
+          </label>
+          <div class="field" id="wrap-cep">
+            <label>Qual é o CEP do imóvel?</label>
+            <input class="max-text" data-input="cep" maxlength="9" placeholder="00000-000" />
+          </div>
+        </div>
+      </section>
+
+      <section class="step" id="step4">
+        <h1 class="question">Hora de contar a história e falar de valor</h1>
+        <p class="question-helper">Mostra o que faz esse imóvel valer a visita. Depois, a gente organiza tudo na revisão.</p>
+        <div class="field-stack" id="step4Fields">
+          <div class="field" id="wrap-description">
+            <div class="field-header">
+              <label>O que a pessoa precisa saber sobre ele?</label>
+              <div class="field-tools">
+                <span class="motivation" id="descMotivation">Me conta os detalhes.</span>
+                <span class="counter" id="descCount">0/1500</span>
+              </div>
+            </div>
+            <div class="editor-container" id="editorWrap">
+                <div class="editor-toolbar">
+                    <button type="button" class="btn-tool" onclick="formatDoc('bold')" title="Negrito">B</button>
+                    <button type="button" class="btn-tool" style="font-style:italic" onclick="formatDoc('italic')" title="Itálico">I</button>
+                    <button type="button" class="btn-tool" style="text-decoration:underline" onclick="formatDoc('underline')" title="Sublinhado">U</button>
+                    <button type="button" class="btn-tool" onclick="formatDoc('insertUnorderedList')" title="Lista">•</button>
+                    <button type="button" class="btn-tool" onclick="formatDoc('formatBlock', 'H3')" title="Aumentar Texto (H3)">T+</button>
+                    <button type="button" class="btn-tool" onclick="formatDoc('formatBlock', 'P')" title="Diminuir Texto (Parágrafo)">T-</button>
+                    
+                    <button type="button" class="btn-tool" title="Inserir Emoji" onclick="toggleEmojiPicker(event)">😊</button>
+                    
+                    <button type="button" class="btn-tool btn-clear" title="Limpar tudo" onclick="clearEditor()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                    </button>
+                    
+                    <button type="button" class="btn-ai-tool" onclick="suggestText('desc')">✨ Me ajuda no texto</button>
+                    
+                    <div class="emoji-picker hidden" id="emojiPicker">
+                        <button onclick="insertEmoji('🏠')">🏠</button><button onclick="insertEmoji('🏢')">🏢</button>
+                        <button onclick="insertEmoji('🏬')">🏬</button><button onclick="insertEmoji('🛋️')">🛋️</button>
+                        <button onclick="insertEmoji('🚪')">🚪</button><button onclick="insertEmoji('🚧')">🚧</button>
+                        <button onclick="insertEmoji('🌳')">🌳</button><button onclick="insertEmoji('🏊‍♂️')">🏊‍♂️</button>
+                        <button onclick="insertEmoji('🚗')">🚗</button><button onclick="insertEmoji('🔑')">🔑</button>
+                        <button onclick="insertEmoji('💰')">💰</button><button onclick="insertEmoji('🤝')">🤝</button>
+                        <button onclick="insertEmoji('📍')">📍</button><button onclick="insertEmoji('✨')">✨</button>
+                        <button onclick="insertEmoji('🏆')">🏆</button>
+                    </div>
+                </div>
+                <div contenteditable="true" id="descEditor" class="editor-area" placeholder="Conte dos ambientes, da localização e dos detalhes que encantam..."></div>
+            </div>
+          </div>
+          <div class="field" id="wrap-mainPrice">
+            <label>Qual é o valor principal?</label>
+            <input class="max-text" data-input="mainPrice" placeholder="R$ 0,00" />
+          </div>
+        </div>
+      </section>
+
+      <section class="step" id="step5">
+        <div class="olx-container">
+          <div class="olx-main">
+            <div class="olx-gallery-shell">
+              <div class="olx-gallery" id="revPhoto">Fotos do imóvel</div>
+              <div class="gallery-thumbs" id="revThumbs"></div>
+            </div>
+            <div class="listing-tagbar" id="revTags"></div>
+            <div class="listing-title-row">
+              <h1 class="olx-title" id="revTitle">Título do Anúncio</h1>
+              <button class="favorite-btn" id="favoriteBtn" type="button" onclick="toggleFavorite()" aria-label="Favoritar anúncio">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+              </button>
+            </div>
+            <div class="rev-location" id="revLocation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s7-5.1 7-11a7 7 0 1 0-14 0c0 5.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              <span>Endereço</span>
+            </div>
+            <div class="olx-icons">
+              <div class="olx-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v16H4z M4 9h16 M9 4v16"/></svg><span id="revArea">0m²</span></div>
+              <div class="olx-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7v11 M21 7v11 M3 14h18 M6 7h12v7H6z M8 10h8"/></svg><span id="revBeds">0 Quartos</span></div>
+              <div class="olx-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4z M12 7v6 M9 10h6"/></svg><span id="revBaths">0 Banheiros</span></div>
+              <div class="olx-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 10h16v10H4z M8 10V7a4 4 0 0 1 8 0v3 M6 14h.01 M18 14h.01"/></svg><span id="revParking">0 Vagas</span></div>
+            </div>
+            <div class="listing-info-panel">
+              <h3>Informações importantes</h3>
+              <div class="listing-detail-grid" id="revDetailsGrid"></div>
+            </div>
+            <div class="olx-desc-box"><h3>A história do imóvel</h3><div id="revDescription">...</div></div>
+            <div class="olx-diferenciais"><h3>Diferenciais que ajudam a vender</h3><div class="cloud-tags" id="revFeatures"></div></div>
+            <div class="olx-map-box">
+              <h3>Localização no mapa</h3>
+              <div class="map-frame-wrap">
+                <iframe id="revMapFrame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa de localização do imóvel"></iframe>
+              </div>
+              <div class="map-hint" id="revMapHint">O mapa aparece assim que o endereço estiver completo.</div>
+            </div>
+            <div class="similar-section">
+              <h3>Anúncios semelhantes a esse</h3>
+              <div class="similar-carousel" id="similarListings"></div>
+            </div>
+          </div>
+          <div class="olx-sidebar-right">
+            <div class="olx-box">
+                <div class="price" id="revPrice">R$ 0</div>
+                <div style="font-size: 14px; margin-bottom: 8px; font-weight:600;" id="revCondo">Condomínio: R$ 0</div>
+                <span class="tag-venda" id="revPurpose">Venda</span>
+                <button class="olx-fake-btn">Conversar (prévia)</button>
+            </div>
+            <div class="olx-box contact-preview" id="revContactBox"></div>
+            <div class="olx-box olx-pro"><span>Anunciante</span><strong>Seu perfil</strong><div style="font-size: 13px; color: var(--muted); line-height: 1.5;">Na Hurby desde 2026<br>Sua Cidade - UF</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="step" id="step6"><div class="success"><div class="success-icon">✓</div><h2>Pronto, seu anúncio está no jeito!</h2><p style="color:var(--muted); font-size: 16px; margin-top:16px;">O JSON final estruturado foi enviado para o Console do Navegador (F12), prontinho para a API do Core Properties do Hurby.</p></div></section>
+    </section>
+  </main>
+
+  <aside class="side" id="side">
+    <div class="side-emoji-wrap">
+        <div class="side-graphic-bg"></div>
+        <div id="sideEmojiContainer"></div>
+    </div>
+    <div class="side-property-label"><span id="sidePropertyBadge">CATEGORIA</span></div>
+    <div class="side-content" id="sideContent"></div>
+  </aside>
+
+  <div class="floating-broker" id="floatingBroker">
+    <div class="floating-broker-text" id="fbText">...</div>
+  </div>
+
+  <div class="bottom-gradient"></div>
+
+  <footer class="actions" id="actions">
+    <div class="actions-inner">
+      <div class="action-left">
+        <button class="btn-arrow back" id="backBtn" type="button" onclick="back()"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      </div>
+      
+      <div class="action-center">
+        <div class="progress-container hidden" id="progressWrap">
+          <div class="progress" id="progress"></div>
+          <div class="progress-text-human" id="progressTextHuman">Vamos por partes.</div>
+        </div>
+      </div>
+
+      <div class="action-right">
+        <button class="draft-btn" id="draftBtn" type="button" onclick="saveDraft()">Guardar rascunho</button>
+        <button class="btn-arrow next" id="nextBtn" type="button" onclick="next()"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal-overlay hidden" id="validationModal">
+    <div class="modal-content">
+      <h2 class="modal-title" id="modalTitle">Quase lá!</h2>
+      <p class="modal-desc" id="modalDesc">Só falta um detalhe.</p>
+      <div class="btn-stack" id="modalButtons"></div>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      residential: ["Casa", "Apartamento", "Studio / Loft", "Kitnet", "Rural"],
+      badgeColor: { "Casa": "#388e3c", "Apartamento": "#455a64", "Studio / Loft": "#e64a19", "Kitnet": "#f57c00", "Comercial": "#1976d2", "Terreno": "#5d4037", "Rural": "#2e7d32" },
+      emojiHTML: {
+        "Casa": `<div class="comp-emoji"><span style="font-size:75px; position:relative; z-index:3;">🏠</span><span style="font-size:40px; position:absolute; right:-20px; bottom:0px; z-index:4;">🚗</span><span style="font-size:50px; position:absolute; left:-25px; bottom:5px; z-index:2;">🌳</span></div>`,
+        "Apartamento": `<div class="comp-emoji"><span style="font-size:75px; position:relative; z-index:2;">🏢</span><span style="font-size:40px; position:absolute; right:-15px; bottom:0px; z-index:4;">🚗</span><span style="font-size:35px; position:absolute; left:-20px; top:15px; z-index:3;">🔑</span></div>`,
+        "Studio / Loft": `<div class="comp-emoji"><span style="font-size:75px; position:relative; z-index:3;">🛋️</span><span style="font-size:45px; position:absolute; right:-20px; bottom:5px; z-index:2;">🪴</span><span style="font-size:35px; position:absolute; left:-15px; bottom:-5px; z-index:4;">💻</span></div>`,
+        "Kitnet": `<div class="comp-emoji"><span style="font-size:75px; position:relative; z-index:2;">🚪</span><span style="font-size:45px; position:absolute; right:-25px; bottom:10px; z-index:3;">🛏️</span><span style="font-size:35px; position:absolute; left:-15px; bottom:0px; z-index:4;">🍳</span></div>`,
+        "Comercial": `<div class="comp-emoji"><span style="font-size:80px; position:relative; z-index:2;">🏪</span><span style="font-size:45px; position:absolute; right:-20px; bottom:-5px; z-index:4;">💰</span><span style="font-size:40px; position:absolute; left:-25px; bottom:0px; z-index:3;">🤝</span></div>`,
+        "Terreno": `<div class="comp-emoji"><span style="font-size:80px; position:relative; z-index:3;">🚧</span><span style="font-size:60px; position:absolute; left:-35px; bottom:0px; z-index:2;">🌳</span><span style="font-size:45px; position:absolute; right:-20px; bottom:-10px; z-index:4;">🛤️</span></div>`,
+        "Rural": `<div class="comp-emoji"><span style="font-size:85px; position:relative; z-index:2;">🌳</span><span style="font-size:35px; position:absolute; right:-20px; bottom:5px; z-index:4;">🐄</span><span style="font-size:55px; position:absolute; left:-30px; bottom:0px; z-index:3;">🚜</span></div>`
+      },
+      features: {
+        "Casa": ["Gourmet", "Piscina", "Churrasqueira", "Varanda", "Armários", "Mobiliada", "Ar-condicionado", "Energia solar"],
+        "Apartamento": ["Sacada", "Portaria 24h", "Piscina", "Academia", "Salão de festas", "Mobiliado", "Ar-condicionado"],
+        "Studio / Loft": ["Mobiliado", "Armários", "Ar-condicionado", "Coworking", "Lavanderia", "Portaria inteligente"],
+        "Kitnet": ["Mobiliada", "Ar-condicionado", "Água inclusa", "Internet inclusa"],
+        "Comercial": ["Vitrine", "Mezanino", "Recepção", "Estacionamento", "Energia trifásica"],
+        "Terreno": ["Murado", "Rua asfaltada", "Água", "Esgoto", "Energia", "Esquina"],
+        "Rural": ["Casa sede", "Piscina", "Pomar", "Poço", "Rio", "Pasto", "Energia"]
+      }
+    };
+
+    const state = {
+      step: 1, propertyType: "", propertySubType: "", purpose: "", condoName: "", commercialType: "", commercialLocation: "", ruralType: "",
+      builtArea: "", totalArea: "", frontMeasure: "", sideMeasure: "", zoning: "",
+      bedrooms: "", suites: "", bathrooms: "", parking: "",
+      title: "", photoCount: 0, photoUrls: [], activePhotoIndex: 0, isFavorite: false, cep: "", street: "", number: "", complement: "", neighborhood: "", city: "", uf: "",
+      description: "", description_text: "", description_html: "", 
+      description_metadata: { description_template_id: "", description_generated_from_fields: false, description_has_unresolved_prompts: false, description_editor_version: "basic_rich_text_v1" },
+      mainPrice: "", condoValue: "", condoHidden: false, iptu: "", 
+      financing: "", paidOff: "", exchange: "", 
+      guarantees: [], features: [], skipFeaturesWarned: false,
+      cepLookupStatus: "", cepLookupMessage: "",
+      contactDisclosureAsked: false, contactChannel: "chat", contactPhone: "", phoneUnlockClicks: 0
+    };
+
+    let activeErrors = []; 
+    let cepLookupTimer = null;
+    let lastCepLookup = "";
+
+    function maskCEP(val) { return val.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').substring(0, 9); }
+    function maskCurrency(val) {
+      let num = val.replace(/\D/g, ''); if(!num) return '';
+      num = (parseInt(num)/100).toFixed(2) + ''; num = num.replace('.', ',');
+      num = num.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'); return 'R$ ' + num;
+    }
+    function onlyDigits(val) { return String(val || "").replace(/\D/g, ""); }
+    function getCepMessageClass() { return state.cepLookupStatus ? `side-note ${state.cepLookupStatus}` : "side-note"; }
+    function getCepMessage() {
+      if (state.cepLookupMessage) return state.cepLookupMessage;
+      return state.cep ? "Se alguma informação vier diferente, pode editar aqui mesmo." : "Digite o CEP no campo principal e eu tento puxar o endereço para você.";
+    }
+    function getUFOptions() {
+      return ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map(uf => `<option value="${uf}"></option>`).join("");
+    }
+
+    function scheduleCepLookup() {
+      const cepDigits = onlyDigits(state.cep);
+      clearTimeout(cepLookupTimer);
+
+      if (cepDigits.length < 8) {
+        lastCepLookup = "";
+        state.cepLookupStatus = "";
+        state.cepLookupMessage = cepDigits.length ? "Quando o CEP estiver completo, eu busco o endereço." : "";
+        renderUI();
+        return;
+      }
+
+      if (cepDigits === lastCepLookup && state.cepLookupStatus === "success") return;
+      state.cepLookupStatus = "loading";
+      state.cepLookupMessage = "Buscando endereço pelo CEP...";
+      renderUI();
+
+      cepLookupTimer = setTimeout(() => lookupCep(cepDigits), 450);
+    }
+
+    async function lookupCep(cepDigits) {
+      lastCepLookup = cepDigits;
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cepDigits}/json/`);
+        if (!response.ok) throw new Error("cep_lookup_failed");
+        const data = await response.json();
+        if (data.erro) throw new Error("cep_not_found");
+        if (onlyDigits(state.cep) !== cepDigits) return;
+
+        state.street = data.logradouro || state.street;
+        state.neighborhood = data.bairro || state.neighborhood;
+        state.city = data.localidade || state.city;
+        state.uf = data.uf || state.uf;
+        state.cepLookupStatus = "success";
+        state.cepLookupMessage = "Encontrei esse endereço. Dá uma conferida e ajuste o que precisar.";
+      } catch (error) {
+        if (onlyDigits(state.cep) !== cepDigits) return;
+        state.cepLookupStatus = "error";
+        state.cepLookupMessage = "Não consegui buscar esse CEP agora. Você pode preencher o endereço manualmente.";
+      }
+      renderUI();
+    }
+
+    function shouldAskCondoFee() {
+      const verticalResidential = ["Apartamento", "Studio / Loft", "Kitnet"].includes(state.propertyType);
+      const condoHouse = state.propertyType === "Casa" && state.propertySubType === "Em condomínio";
+      const commercialCondo = state.propertyType === "Comercial" && /shopping|galeria/i.test(state.commercialLocation || "");
+      return verticalResidential || condoHouse || commercialCondo;
+    }
+
+    function syncCondoFeeVisibility() {
+      if (!shouldAskCondoFee()) {
+        state.condoValue = "";
+        state.condoHidden = false;
+      }
+    }
+    function maskPhoneInput(val) {
+      const d = onlyDigits(val).slice(0, 11);
+      if (d.length <= 2) return d ? `(${d}` : "";
+      if (d.length <= 6) return `(${d.slice(0,2)}) ${d.slice(2)}`;
+      if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+      return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+    }
+    function maskPhoneForPreview(phone) {
+      const d = onlyDigits(phone);
+      if (d.length < 10) return "Telefone não informado";
+      if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,4)}**${d.slice(6,7)}-${d.slice(7,8)}**${d.slice(9,10)}`;
+      return `(${d.slice(0,2)}) ${d.slice(2,4)}**${d.slice(7,8)}-${d.slice(8,9)}**${d.slice(10,11)}`;
+    }
+    function getMapQuery() {
+      return [state.street, state.number, state.neighborhood, state.city, state.uf].filter(Boolean).join(", ");
+    }
+    function getMapSrc() {
+      const query = getMapQuery();
+      return query ? `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed` : "";
+    }
+    function formatCurrencyClean(value) {
+      const digits = onlyDigits(value);
+      if (!digits) return "";
+      const amount = Math.round(Number(digits) / 100);
+      return `R$ ${amount.toLocaleString("pt-BR")}`;
+    }
+    function readableStatus(value, yesText = "Aceita", noText = "Não aceita") {
+      if (value === "Sim") return yesText;
+      if (value === "Não") return noText;
+      return "Sob consulta";
+    }
+    function getCondoLabel() {
+      if (state.condoName) return state.condoName;
+      if (shouldAskCondoFee()) return "Condomínio não informado";
+      return "Não se aplica";
+    }
+    function getListingDetails() {
+      const details = [
+        { label: "Condomínio ou edifício", value: getCondoLabel() },
+        { label: "Tipo do anúncio", value: [state.propertyType, state.commercialType, state.commercialLocation].filter(Boolean).join(" · ") || "Imóvel" },
+        { label: "Financiamento", value: readableStatus(state.financing) },
+        { label: "FGTS", value: "Sob consulta" },
+        { label: "Permuta ou troca", value: readableStatus(state.exchange, "Aceita", "Não aceita") },
+        { label: "Imóvel quitado", value: readableStatus(state.paidOff, "Sim", "Não") },
+        { label: "IPTU", value: state.iptu || "Não informado" }
+      ];
+      if (state.purpose.includes("Locação")) {
+        details.push({ label: "Garantias aceitas", value: state.guarantees.length ? state.guarantees.join(", ") : "Sob consulta" });
+      }
+      return details;
+    }
+    function updatePhotosFromFiles(files) {
+      state.photoUrls.forEach(url => URL.revokeObjectURL(url));
+      const list = Array.from(files || []).slice(0, 22);
+      state.photoUrls = list.map(file => URL.createObjectURL(file));
+      state.photoCount = list.length;
+      state.activePhotoIndex = 0;
+      renderUI();
+    }
+    function renderGallery() {
+      const gallery = document.getElementById("revPhoto");
+      const thumbs = document.getElementById("revThumbs");
+      if (!gallery || !thumbs) return;
+
+      const total = state.photoCount || state.photoUrls.length;
+      const activeUrl = state.photoUrls[state.activePhotoIndex];
+      gallery.style.backgroundImage = activeUrl ? `url("${activeUrl}")` : "";
+
+      if (activeUrl) {
+        gallery.innerHTML = `
+          ${total > 1 ? `<button class="gallery-nav prev" type="button" onclick="prevPhoto()" aria-label="Foto anterior">‹</button><button class="gallery-nav next" type="button" onclick="nextPhoto()" aria-label="Próxima foto">›</button>` : ""}
+          <div class="gallery-count">${state.activePhotoIndex + 1} / ${total}</div>
+        `;
+      } else {
+        gallery.innerHTML = `<span class="gallery-empty-icon">📷</span><span class="gallery-caption">${total ? `${total} foto(s) anexada(s)` : "Fotos do imóvel"}</span><div class="gallery-count">${total || 0} foto(s)</div>`;
+      }
+
+      const thumbItems = state.photoUrls.length
+        ? state.photoUrls.slice(0, 6).map((url, i) => `<button class="gallery-thumb ${i === state.activePhotoIndex ? "active" : ""}" type="button" onclick="selectPhoto(${i})" style="background-image:url('${url}')"></button>`).join("")
+        : Array.from({ length: Math.max(3, Math.min(total || 4, 6)) }, (_, i) => `<div class="gallery-thumb ${i === 0 ? "active" : ""}">📷</div>`).join("");
+      thumbs.innerHTML = thumbItems;
+    }
+    function renderSimilarListings() {
+      const el = document.getElementById("similarListings");
+      if (!el) return;
+      const city = state.city || "na sua região";
+      const type = state.propertyType || "imóvel";
+      const basePrice = formatCurrencyClean(state.mainPrice) || "Sob consulta";
+      const items = [
+        { tag: "Novo", title: `${type} com perfil parecido`, meta: `${city} · ${basePrice}` },
+        { tag: "Destaque", title: `${type} com boa procura`, meta: `${state.neighborhood || "Bairro próximo"} · visite a prévia` },
+        { tag: "Oportunidade", title: `Outra opção para comparar`, meta: `${state.bedrooms || "--"} quartos · ${state.parking || "--"} vagas` }
+      ];
+      el.innerHTML = items.map(item => `
+        <article class="similar-card">
+          <div class="similar-media">${item.tag}</div>
+          <div class="similar-body"><strong>${item.title}</strong><span>${item.meta}</span></div>
+        </article>
+      `).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => { renderProgress(); initEvents(); renderUI(); });
+
+    window.formatDoc = function(cmd, value=null) { document.execCommand(cmd, false, value); document.getElementById('descEditor').focus(); updateDescState(); };
+    window.clearEditor = function() { document.getElementById('descEditor').innerHTML = ''; updateDescState(); };
+    window.toggleEmojiPicker = function(e) { document.getElementById('emojiPicker').classList.toggle('hidden'); };
+    window.insertEmoji = function(emoji) { document.getElementById('descEditor').focus(); document.execCommand('insertText', false, emoji); document.getElementById('emojiPicker').classList.add('hidden'); updateDescState(); };
+
+    function updateDescState() {
+        const editor = document.getElementById('descEditor');
+        const rawHtml = editor.innerHTML;
+        const plainText = editor.innerText || editor.textContent; 
+
+        state.description_text = plainText;
+        state.description = plainText; 
+        state.description_html = rawHtml.replace(/ class="placeholder-red"/g, ""); 
+        state.description_metadata.description_has_unresolved_prompts = plainText.includes('[');
+
+        const cDesc = document.getElementById('descCount');
+        const mDesc = document.getElementById('descMotivation');
+        const len = plainText.trim().length;
+        
+        cDesc.textContent = `${len}/1500`;
+        if (len === 0) mDesc.textContent = "Me conta os detalhes.";
+        else if (len < 100) mDesc.textContent = "Boa! Agora fala um pouco da vizinhança.";
+        else if (len < 200) mDesc.textContent = "Está ganhando forma. Mais detalhes ajudam bastante.";
+        else if (len < 300) mDesc.textContent = "Quase lá. Mostra o que faz ele especial.";
+        else mDesc.textContent = "Pronto, essa descrição já conversa bem.";
+        clearBubbles();
+    }
+
+    function initEvents() {
+      const cTitle = document.getElementById('titleCount');
+
+      document.body.addEventListener("input", e => {
+        const input = e.target.closest("[data-input]"); if (!input) return;
+        if(input.dataset.input === 'cep') input.value = maskCEP(input.value);
+        if(input.dataset.input === 'uf') input.value = input.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2);
+        if(input.dataset.input === 'contactPhone') input.value = maskPhoneInput(input.value);
+        if(['mainPrice', 'condoValue', 'iptu'].includes(input.dataset.input)) input.value = maskCurrency(input.value);
+        state[input.dataset.input] = input.value; clearBubbles();
+        if(input.dataset.input === 'cep') scheduleCepLookup();
+
+        if(input.dataset.input === 'title') {
+          const len = input.value.length; cTitle.textContent = `${len}/90`;
+          cTitle.className = (len > 0 && len < 30) ? 'counter error' : 'counter';
+        }
+      });
+
+      document.getElementById('descEditor').addEventListener('paste', function(e) {
+          e.preventDefault(); const text = (e.originalEvent || e).clipboardData.getData('text/plain'); document.execCommand('insertText', false, text);
+      });
+      document.getElementById('descEditor').addEventListener('input', updateDescState);
+      document.getElementById('descEditor').addEventListener('blur', updateDescState);
+
+      document.body.addEventListener("change", e => {
+        if (e.target.dataset.checkbox === "condoHidden") { state.condoHidden = e.target.checked; if (state.condoHidden) state.condoValue = ''; renderUI(); }
+      });
+
+      document.body.addEventListener("click", event => {
+        if (!event.target.closest('.emoji-picker') && !event.target.closest('[onclick="toggleEmojiPicker(event)"]')) { document.getElementById('emojiPicker').classList.add('hidden'); }
+        
+        const selectBtn = event.target.closest("[data-select]"); 
+        const circleBtn = event.target.closest("[data-circle]");
+        const featureBtn = event.target.closest("[data-feature]"); 
+        const guarBtn = event.target.closest("[data-guarantee]");
+
+        if (selectBtn) {
+          const { select: key, value } = selectBtn.dataset;
+          if (state[key] === value) {
+            state[key] = ""; 
+            if (key === "propertyType") { state.propertySubType = ""; state.commercialType = ""; state.commercialLocation = ""; state.ruralType = ""; state.condoName = ""; state.features = []; state.zoning = "";}
+          } else {
+            if (key === "purpose" && value === "Temporada" && !CONFIG.residential.includes(state.propertyType)) {
+              openModal("Só um ajuste", "Temporada funciona apenas para imóveis residenciais. Escolhe outra intenção por aqui.", [{text:"Entendi", action:closeModal}]); return;
+            }
+            state[key] = value;
+            if (key === "propertyType") { state.propertySubType = ""; state.commercialType = ""; state.commercialLocation = ""; state.ruralType = ""; state.condoName = ""; state.features = []; state.zoning = "";}
+          }
+          syncCondoFeeVisibility(); clearBubbles(); renderUI();
+        }
+
+        if (circleBtn) { state[circleBtn.dataset.circle] = state[circleBtn.dataset.circle] === circleBtn.dataset.value ? "" : circleBtn.dataset.value; clearBubbles(); renderUI(); }
+        if (featureBtn) { const v = featureBtn.dataset.feature; const idx = state.features.indexOf(v); if (idx > -1) state.features.splice(idx, 1); else state.features.push(v); renderUI(); }
+        if (guarBtn) { const v = guarBtn.dataset.guarantee; const idx = state.guarantees.indexOf(v); if (idx > -1) state.guarantees.splice(idx, 1); else state.guarantees.push(v); renderUI(); }
+      });
+
+      const zone = document.getElementById("dropzone"); const photosInput = document.getElementById("photos");
+      if (zone && photosInput) {
+        zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("dragging"); });
+        zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+        zone.addEventListener("drop", e => { e.preventDefault(); zone.classList.remove("dragging"); if (e.dataTransfer.files.length) { photosInput.files = e.dataTransfer.files; updatePhotosFromFiles(e.dataTransfer.files); }});
+        photosInput.addEventListener("change", e => { updatePhotosFromFiles(e.target.files); });
+      }
+    }
+
+    function getDynamicLabel() {
+        if(state.propertyType === "Casa") return state.propertySubType || "CASA";
+        if(state.propertyType === "Comercial") return state.commercialType || "COMERCIAL";
+        if(state.propertyType === "Rural") return state.ruralType || "RURAL";
+        return state.propertyType || "IMÓVEL";
+    }
+
+    function getAITemplates() {
+        const prop = getDynamicLabel().toLowerCase();
+        const beds = state.bedrooms ? `${state.bedrooms} Quartos` : 'excelentes ambientes';
+        const isRent = state.purpose.includes("Locação") || state.purpose === "Temporada";
+        let profile = "residencial_venda"; 
+        if (state.propertyType === 'Terreno') profile = "terreno";
+        else if (state.propertyType === 'Comercial') profile = "comercial";
+        else if (state.propertyType === 'Rural') profile = "rural";
+        else if (isRent) profile = "residencial_aluguel";
+
+        const DB = {
+            residencial_venda: {
+                titles: [`${prop} à venda com ${beds} e [DIFERENCIAL PRINCIPAL]`],
+                desc: [`<h3>Um imóvel para imaginar a vida acontecendo</h3><br>Este(a) ${prop} combina conforto, boa distribuição e aquele potencial de virar lar de verdade. Com ${beds}, os ambientes ajudam a rotina a fluir melhor.<br><br><ul><li><b class="placeholder-red">[DESTAQUE 1, EX: MÓVEIS PLANEJADOS]</b></li><li><b class="placeholder-red">[DESTAQUE 2, EX: VARANDA GOURMET]</b></li></ul>A localização em <b class="placeholder-red">[NOME DO BAIRRO]</b> deixa você perto de <b class="placeholder-red">[PONTO DE REFERÊNCIA]</b>. Vale conhecer de perto.`]
+            },
+            residencial_aluguel: {
+                titles: [`${prop} para alugar em [BAIRRO], pronto para receber você`],
+                desc: [`<h3>Um lugar prático para a rotina começar bem</h3><br>Este(a) ${prop} para locação é uma boa escolha para quem procura conforto sem complicação. Com ${beds}, o espaço conta com <b class="placeholder-red">[DETALHES DA MOBÍLIA OU ELETROS INCLUSOS]</b>.<br><br>Fica em <b class="placeholder-red">[NOME DO BAIRRO]</b>, com acesso fácil a <b class="placeholder-red">[COMÉRCIOS, ESCOLAS OU TRANSPORTE]</b>. A garantia aceita é <b class="placeholder-red">[TIPO DE GARANTIA]</b>. Vem ver se combina com você.`]
+            },
+            terreno: {
+                titles: [`Terreno em [BAIRRO] para tirar seu projeto do papel`],
+                desc: [`<h3>Um espaço pronto para receber boas ideias</h3><br>Este terreno tem topografia <b class="placeholder-red">[PLANA/ACLIVE/DECLIVE]</b> e oferece uma área interessante para construir ou investir.<br><br>O zoneamento permite <b class="placeholder-red">[TIPO DE CONSTRUÇÃO]</b>, e a infraestrutura do local conta com <b class="placeholder-red">[ÁGUA, LUZ, ASFALTO, ETC]</b>. Um endereço com potencial para crescer junto com o seu plano.`]
+            },
+            comercial: {
+                titles: [`${prop} comercial em [LOCALIZAÇÃO] para seu negócio aparecer`],
+                desc: [`<h3>Um ponto pensado para movimento e presença</h3><br>Este(a) ${prop} oferece boa visibilidade e pode receber diferentes tipos de operação. A estrutura conta com <b class="placeholder-red">[EX: SALÃO VÃO LIVRE, X BANHEIROS, MEZANINO]</b>.<br><br>A infraestrutura está pronta para <b class="placeholder-red">[TIPO DE INSTALAÇÃO]</b>, em uma região com <b class="placeholder-red">[FLUXO, REFERÊNCIA OU DIFERENCIAL]</b>. Um bom começo para colocar o negócio em destaque.`]
+            },
+            rural: {
+                titles: [`${prop} com [RECURSO NATURAL] para viver, produzir ou descansar`],
+                desc: [`<h3>Natureza, espaço e possibilidade no mesmo lugar</h3><br>Este(a) ${prop} reúne tranquilidade e potencial de uso. A área total é de <b class="placeholder-red">[TAMANHO DA ÁREA]</b>, com relevo <b class="placeholder-red">[TIPO DE RELEVO]</b> e características interessantes para quem busca campo de verdade.<br><br>A propriedade conta com <b class="placeholder-red">[RIO, NASCENTE OU POÇO]</b> e infraestrutura como <b class="placeholder-red">[EX: CURRAL, CERCA, GALPÃO]</b>. Um lugar para conhecer sem pressa.`]
+            }
+        };
+        return DB[profile] || DB['residencial_venda'];
+    }
+
+    window.suggestText = function(type) {
+        const templates = getAITemplates();
+        if (type === 'title') {
+            state.title = templates.titles[0];
+            const input = document.querySelector('[data-input="title"]');
+            input.value = state.title; input.dispatchEvent(new Event('input', { bubbles: true }));
+        } else {
+            const editor = document.getElementById('descEditor');
+            editor.innerHTML = templates.desc[0];
+            state.description_metadata.description_template_id = "ai_contextual_v2";
+            state.description_metadata.description_generated_from_fields = true;
+            updateDescState();
+        }
+    }
+
+    function renderUI() {
+      document.querySelectorAll(".step").forEach((el, index) => el.classList.toggle("active", index + 1 === state.step));
+      renderProgress();
+      
+      const leftInner = document.getElementById('leftInner');
+      if (state.step === 5) leftInner.style.maxWidth = '1160px';
+      else leftInner.style.maxWidth = '760px';
+
+      const shouldShowSidebar = state.propertyType && state.step < 5;
+      if (shouldShowSidebar) {
+        document.body.classList.add("sidebar-open"); 
+        document.getElementById("side").classList.add("open");
+        document.getElementById("sideEmojiContainer").innerHTML = CONFIG.emojiHTML[state.propertyType] || "🏠";
+        const badgeSpan = document.getElementById("sidePropertyBadge");
+        if(badgeSpan) {
+            badgeSpan.textContent = getDynamicLabel();
+            badgeSpan.style.backgroundColor = CONFIG.badgeColor[state.propertyType] || "var(--accent)";
+        }
+      } else {
+        document.body.classList.remove("sidebar-open"); 
+        document.getElementById("side").classList.remove("open");
+      }
+
+      if (state.step === 1) updateSelectionUI("propertyType");
+      if (state.step === 2) Components.CharacteristicsMain();
+      if (state.step === 5) Components.ReviewScreen();
+      
+      Components.Sidebar(); 
+      Components.NavigationActions();
+    }
+
+    const Components = {
+      CharacteristicsMain() {
+        const el = document.getElementById("characteristicsMain"); let html = "";
+        if (["Casa", "Apartamento", "Studio / Loft", "Kitnet"].includes(state.propertyType)) {
+          html += gridInputs([{ label: "Qual é a área útil?", key: "builtArea", placeholder: "Ex: 90 m²" }, { label: "E a área total?", key: "totalArea", placeholder: "Ex: 150 m²" }]) +
+          circleSection("Quantos quartos?", "bedrooms", ["1", "2", "3", "4", "5", "+5"]) + circleSection("Tem suítes?", "suites", ["0", "1", "2", "3", "+3"]) +
+          circleSection("Quantos banheiros?", "bathrooms", ["1", "2", "3", "4", "5", "+5"]) + circleSection("Vagas de garagem", "parking", ["0", "1", "2", "3", "+3"]);
+        } else if (state.propertyType === "Comercial") {
+          html += gridInputs([{ label: "Qual é a área útil?", key: "builtArea", placeholder: "Ex: 120 m²" }, { label: "E a área total?", key: "totalArea", placeholder: "Ex: 200 m²" }]) + 
+          circleSection("Quantos banheiros?", "bathrooms", ["1", "2", "3", "4", "+4"]) + circleSection("Vagas disponíveis", "parking", ["0", "1", "2", "3", "+3"]);
+        } else if (["Terreno"].includes(state.propertyType)) {
+          html += gridInputs([
+            { label: "Qual é a área total?", key: "totalArea", placeholder: "Ex: 450 m²" },
+            { label: "Frente do terreno", key: "frontMeasure", placeholder: "Ex: 15 m" },
+            { label: "Fundo ou lateral", key: "sideMeasure", placeholder: "Ex: 30 m" }
+          ], "repeat(3, minmax(0, 1fr))") + circleSection("Qual é o zoneamento?", "zoning", ["Residencial", "Comercial", "Misto", "Industrial"]);
+        } else if (state.propertyType === "Rural") {
+           html += gridInputs([{ label: "Qual é o tamanho da propriedade?", key: "totalArea", placeholder: "Ex: 10 hectares" }]);
+        }
+        if (el.innerHTML !== html) el.innerHTML = html; updateSelectionUI("circle");
+      },
+
+      Sidebar() {
+        const el = document.getElementById("sideContent");
+        if (!state.propertyType) { el.innerHTML = `<div class="side-empty">Escolha uma categoria para começarmos.</div>`; return; }
+        
+        let c = "";
+        if (state.step === 1) c = sideDefinition();
+        if (state.step === 2) c = sideFeatures();
+        if (state.step === 3) c = sideAddress();
+        if (state.step === 4) c = sidePrices();
+        if(el.innerHTML !== c) el.innerHTML = c;
+        updateSelectionUI("select"); updateSelectionUI("feature"); updateSelectionUI("guarantee");
+      },
+
+      ReviewScreen() {
+        renderGallery();
+        document.getElementById("revTags").innerHTML = `
+          <span class="listing-tag highlight">Anúncio em destaque</span>
+          <span class="listing-tag new">Novo imóvel</span>
+          <span class="listing-tag safe">Verificado na prévia</span>
+        `;
+        document.getElementById("favoriteBtn").classList.toggle("active", state.isFavorite);
+        document.getElementById("revTitle").textContent = state.title || "Seu imóvel quase pronto";
+        const loc = [state.street, state.number, state.complement, state.neighborhood, state.city, state.uf].filter(Boolean).join(", ");
+        document.getElementById("revLocation").innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s7-5.1 7-11a7 7 0 1 0-14 0c0 5.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>${loc || "Localização ainda não informada"}</span>`;
+        document.getElementById("revPrice").textContent = formatCurrencyClean(state.mainPrice) || "Valor sob consulta";
+        
+        const reqCondo = shouldAskCondoFee();
+        if(reqCondo) {
+            document.getElementById("revCondo").style.display = "block";
+            document.getElementById("revCondo").textContent = state.condoHidden ? "Condomínio: consultar com o anunciante" : `Condomínio: ${formatCurrencyClean(state.condoValue) || "R$ 0"}`;
+        } else {
+            document.getElementById("revCondo").style.display = "none";
+        }
+
+        const purposeLabel = { "Venda": "venda", "Locação": "aluguel", "Venda ou locação": "venda e/ou aluguel", "Temporada": "temporada" }[state.purpose];
+        document.getElementById("revPurpose").textContent = purposeLabel ? `Para ${purposeLabel}` : "Para venda";
+        document.getElementById("revDescription").innerHTML = state.description_html || "A descrição ainda não foi escrita.";
+        document.getElementById("revArea").textContent = state.builtArea || state.totalArea || "-- m²";
+        document.getElementById("revBeds").textContent = state.bedrooms ? `${state.bedrooms} Quartos` : "--";
+        document.getElementById("revBaths").textContent = state.bathrooms ? `${state.bathrooms} Banheiros` : "--";
+        document.getElementById("revParking").textContent = state.parking ? `${state.parking} Vagas` : "--";
+        document.getElementById("revDetailsGrid").innerHTML = getListingDetails().map(item => `<div class="listing-detail-item"><span>${item.label}</span><strong>${item.value}</strong></div>`).join("");
+
+        if (state.features.length === 0) {
+            document.getElementById("revFeatures").innerHTML = `<span style="color: var(--muted); font-size: 14px;">Nenhum diferencial marcado por enquanto.</span>`;
+        } else {
+            const sizes = ['14px', '16px', '15px']; const wghts = ['600', '700'];
+            document.getElementById("revFeatures").innerHTML = state.features.map((f, i) => `<span class="dense-pill" style="font-size: ${sizes[i%sizes.length]}; font-weight: ${wghts[i%wghts.length]}; color: var(--blue); background:rgba(21,93,252,0.05); border-radius:8px;">${f}</span>`).join("");
+        }
+
+        const mapFrame = document.getElementById("revMapFrame");
+        const mapHint = document.getElementById("revMapHint");
+        const mapSrc = getMapSrc();
+        if (mapSrc) {
+            mapFrame.src = mapSrc;
+            mapHint.textContent = state.number ? "Mapa gerado a partir do endereço informado." : "Mapa gerado pelo endereço disponível. Inserir o número melhora a precisão.";
+        } else {
+            mapFrame.removeAttribute("src");
+            mapHint.textContent = "O mapa aparece assim que o endereço estiver completo.";
+        }
+
+        const contactBox = document.getElementById("revContactBox");
+        if (state.contactChannel === "phone" && state.contactPhone) {
+            contactBox.innerHTML = `
+              <span class="contact-kicker">Contato do anunciante</span>
+              <div class="masked-phone">${maskPhoneForPreview(state.contactPhone)}</div>
+              <p class="contact-note">O telefone fica mascarado na prévia. Na publicação, o desbloqueio ajuda a medir interesse real e incentiva o cadastro do visitante.</p>
+              <button class="unlock-phone-btn" type="button" onclick="simulatePhoneUnlock()">Desbloquear número</button>
+              <div class="phone-stat">${state.phoneUnlockClicks} interesse(s) no telefone nesta prévia.</div>
+            `;
+        } else {
+            contactBox.innerHTML = `
+              <span class="contact-kicker">Contato do anunciante</span>
+              <strong>Somente via chat</strong>
+              <p class="contact-note" style="margin-top:12px;">O número não será exibido. As conversas chegam pelo sistema de mensagens rápidas da Hurby.</p>
+            `;
+        }
+        renderSimilarListings();
+      },
+
+      NavigationActions() {
+        document.getElementById("backBtn").classList.toggle("hidden", state.step === 1);
+        document.getElementById("actions").classList.toggle("hidden", state.step === 6);
+        const nextBtn = document.getElementById("nextBtn"); const draftBtn = document.getElementById("draftBtn");
+        
+        if (state.step === 5) {
+          nextBtn.innerHTML = `Publicar anúncio <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`;
+          nextBtn.setAttribute('onclick', 'publishAd()'); 
+          nextBtn.classList.add("publish-mode"); draftBtn.classList.add("hidden"); 
+        } else {
+          nextBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+          nextBtn.setAttribute('onclick', 'next()');
+          nextBtn.classList.remove("publish-mode"); draftBtn.classList.remove("hidden");
+        }
+      }
+    };
+
+    function updateSelectionUI(type) {
+      if (type === "propertyType" || type === "select") document.querySelectorAll("[data-select]").forEach(btn => btn.classList.toggle("selected", state[btn.dataset.select] === btn.dataset.value));
+      if (type === "circle") document.querySelectorAll("[data-circle]").forEach(btn => btn.classList.toggle("selected", state[btn.dataset.circle] === btn.dataset.value));
+      if (type === "feature") document.querySelectorAll("[data-feature]").forEach(btn => btn.classList.toggle("selected", state.features.includes(btn.dataset.feature)));
+      if (type === "guarantee") document.querySelectorAll("[data-guarantee]").forEach(btn => btn.classList.toggle("selected", state.guarantees.includes(btn.dataset.guarantee)));
+    }
+
+    function sideDefinition() {
+      let html = "";
+      if (state.propertyType === "Casa") {
+        html += sideBlock("A casa está localizada em:", `<div class="pill-group" id="wrap-propSub">${pill("propertySubType", "De rua", "Rua pública")}${pill("propertySubType", "Em condomínio", "Condomínio")}</div>`);
+        if (state.propertySubType === "Em condomínio") html += sideBlock("Qual é o nome do condomínio?", `<div class="dense-grid" style="grid-template-columns:1fr"><input data-input="condoName" placeholder="Ex: Condomínio Primavera" value="${escapeAttr(state.condoName)}" /></div>`);
+      } else if (state.propertyType === "Apartamento") {
+        html += sideBlock("Qual é o nome do condomínio ou edifício?", `<div class="dense-grid" style="grid-template-columns:1fr"><input data-input="condoName" placeholder="Ex: Edifício das Palmeiras" value="${escapeAttr(state.condoName)}" /></div>`);
+      } else if (state.propertyType === "Comercial") {
+        html += sideBlock("Que tipo de ponto comercial é esse?", `<div class="pill-group" id="wrap-comType">${pill("commercialType", "Sala", "Escritório / sala")}${pill("commercialType", "Loja")}${pill("commercialType", "Galpão")}</div>`);
+        if (["Sala", "Loja"].includes(state.commercialType)) {
+          html += sideBlock("Esse ponto fica onde?", `<div class="pill-group">${pill("commercialLocation", "Rua", "Rua pública")}${pill("commercialLocation", "Shopping", "Shopping")}${pill("commercialLocation", "Galeria", "Galeria")}</div>`);
+          if (["Shopping", "Galeria"].includes(state.commercialLocation)) html += sideBlock("Qual é o nome do local?", `<div class="dense-grid" style="grid-template-columns:1fr"><input data-input="condoName" placeholder="Ex: Shopping Central ou Galeria Itália" value="${escapeAttr(state.condoName)}" /></div>`);
+        }
+      } else if (state.propertyType === "Terreno") {
+        html += sideBlock("O terreno fica em:", `<div class="pill-group" id="wrap-propSub">${pill("propertySubType", "Rua Pública", "Rua pública")}${pill("propertySubType", "Fechado", "Condomínio ou loteamento fechado")}</div>`);
+        if (state.propertySubType === "Fechado") html += sideBlock("Qual é o nome do loteamento?", `<div class="dense-grid" style="grid-template-columns:1fr"><input data-input="condoName" placeholder="Nome do loteamento ou condomínio" value="${escapeAttr(state.condoName)}" /></div>`);
+      } else if (state.propertyType === "Rural") {
+        html += sideBlock("No rural, estamos falando de:", `<div class="pill-group" id="wrap-rurType">${["Chácara", "Sítio", "Fazenda"].map(v => pill("ruralType", v)).join("")}</div>`);
+      }
+      html += sideBlock("O que você gostaria de fazer com ele?", `<div class="pill-group" id="wrap-purpose">${pill("purpose", "Venda", "Vender")}${pill("purpose", "Locação", "Alugar")}${pill("purpose", "Venda ou locação", "Vender e/ou alugar")}${CONFIG.residential.includes(state.propertyType) ? pill("purpose", "Temporada", "Temporada") : ""}</div>`);
+      return html;
+    }
+    
+    function sideFeatures() { return sideBlock("O que faz esse imóvel brilhar?", `<div class="feature-grid">${(CONFIG.features[state.propertyType] || []).map(item => `<button class="feature dense-pill ${state.features.includes(item) ? "selected" : ""}" type="button" data-feature="${item}">${item}</button>`).join("")}</div>`); }
+    
+    function sideAddress() { 
+      return sideBlock("Onde fica esse imóvel?", `
+        <div class="side-form">
+           <div class="${getCepMessageClass()}">${getCepMessage()}</div>
+           <div class="cep-number-callout"><span>!</span><span>Depois do CEP, confira e preencha o <strong>número do imóvel</strong>. Ele ajuda o mapa a apontar o lugar certo.</span></div>
+           <div class="side-row address-main">
+             <input data-input="street" placeholder="Rua ou avenida" value="${escapeAttr(state.street)}"/>
+             <input data-input="number" placeholder="Nº" value="${escapeAttr(state.number)}"/>
+           </div>
+           <input data-input="complement" placeholder="Complemento, bloco ou referência" value="${escapeAttr(state.complement)}"/>
+           <input data-input="neighborhood" placeholder="Bairro" value="${escapeAttr(state.neighborhood)}"/>
+           <div class="side-row city-uf">
+             <input data-input="city" placeholder="Cidade" value="${escapeAttr(state.city)}"/>
+             <input data-input="uf" list="ufOptions" placeholder="UF" maxlength="2" value="${escapeAttr(state.uf)}"/>
+           </div>
+           <datalist id="ufOptions">${getUFOptions()}</datalist>
+        </div>
+      `); 
+    }
+    
+    function sidePrices() {
+      const condoFee = shouldAskCondoFee();
+      let html = sideBlock(condoFee ? "Tem condomínio ou IPTU para informar?" : "Tem IPTU para informar?", `
+        <div class="dense-grid" style="grid-template-columns:${condoFee ? '1fr 1fr' : '1fr'}">
+           ${condoFee ? `<input data-input="condoValue" placeholder="Condomínio R$" value="${state.condoValue}" ${state.condoHidden ? 'disabled style="opacity:0.5"' : ''}/>` : ""}
+           <input data-input="iptu" placeholder="IPTU R$" value="${state.iptu}"/>
+        </div>
+        ${condoFee ? `<label class="checkbox-lbl"><input type="checkbox" data-checkbox="condoHidden" ${state.condoHidden ? 'checked' : ''} /> Prefiro não informar o condomínio agora</label>` : ""}
+      `);
+
+      if (state.purpose.includes("Venda")) {
+          html += sideBlock("Como você topa negociar?", `
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <div>
+                  <label style="font-size:12px; color:var(--muted); margin-bottom:4px; display:block; font-weight:700;">Aceita financiamento?</label>
+                  <div class="pill-group">${pill("financing", "Sim")}${pill("financing", "Não")}${pill("financing", "A confirmar", "Ainda vou confirmar")}</div>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:var(--muted); margin-bottom:4px; display:block; font-weight:700;">O imóvel está quitado?</label>
+                  <div class="pill-group">${pill("paidOff", "Sim")}${pill("paidOff", "Não")}${pill("paidOff", "A confirmar", "Ainda vou confirmar")}</div>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:var(--muted); margin-bottom:4px; display:block; font-weight:700;">Aceita permuta?</label>
+                  <div class="pill-group">${pill("exchange", "Sim")}${pill("exchange", "Não")}${pill("exchange", "A confirmar", "Ainda vou confirmar")}</div>
+                </div>
+            </div>
+          `);
+      }
+      if (state.purpose.includes("Locação")) {
+          html += sideBlock("Para alugar, quais garantias você aceita?", `<div class="pill-group">${["Caução", "Fiador", "Seguro Fiança", "Tít. Capitalização", "CredPago"].map(v => `<button class="pill dense-pill ${state.guarantees.includes(v) ? "selected" : ""}" type="button" data-guarantee="${v}">${v}</button>`).join("")}</div>`);
+      }
+      return html;
+    }
+
+    function sideBlock(title, content) { return `<div class="side-block"><h3>${title}</h3>${content}</div>`; }
+    function circleSection(title, key, values) { return `<div class="section"><h3>${title}</h3><div class="circle-group">${values.map(value => `<button class="circle ${state[key] === value ? "selected" : ""}" type="button" data-circle="${key}" data-value="${value}">${value}</button>`).join("")}</div></div>`; }
+    function pill(key, value, label = value) { return `<button class="pill dense-pill ${state[key] === value ? "selected" : ""}" type="button" data-select="${key}" data-value="${value}">${label}</button>`; }
+    function gridInputs(fields, tmpl = "1fr 1fr") { return `<div class="field-grid" style="grid-template-columns: ${tmpl}">${fields.map(f => `<div class="field" id="wrap-${f.key}"><label>${f.label}</label><input data-input="${f.key}" placeholder="${f.placeholder}" value="${state[f.key]}" /></div>`).join("")}</div>`; }
+    function escapeAttr(value) { return String(value || "").replaceAll('"', "&quot;"); }
+
+    function showHardErrors(errors) {
+      activeErrors = errors.map(err => ({ ...err, friendlyMsg: err.friendlyMsg || "Conta pra gente aqui" }));
+      drawBubbles();
+    }
+
+    function clearBubbles() { document.querySelectorAll('.error-bubble').forEach(e => e.remove()); }
+    function drawBubbles() {
+      clearBubbles();
+      activeErrors.forEach(err => {
+        let el = document.querySelector(err.selector); if (!el) return;
+        let target = el;
+        if (err.selector === '#step1 .mosaic') target = document.querySelector('#step1 .question');
+        else if (err.selector === '#wrap-builtArea' || err.selector === '#wrap-totalArea') target = el.parentElement.parentElement.previousElementSibling;
+        else if (el.closest('.side-block')) target = el.closest('.side-block').querySelector('h3') || el;
+        else if (el.closest('.field')) target = el.closest('.field').querySelector('label') || el;
+        
+        const rect = target.getBoundingClientRect(); 
+        const bubble = document.createElement('div');
+        bubble.className = 'error-bubble'; 
+        bubble.innerHTML = `<span>${err.friendlyMsg}</span> <span style="font-size:18px;">👇</span>`;
+        bubble.style.top = `${rect.top + window.scrollY}px`; 
+        bubble.style.left = `${rect.left + window.scrollX + (rect.width/2)}px`;
+        document.body.appendChild(bubble);
+      });
+    }
+
+    function openModal(title, desc, buttons) {
+      document.getElementById('modalTitle').innerHTML = title; document.getElementById('modalDesc').innerHTML = desc;
+      const stack = document.getElementById('modalButtons'); stack.innerHTML = '';
+      buttons.forEach(b => {
+        const btn = document.createElement('button'); btn.className = b.class || 'btn-vamos'; btn.innerHTML = b.text; btn.onclick = b.action; stack.appendChild(btn);
+      });
+      document.getElementById('validationModal').classList.remove('hidden');
+    }
+    function closeModal() { document.getElementById('validationModal').classList.add('hidden'); drawBubbles(); }
+
+    window.selectPhoto = function(index) {
+      if (!state.photoUrls[index]) return;
+      state.activePhotoIndex = index;
+      renderUI();
+    };
+
+    window.nextPhoto = function() {
+      if (!state.photoUrls.length) return;
+      state.activePhotoIndex = (state.activePhotoIndex + 1) % state.photoUrls.length;
+      renderUI();
+    };
+
+    window.prevPhoto = function() {
+      if (!state.photoUrls.length) return;
+      state.activePhotoIndex = (state.activePhotoIndex - 1 + state.photoUrls.length) % state.photoUrls.length;
+      renderUI();
+    };
+
+    window.toggleFavorite = function() {
+      state.isFavorite = !state.isFavorite;
+      renderUI();
+    };
+
+    function contactDisclosureHTML(error = "") {
+      return `
+        Você quer divulgar um telefone no anúncio ou prefere receber tudo pelo chat da Hurby?
+        <div class="contact-modal-field">
+          <label>Telefone para exibir mascarado</label>
+          <input data-input="contactPhone" id="contactPhoneModal" placeholder="(65) 99999-0000" value="${escapeAttr(state.contactPhone)}" inputmode="tel" />
+          ${error ? `<div class="contact-modal-error">${error}</div>` : ""}
+        </div>
+        <div class="contact-term">
+          Ao autorizar a divulgação do telefone, você declara ser titular ou responsável pelo número informado e concorda com a exibição mascarada na página do anúncio. Essa autorização fica registrada para fins de LGPD, auditoria e estatísticas de interesse no contato.
+        </div>
+      `;
+    }
+
+    window.openContactDisclosure = function(error = "") {
+      openModal("Como prefere receber interessados?", contactDisclosureHTML(error), [
+        { text: "Divulgar telefone mascarado", action: () => window.acceptPhoneDisclosure() },
+        { text: "Usar somente chat", class: "btn-skip", action: () => window.chooseChatOnly() }
+      ]);
+    };
+
+    window.acceptPhoneDisclosure = function() {
+      const phoneInput = document.getElementById("contactPhoneModal");
+      if (phoneInput) state.contactPhone = maskPhoneInput(phoneInput.value);
+      if (onlyDigits(state.contactPhone).length < 10) {
+        openContactDisclosure("Digite um telefone com DDD para podermos mascarar na página.");
+        return;
+      }
+      state.contactDisclosureAsked = true;
+      state.contactChannel = "phone";
+      closeModal();
+      executeNext();
+    };
+
+    window.chooseChatOnly = function() {
+      state.contactDisclosureAsked = true;
+      state.contactChannel = "chat";
+      state.contactPhone = "";
+      closeModal();
+      executeNext();
+    };
+
+    window.simulatePhoneUnlock = function() {
+      state.phoneUnlockClicks++;
+      openModal("Interesse registrado", "Na publicação real, esse clique desbloqueia o telefone para usuários cadastrados e vira estatística para o anunciante.", [{ text: "Entendi", action: closeModal }]);
+      renderUI();
+    };
+
+    /* CORE: GERAÇÃO DO PAYLOAD DE CONTRATO FINAL */
+    function getFinalJSON(action) {
+        // Dicionários para simulação de conversão para chaves técnicas
+        const typeKeys = { "Casa": "house", "Apartamento": "apartment", "Studio / Loft": "studio_loft", "Kitnet": "kitnet", "Terreno": "land", "Comercial": "commercial", "Rural": "rural" };
+        const subTypeKeys = { "De rua": "street_house", "Em condomínio": "condo_house", "Sala": "office_room", "Loja": "retail_store", "Galpão": "warehouse", "Rua Pública": "public_street", "Fechado": "gated_community", "Chácara": "small_farm", "Sítio": "farm", "Fazenda": "large_farm" };
+        const purposeKeys = { "Venda": "sale", "Locação": "rent", "Venda ou locação": "sale_or_rent", "Temporada": "seasonal" };
+        const triStateKeys = { "Sim": "yes", "Não": "no", "A confirmar": "to_confirm" };
+
+        const propTypeKey = state.propertyType ? typeKeys[state.propertyType] : null;
+        const propSubTypeKey = (state.propertySubType || state.commercialType || state.ruralType) ? subTypeKeys[(state.propertySubType || state.commercialType || state.ruralType)] : null;
+        const purpKey = state.purpose ? purposeKeys[state.purpose] : null;
+        const hasCondo = state.propertyType === "Apartamento" || state.propertySubType === "Em condomínio" || state.propertySubType === "Fechado" || state.propertyType === "Studio / Loft" || state.propertyType === "Kitnet";
+
+        // Geração das Tags Sugeridas Base
+        let suggestedTags = [];
+        if(state.financing === "Sim") suggestedTags.push("accepts_financing");
+        if(state.exchange === "Sim") suggestedTags.push("accepts_exchange");
+        if(hasCondo) suggestedTags.push("gated_community");
+
+        return {
+            action: action,
+            listing: {
+                title: state.title || (action === 'save_draft' ? "Rascunho sem título" : ""),
+                purpose_key: purpKey,
+                visibility_scope: action === 'publish' ? "public" : "private"
+                // publication_status e reference_code são gerados puramente pelo backend
+            },
+            asset: {
+                property_type_key: propTypeKey,
+                property_subtype_key: propSubTypeKey,
+                has_condominium_context: hasCondo,
+                condominium: {
+                    condominium_id: null,
+                    condominium_name_snapshot: state.condoName || null
+                },
+                specs: {
+                    built_area: state.builtArea ? Number(state.builtArea) : null,
+                    total_area: state.totalArea ? Number(state.totalArea) : null,
+                    front_measure: state.frontMeasure ? Number(state.frontMeasure) : null,
+                    side_measure: state.sideMeasure ? Number(state.sideMeasure) : null,
+                    zoning_key: state.zoning ? state.zoning.toLowerCase() : null,
+                    bedrooms: state.bedrooms ? Number(state.bedrooms.replace('+','')) : null,
+                    suites: state.suites ? Number(state.suites.replace('+','')) : null,
+                    bathrooms: state.bathrooms ? Number(state.bathrooms.replace('+','')) : null,
+                    parking_spots: state.parking ? Number(state.parking.replace('+','')) : null
+                }
+            },
+            location: {
+                zipcode: state.cep || null,
+                street: state.street || null,
+                number: state.number || null,
+                complement: state.complement || null,
+                neighborhood: state.neighborhood || null,
+                city: state.city || null,
+                state_uf: state.uf || null,
+                display_rule: "neighborhood_only" 
+            },
+            pricing: {
+                main_price: state.mainPrice ? Number(state.mainPrice.replace(/\D/g, ''))/100 : null,
+                condo_fee: state.condoHidden ? null : (state.condoValue ? Number(state.condoValue.replace(/\D/g, ''))/100 : null),
+                iptu_yearly: state.iptu ? Number(state.iptu.replace(/\D/g, ''))/100 : null,
+                is_condo_hidden: state.condoHidden
+            },
+            price_strategy: {
+                owner_requested_price: null,
+                owner_minimum_acceptable_price: null,
+                professional_recommended_price: null,
+                price_strategy_notes: "",
+                negotiation_margin_authorized: false
+            },
+            business_terms: {
+                financing_status: triStateKeys[state.financing] || "to_confirm",
+                paid_off_status: triStateKeys[state.paidOff] || "to_confirm",
+                exchange_status: triStateKeys[state.exchange] || "to_confirm",
+                exchange_accepts_vehicle: "to_confirm",
+                exchange_accepts_property: "to_confirm",
+                accepted_guarantees: state.guarantees.map(g => ({ key: g.toLowerCase().replace(/ /g, '_'), label: g }))
+            },
+            suggested_visual_tags: suggestedTags,
+            description: {
+                html: state.description_html,
+                text: state.description_text,
+                has_unresolved_prompts: state.description_text.includes('[')
+            },
+            features: state.features.map(f => ({ key: f.toLowerCase().replace(/ /g, '_').replace(/-/, '_'), label: f })),
+            media: Array.from({length: Math.min(state.photoCount, 22)}).map((_, i) => ({
+                storagePath: `properties/temp-uuid/media/foto_${i}.webp`,
+                order: i + 1,
+                isCover: i === 0
+            }))
+        };
+    }
+
+    window.saveDraft = function() {
+        const payload = getFinalJSON('save_draft');
+        console.log("🚀 [BACKEND PAYLOAD] RASCUNHO (save_draft):", JSON.stringify(payload, null, 2));
+        alert("Rascunho guardado! O payload também foi enviado para o F12.");
+    };
+
+    window.publishAd = function() {
+        if (state.description_text.includes('[')) {
+            openModal("Tem um pedacinho para revisar", "A descrição ainda tem trechos de orientação marcados em vermelho. Troca esses pedaços pelo detalhe real do imóvel antes de publicar.", [{text:"Revisar texto", action:closeModal}]);
+            return;
+        }
+        
+        const payload = getFinalJSON('publish');
+        console.log("🚀 [BACKEND PAYLOAD] PUBLICAÇÃO (publish):", JSON.stringify(payload, null, 2));
+        state.step = 6;
+        renderUI(); window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    function executeNext() {
+      if (state.step < 5) state.step++;
+      renderUI(); window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    window.next = function() {
+      clearBubbles(); activeErrors = []; let errors = [];
+      
+      if (state.step === 1) {
+        if (!state.propertyType) errors.push({ selector: '#step1 .mosaic' });
+        else if (["Casa", "Terreno"].includes(state.propertyType) && !state.propertySubType) errors.push({ selector: '#wrap-propSub' });
+        else if (!state.purpose) errors.push({ selector: '#wrap-purpose' });
+      } else if (state.step === 2) {
+        if (!state.builtArea && !["Terreno", "Rural"].includes(state.propertyType)) errors.push({ selector: '#wrap-builtArea' });
+        if (["Terreno"].includes(state.propertyType) && !state.totalArea) errors.push({ selector: '#wrap-totalArea' });
+      } else if (state.step === 3) {
+        if (state.title.trim().length < 30) {
+            errors.push({ selector: '#wrap-title', friendlyMsg:"Pelo menos 30 letras" });
+        } else if (state.title.includes('[')) {
+            openModal("Ficou um detalhe no título", "Você usou uma sugestão nossa e ainda restou uma parte entre colchetes <b>[ASSIM]</b>. Troca por uma informação real do imóvel para seguirmos.", [{text:"Revisar título", action:closeModal}]); return;
+        }
+        if (!state.cep.trim()) errors.push({ selector: '#wrap-cep' });
+      } else if (state.step === 4) {
+        if (state.description.trim().length < 200) {
+            errors.push({ selector: '#wrap-description', friendlyMsg:"Tenta chegar em 200 letras" });
+        } else if (state.description.includes('[')) {
+            openModal("Tem um detalhe pedindo atenção", "Alguns trechos da descrição ainda estão como orientação. Substitui o que está destacado em vermelho e a gente continua.", [{text:"Revisar texto", action:closeModal}]); return;
+        }
+        if (!state.mainPrice.trim()) errors.push({ selector: '#wrap-mainPrice' });
+        
+        const reqCondo = shouldAskCondoFee();
+        if (reqCondo && !state.condoValue && !state.condoHidden) {
+            showHardErrors([{selector: '.checkbox-lbl', friendlyMsg: "Informe o valor ou marque aqui"}]); return;
+        }
+      }
+
+      if (errors.length > 0) { showHardErrors(errors); return; }
+
+      if (state.step === 2 && state.features.length === 0 && !state.skipFeaturesWarned) {
+        state.skipFeaturesWarned = true;
+        openModal("Quer deixar sem diferenciais?", "Tudo bem seguir assim, mas marcar bons detalhes ajuda o anúncio a aparecer com mais força para quem está procurando.", [
+          { text: "Vou escolher alguns detalhes", action: closeModal },
+          { text: "Continuar assim mesmo", class: "btn-skip", action: () => { closeModal(); executeNext(); } }
+        ]); return;
+      }
+
+      if (state.step === 4 && !state.contactDisclosureAsked) {
+        openContactDisclosure();
+        return;
+      }
+
+      executeNext();
+    };
+
+    window.back = function() { clearBubbles(); if (state.step > 1) state.step--; renderUI(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+
+    function renderProgress() { 
+      const progWrap = document.getElementById("progressWrap");
+      const fbBubble = document.getElementById("floatingBroker");
+      const fbText = document.getElementById("fbText");
+
+      if (state.step === 1) {
+          progWrap.classList.add("hidden"); fbBubble.classList.remove("visible");
+      } else if (state.step >= 5) {
+          progWrap.classList.add("hidden"); fbBubble.classList.add("visible");
+          if(state.features.length === 0) fbText.innerHTML = "Eu sou o Hurby falando daqui do logo: essa vitrine está montada, mas ainda pode ganhar força com alguns diferenciais.";
+          else if(state.features.length <= 2) fbText.innerHTML = "Boa, a página já parece anúncio final. Mais um ou dois diferenciais deixam a oferta com mais poder de clique.";
+          else fbText.innerHTML = "Agora sim: tag de destaque, mapa, fotos, contato e bons detalhes. Essa página já tem cara de imóvel que chama conversa.";
+      } else {
+          progWrap.classList.remove("hidden"); fbBubble.classList.remove("visible");
+          const progressTotal = 3;
+          const stepDisplay = Math.max(0, Math.min(state.step - 1, progressTotal));
+          let humanMsg = "Seguimos juntos.";
+          if (state.step === 2) humanMsg = "Primeiro bloco no lugar!";
+          if (state.step === 3) humanMsg = "Metade vencida, falta pouco!";
+          if (state.step === 4) humanMsg = "Últimos detalhes antes da revisão.";
+
+          document.getElementById("progressTextHuman").textContent = humanMsg;
+          document.getElementById("progress").innerHTML = Array.from({length: progressTotal}, (_, i) => `<div class="bar ${i < stepDisplay ? 'active' : ''}"></div>`).join(""); 
+      }
+    }
+  </script>
+</body>
+</html>
