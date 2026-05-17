@@ -160,7 +160,7 @@ export default function EditMarketplaceListingPage() {
 
       setForm({
         title: data.title || '',
-        property_type_slug: 'house',
+        property_type_slug: asset?.property_type?.slug || asset?.property_type_slug || 'house',
         property_business_context_slug: data.property_business_context?.slug || 'sale',
         listing_status_slug: data.listing_status?.slug || 'draft',
         description: data.description || '',

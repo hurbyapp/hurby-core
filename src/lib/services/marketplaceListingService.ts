@@ -170,6 +170,11 @@ export async function getMyMarketplaceListings() {
       property_assets (
         id,
         property_type_id,
+        property_type (
+          id,
+          slug,
+          label
+        ),
         operational_model_id,
         property_standard,
         condominium_name,
@@ -208,6 +213,11 @@ export async function getMyMarketplaceListingById(listingId: string) {
       property_assets (
         id,
         property_type_id,
+        property_type (
+          id,
+          slug,
+          label
+        ),
         operational_model_id,
         property_standard,
         condominium_name,

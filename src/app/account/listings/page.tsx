@@ -170,6 +170,9 @@ export default function AccountListingsPage() {
         const features = asset?.property_asset_features || []
         const location = Array.isArray(locations) ? locations[0] : locations
         const feature = Array.isArray(features) ? features[0] : features
+        const propertyType = Array.isArray(asset?.property_type)
+          ? asset?.property_type[0]
+          : asset?.property_type
 
         return (
           <section
@@ -196,6 +199,20 @@ export default function AccountListingsPage() {
             </p>
             <p>
               <strong>IPTU:</strong> {listing.iptu_value ?? '-'}
+            </p>
+            {/* TIPO_TECNICO_VISIBILIDADE_V1 */}
+            <p>
+              <strong>Tipo do imovel:</strong>{' '}
+              {propertyType?.label || propertyType?.slug || asset?.property_type_id || '-'}
+            </p>
+            <p>
+              <strong>Listing ID:</strong> {listing.id}
+            </p>
+            <p>
+              <strong>Asset ID:</strong> {asset?.id || '-'}
+            </p>
+            <p>
+              <strong>Property type ID:</strong> {asset?.property_type_id || '-'}
             </p>
             <p>
               <strong>Finalidade:</strong>{' '}
@@ -230,9 +247,48 @@ export default function AccountListingsPage() {
               {asset?.condominium_name || asset?.building_name || '-'}
             </p>
 
-            <Link href={`/account/listings/${listing.id}/edit`}>
-              Editar anuncio
-            </Link>
+            {/* RAW_DEBUG_MARKETPLACE_LISTING_V1 */}
+            <details style={{ marginTop: 16, border: '1px solid #ddd', borderRadius: 10, padding: 12, background: '#fafafa' }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 800 }}>
+                Ver dados tecnicos completos
+              </summary>
+
+              <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
+                <section>
+                  <h3>Listing / property_listings</h3>
+                  <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, background: '#fff', padding: 12, borderRadius: 8, overflowX: 'auto' }}>
+                    {JSON.stringify(listing, null, 2)}
+                  </pre>
+                </section>
+
+                <section>
+                  <h3>Asset / property_assets</h3>
+                  <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, background: '#fff', padding: 12, borderRadius: 8, overflowX: 'auto' }}>
+                    {JSON.stringify(asset, null, 2)}
+                  </pre>
+                </section>
+
+                <section>
+                  <h3>Location / property_asset_locations</h3>
+                  <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, background: '#fff', padding: 12, borderRadius: 8, overflowX: 'auto' }}>
+                    {JSON.stringify(location, null, 2)}
+                  </pre>
+                </section>
+
+                <section>
+                  <h3>Features / property_asset_features</h3>
+                  <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, background: '#fff', padding: 12, borderRadius: 8, overflowX: 'auto' }}>
+                    {JSON.stringify(feature, null, 2)}
+                  </pre>
+                </section>
+              </div>
+            </details>
+
+            <div style={{ marginTop: 14 }}>
+              <Link href={`/account/listings/${listing.id}/edit`}>
+                Editar anuncio
+              </Link>
+            </div>
           </section>
         )
       })}
