@@ -109,12 +109,12 @@ const phases = [
     ],
   },
   {
-    title: '6. Publicacao parametrizada',
+    title: 'Publicacao / Anuncio distribuivel',
     route: 'publicacao',
     status: 'Futuro acoplavel',
     progress: 0,
     description:
-      'Ativacao do anuncio com titulo, descricao, preco, fotos, tags, canais e estrategia aprovada.',
+      'Camada independente que transforma a estrategia aprovada em anuncio distribuivel para marketplace, pagina profissional, redes, parceiros e canais futuros.',
     pipelines: [
       'Gerar anuncio publico',
       'Aplicar estrategia',
@@ -381,8 +381,24 @@ export default function PipelinePage() {
             <strong>Pipeline de inteligencia</strong>
             <p style={{ marginBottom: 0, color: '#475467', lineHeight: 1.5 }}>
               Atua como cerebro do processo. Interpreta os dados dos pipelines
-              inferiores e gera decisoes de preco, posicionamento, anuncio,
-              distribuicao, proposta e publicacao.
+              inferiores e gera decisoes de preco, posicionamento, proposta e estrategia.
+            </p>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #16a34a',
+              borderRadius: 14,
+              padding: 14,
+              background: '#f0fdf4',
+            }}
+          >
+            {/* PIPELINE_PUBLICATION_LAYER_NOTE_V1 */}
+            <strong>Publicacao / Anuncio distribuivel</strong>
+            <p style={{ marginBottom: 0, color: '#475467', lineHeight: 1.5 }}>
+              Camada independente que materializa a estrategia em anuncio publico:
+              titulo, descricao, preco, fotos, tags, canais, marketplace, redes,
+              parceiros e vitrine profissional.
             </p>
           </div>
         </div>
