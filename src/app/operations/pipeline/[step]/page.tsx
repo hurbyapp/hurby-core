@@ -4363,6 +4363,306 @@ export default function PipelineStepPage() {
 
 
 
+
+      {/* PIPELINE_LEVANTAMENTO_CONDITIONAL_TYPE_ROUTING_V1 */}
+      {stepKey === 'levantamento' && isPipelineStarted && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - O Pipeline Pro não deve usar formulário único genérico.
+            - O questionário muda conforme tipo/subtipo do patrimônio.
+            - Nesta foundation ainda não há estado real de seleção.
+            - Futuramente o roteamento deve vir de:
+              property_assets.property_type_id
+              property_assets.property_subtype_id
+              property_asset_features
+              metadata.type_profile
+            - Exemplo:
+              casa_rua, casa_condominio, apartamento_antigo,
+              apartamento_moderno, apartamento_conceitual, terreno,
+              comercial, rural.
+            - Potenciais estratégicos também mudam:
+              Airbnb, temporada, comercial, idoso/PCD, família,
+              investimento, renda, administração, incorporação etc.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#2563eb',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Roteamento inteligente do levantamento
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                O formulário muda conforme tipo, subtipo e potencial do imóvel
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 980,
+                }}
+              >
+                Casa de rua, casa em condomínio, apartamento antigo, apartamento moderno,
+                apartamento conceitual, terreno, comercial e rural não devem receber as
+                mesmas perguntas. O Pipeline precisa adaptar o levantamento para orientar
+                melhor preço, risco, público-alvo, potencial de uso e estratégia.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#2563eb',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              condicional
+            </span>
+          </div>
+
+          <section
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 16,
+              padding: 14,
+              background: '#f8fafc',
+              marginBottom: 16,
+            }}
+          >
+            <h3 style={{ margin: '0 0 8px' }}>
+              0. Definição do tipo/subtipo para guiar o questionário
+            </h3>
+
+            <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+              Este bloco representa a decisão inicial que futuramente virá do cadastro
+              do imóvel ou do atendimento. A partir dele, o sistema mostra perguntas
+              específicas e oculta módulos que não fazem sentido.
+            </p>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: 10,
+              }}
+            >
+              <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                Tipo principal do imóvel
+                <select name="pipeline_property_type_route" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                  <option value="">Selecionar</option>
+                  <option value="street_house">Casa de rua</option>
+                  <option value="condominium_house">Casa em condomínio</option>
+                  <option value="apartment">Apartamento</option>
+                  <option value="land">Terreno / lote</option>
+                  <option value="commercial">Comercial</option>
+                  <option value="rural">Rural</option>
+                </select>
+              </label>
+
+              <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                Subtipo / perfil do imóvel
+                <select name="pipeline_property_subtype_route" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                  <option value="">Selecionar</option>
+                  <option value="traditional">Tradicional / antigo</option>
+                  <option value="modern">Moderno</option>
+                  <option value="conceptual">Conceitual / serviços</option>
+                  <option value="high_standard">Alto padrão</option>
+                  <option value="popular">Popular</option>
+                  <option value="investment">Investimento</option>
+                  <option value="mixed_use">Uso misto</option>
+                </select>
+              </label>
+
+              <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                Potencial estratégico principal
+                <select name="pipeline_primary_potential" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                  <option value="">Selecionar</option>
+                  <option value="family_housing">Moradia familiar</option>
+                  <option value="investment">Investimento</option>
+                  <option value="traditional_rental">Locação tradicional</option>
+                  <option value="short_term_rental">Airbnb / temporada</option>
+                  <option value="commercial_potential">Potencial comercial</option>
+                  <option value="elderly_accessible">Idoso / acessibilidade</option>
+                  <option value="pcd_accessible">PCD / necessidades especiais</option>
+                  <option value="development">Incorporação / desenvolvimento</option>
+                </select>
+              </label>
+
+              <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                Proprietário aceita explorar esse potencial?
+                <select name="owner_accepts_potential_strategy" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                  <option value="">Selecionar</option>
+                  <option value="yes">Sim</option>
+                  <option value="maybe">Talvez / depende da proposta</option>
+                  <option value="no">Não</option>
+                  <option value="unknown">Ainda não perguntado</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <div style={{ display: 'grid', gap: 16 }}>
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                A. Casa de rua
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Perguntas próprias para casa fora de condomínio. Foco em rua, fachada,
+                terreno, acessibilidade, potencial comercial, reforma e uso futuro.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  { label: 'Fachada com potencial comercial?', name: 'street_house_commercial_front', options: ['Sim', 'Não', 'Talvez', 'Não avaliado'] },
+                  { label: 'Rua permite uso comercial?', name: 'street_commercial_use_fit', options: ['Sim', 'Não', 'Precisa consultar', 'Não avaliado'] },
+                  { label: 'Acessibilidade para idoso/PCD', name: 'street_house_accessibility', options: ['Boa', 'Adaptável', 'Ruim', 'Não avaliado'] },
+                  { label: 'Potencial de ampliação/reforma', name: 'street_house_expansion_potential', options: ['Baixo', 'Médio', 'Alto', 'Não avaliado'] },
+                  { label: 'Segurança percebida da rua', name: 'street_security_perception', options: ['Baixa', 'Média', 'Alta', 'Não avaliada'] },
+                  { label: 'Potencial Airbnb/temporada', name: 'street_house_airbnb_potential', options: ['Baixo', 'Médio', 'Alto', 'Não recomendado', 'Não avaliado'] },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Observações específicas para casa de rua
+                  <textarea name="street_house_specific_notes" rows={3} placeholder="Registre rua, fachada, potencial comercial, reforma, acessibilidade, garagem, segurança e pontos de atenção." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+              </div>
+            </section>
+
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                B. Casa em condomínio
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Perguntas próprias para casa em condomínio. Foco em padrão da vizinhança,
+                lazer, regras internas, segurança, taxa e perfil familiar/alto padrão.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  { label: 'Padrão do condomínio', name: 'condo_house_standard', options: ['Popular', 'Médio', 'Médio elevado', 'Alto padrão', 'Luxo', 'Não avaliado'] },
+                  { label: 'Lazer do condomínio', name: 'condo_house_leisure_level', options: ['Básico', 'Bom', 'Completo', 'Premium', 'Não avaliado'] },
+                  { label: 'Regras para locação/temporada', name: 'condo_house_rental_rules', options: ['Permite', 'Não permite', 'Com restrições', 'Precisa consultar'] },
+                  { label: 'Segurança do condomínio', name: 'condo_house_security_level', options: ['Baixa', 'Média', 'Alta', 'Premium', 'Não avaliada'] },
+                  { label: 'Taxa condominial compatível?', name: 'condo_house_fee_fit', options: ['Sim', 'Não', 'A confirmar', 'Não avaliado'] },
+                  { label: 'Potencial família/alto padrão', name: 'condo_house_family_premium_potential', options: ['Baixo', 'Médio', 'Alto', 'Muito alto', 'Não avaliado'] },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Observações específicas para casa em condomínio
+                  <textarea name="condo_house_specific_notes" rows={3} placeholder="Registre padrão do condomínio, lazer, regras, segurança, taxa, perfil do público e pontos de atenção." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+              </div>
+            </section>
+
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                C. Apartamento por perfil
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Apartamento antigo, moderno e conceitual possuem liquidez, riscos e
+                potenciais diferentes. O Pipeline precisa capturar isso antes da estratégia.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  { label: 'Perfil do apartamento', name: 'apartment_profile_type', options: ['Antigo/tradicional', 'Moderno com lazer comum', 'Conceitual com serviços', 'Alto padrão', 'Compacto/investimento', 'Não avaliado'] },
+                  { label: 'Potencial Airbnb/temporada', name: 'apartment_airbnb_potential', options: ['Baixo', 'Médio', 'Alto', 'Muito alto', 'Não recomendado', 'Não avaliado'] },
+                  { label: 'Estrutura para serviços', name: 'apartment_service_structure', options: ['Nenhuma', 'Lavanderia', 'Coworking', 'Serviços compartilhados', 'Completa', 'Não avaliado'] },
+                  { label: 'Acessibilidade para idoso/PCD', name: 'apartment_accessibility', options: ['Boa', 'Média', 'Ruim', 'Adaptável', 'Não avaliado'] },
+                  { label: 'Elevador e circulação', name: 'apartment_mobility_quality', options: ['Boa', 'Regular', 'Ruim', 'Sem elevador', 'Não avaliado'] },
+                  { label: 'Público mais provável', name: 'apartment_probable_audience', options: ['Família', 'Jovem/casal', 'Investidor', 'Temporada', 'Idoso', 'Executivo', 'Não avaliado'] },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Observações específicas para apartamento
+                  <textarea name="apartment_profile_specific_notes" rows={3} placeholder="Registre se é antigo, moderno ou conceitual, potencial Airbnb, serviços, acessibilidade, público provável e riscos." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+              </div>
+            </section>
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_LEVANTAMENTO_REAL_FIELDS_V1 */}
       {stepKey === 'levantamento' && isPipelineStarted && (
         <section
