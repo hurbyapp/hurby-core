@@ -4725,6 +4725,417 @@ export default function PipelineStepPage() {
         </section>
       )}
 
+
+      {/* PIPELINE_LEVANTAMENTO_OWNER_COMMERCIAL_FIELDS_V1 */}
+      {stepKey === 'levantamento' && isPipelineStarted && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Estes campos saem da antiga ficha e entram no Pipeline no ponto correto.
+            - São dados coletados na conversa/vistoria.
+            - Ainda não salvar no banco.
+            - Futuramente devem alimentar:
+              owner_interview
+              commercial_assessment
+              private_notes
+              public_summary
+              owner_visibility_summary
+            - Atenção LGPD/produto:
+              perfil do proprietário é dado interno, não deve aparecer no anúncio público.
+              O proprietário pode receber resumo apropriado, mas não análise sensível dele.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#7c3aed',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Entrevista e leitura comercial
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Proprietário, motivação, preço e estratégia preliminar
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 940,
+                }}
+              >
+                Estes campos capturam o contexto humano e comercial da captação.
+                Eles não são o anúncio final, mas alimentam a futura inteligência,
+                proposta ao proprietário e posicionamento do imóvel.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#7c3aed',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              dados internos
+            </span>
+          </div>
+
+          <div style={{ display: 'grid', gap: 16 }}>
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                5. Perfil do proprietário e contexto da negociação
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Informações internas para orientar abordagem, negociação e proposta.
+                Não devem ser expostas publicamente.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                {[
+                  {
+                    label: 'Motivação do proprietário',
+                    name: 'owner_motivation',
+                    options: ['Venda por necessidade', 'Venda por oportunidade', 'Mudança', 'Investimento', 'Inventário/família', 'Não informado'],
+                  },
+                  {
+                    label: 'Urgência percebida',
+                    name: 'owner_urgency',
+                    options: ['Baixa', 'Média', 'Alta', 'Muito alta', 'Não avaliada'],
+                  },
+                  {
+                    label: 'Flexibilidade de preço',
+                    name: 'owner_price_flexibility',
+                    options: ['Baixa', 'Média', 'Alta', 'Depende da proposta', 'Não informada'],
+                  },
+                  {
+                    label: 'Abertura para estratégia profissional',
+                    name: 'owner_strategy_openness',
+                    options: ['Aberto', 'Parcialmente aberto', 'Resistente', 'Precisa alinhamento', 'Não avaliado'],
+                  },
+                  {
+                    label: 'Disponibilidade do proprietário',
+                    name: 'owner_availability',
+                    options: ['Alta', 'Média', 'Baixa', 'Difícil contato', 'Representante intermediando'],
+                  },
+                  {
+                    label: 'Tipo de contato',
+                    name: 'owner_contact_type',
+                    options: ['Proprietário direto', 'Representante', 'Familiar', 'Administrador', 'Outro intermediário'],
+                  },
+                ].map((field) => (
+                  <label
+                    key={field.name}
+                    style={{
+                      display: 'grid',
+                      gap: 6,
+                      fontSize: 13,
+                      color: '#344054',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {field.label}
+                    <select
+                      name={field.name}
+                      defaultValue=""
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 10,
+                        padding: '10px 11px',
+                        background: '#fff',
+                        color: '#111827',
+                      }}
+                    >
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Objeções, travas ou pontos sensíveis do proprietário
+                  <textarea
+                    name="owner_main_objections"
+                    rows={3}
+                    placeholder="Ex.: preço acima do mercado, resistência a fotos, urgência financeira, dificuldade com documentação, expectativa irreal, familiares envolvidos."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      color: '#111827',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Notas internas sobre comportamento/contexto do proprietário
+                  <textarea
+                    name="owner_behavior_notes"
+                    rows={4}
+                    placeholder="Registre leitura profissional do contexto. Evite linguagem ofensiva. Use observações úteis para estratégia, negociação e alinhamento."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      color: '#111827',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                6. Leitura comercial preliminar
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Primeira leitura comercial feita a partir da vistoria. A inteligência
+                final ainda será gerada depois, com base nos módulos essenciais.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Preço pedido pelo proprietário
+                  <input
+                    name="owner_requested_price"
+                    placeholder="Ex.: 850000"
+                    inputMode="numeric"
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                    }}
+                  />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Percepção inicial de preço
+                  <select name="initial_price_perception" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="below_market">Abaixo do mercado</option>
+                    <option value="aligned">Aparentemente alinhado</option>
+                    <option value="above_market">Acima do mercado</option>
+                    <option value="far_above_market">Muito acima do mercado</option>
+                    <option value="needs_research">Precisa pesquisa</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Liquidez percebida
+                  <select name="liquidity_perception" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="low">Baixa</option>
+                    <option value="medium">Média</option>
+                    <option value="high">Alta</option>
+                    <option value="very_high">Muito alta</option>
+                    <option value="unknown">Não avaliada</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Potencial de destaque
+                  <select name="highlight_potential" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="standard">Padrão</option>
+                    <option value="good">Bom</option>
+                    <option value="premium">Premium</option>
+                    <option value="opportunity">Oportunidade</option>
+                    <option value="difficult">Difícil posicionamento</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Público-alvo provável
+                  <input
+                    name="probable_target_audience"
+                    placeholder="Ex.: família, investidor, casal jovem, alto padrão, locação temporada"
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                    }}
+                  />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Perfil de uso provável
+                  <select name="probable_use_profile" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="family_housing">Moradia familiar</option>
+                    <option value="investment">Investimento</option>
+                    <option value="rental">Locação tradicional</option>
+                    <option value="short_term_rental">Temporada / Airbnb</option>
+                    <option value="elderly">Terceira idade</option>
+                    <option value="commercial_use">Uso comercial</option>
+                    <option value="mixed">Uso misto</option>
+                  </select>
+                </label>
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Diferenciais comerciais percebidos
+                  <textarea
+                    name="commercial_strengths"
+                    rows={3}
+                    placeholder="Ex.: localização, planta, acabamento, lazer, potencial de renda, vista, condomínio, preço, exclusividade."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Pontos fracos comerciais percebidos
+                  <textarea
+                    name="commercial_weaknesses"
+                    rows={3}
+                    placeholder="Ex.: preço, documentação, conservação, localização, fotos ruins, baixa liquidez, concorrência forte."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Recomendação comercial inicial
+                  <textarea
+                    name="initial_commercial_recommendation"
+                    rows={4}
+                    placeholder="Sugestão inicial do profissional antes da inteligência final: preço, posicionamento, melhorias, fotos, abordagem e prioridade."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+              </div>
+            </section>
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_LEVANTAMENTO_OPERATIONAL_MODULES_V1 */}
       {stepKey === 'levantamento' && isPipelineStarted && (
         <section
