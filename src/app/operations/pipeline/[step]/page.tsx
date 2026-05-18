@@ -3226,7 +3226,7 @@ export default function PipelineStepPage() {
               <div>
                 <strong>{item}</strong>
                 <p style={{ marginBottom: 0, color: '#667085', fontSize: 13 }}>
-                  Futuro item executavel do pipeline.
+                  {stepKey === 'levantamento' ? 'Item executável detalhado abaixo.' : 'Futuro item executavel do pipeline.'}
                 </p>
               </div>
             </div>
@@ -4107,6 +4107,363 @@ export default function PipelineStepPage() {
       )}
 
 
+
+
+      {/* PIPELINE_LEVANTAMENTO_EXECUTABLE_CHECKLIST_V1 */}
+      {stepKey === 'levantamento' && isPipelineStarted && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este é o modelo correto do Levantamento: checklist executável.
+            - Cada item do checklist contém perguntas reais.
+            - Progresso e nota futura devem nascer por item, não por bloco solto.
+            - Se o Pipeline veio de anúncio existente, composição/localização/fotos devem ser herdadas do anúncio/property_asset e revisadas pelo profissional.
+            - Se veio de novo atendimento, os mesmos campos precisam ser preenchidos durante vistoria.
+            - Futuramente:
+              1) carregar dados herdados;
+              2) permitir confirmar/corrigir/complementar;
+              3) salvar autosave por item;
+              4) calcular progresso;
+              5) calcular nota/maturidade;
+              6) liberar inteligência com base em maturidade mínima.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#2563eb',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Checklist executável do Levantamento
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Perguntas reais dentro de cada passo da vistoria
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 980,
+                }}
+              >
+                Este bloco substitui a lógica de fichário solto. O corretor executa
+                o levantamento por passos. Cada passo tem perguntas, status, progresso
+                e futura nota parcial. Dados já existentes do anúncio devem ser herdados
+                e conferidos, não redigitados.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#2563eb',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              checklist v1
+            </span>
+          </div>
+
+          <div style={{ display: 'grid', gap: 14 }}>
+            <article
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#2563eb', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    1 / Tipo e subtipo
+                  </span>
+                  <h3 style={{ margin: 0 }}>Selecionar tipo e subtipo do imóvel</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Este passo define quais perguntas aparecem depois. Casa de rua, casa em condomínio,
+                apartamento antigo, moderno, conceitual, terreno, comercial e rural não devem seguir
+                o mesmo roteiro.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Tipo principal
+                  <select name="checklist_property_type" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="street_house">Casa de rua</option>
+                    <option value="condominium_house">Casa em condomínio</option>
+                    <option value="apartment">Apartamento</option>
+                    <option value="land">Terreno / lote</option>
+                    <option value="commercial">Comercial</option>
+                    <option value="rural">Rural</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Subtipo / perfil
+                  <select name="checklist_property_subtype" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="traditional">Tradicional / antigo</option>
+                    <option value="modern">Moderno</option>
+                    <option value="conceptual">Conceitual / serviços</option>
+                    <option value="popular">Popular</option>
+                    <option value="high_standard">Alto padrão</option>
+                    <option value="luxury">Luxo</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Potencial principal
+                  <select name="checklist_primary_potential" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="family">Moradia familiar</option>
+                    <option value="investment">Investimento</option>
+                    <option value="rental">Locação tradicional</option>
+                    <option value="short_term">Airbnb / temporada</option>
+                    <option value="commercial">Uso comercial</option>
+                    <option value="elderly">Idoso / acessibilidade</option>
+                    <option value="pcd">PCD / necessidades especiais</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Proprietário aceita explorar esse potencial?
+                  <select name="checklist_owner_accepts_potential" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="yes">Sim</option>
+                    <option value="maybe">Talvez / depende da proposta</option>
+                    <option value="no">Não</option>
+                    <option value="unknown">Ainda não perguntado</option>
+                  </select>
+                </label>
+              </div>
+            </article>
+
+            <article
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#16a34a', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    2 / Composição
+                  </span>
+                  <h3 style={{ margin: 0 }}>Preencher ou conferir composição do imóvel</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Se este Pipeline veio de anúncio existente, os dados de composição devem ser herdados do
+                anúncio/property_asset e apenas conferidos. Se veio de novo atendimento, devem ser preenchidos
+                na vistoria.
+              </p>
+
+              {isAttachMode && attachedListing?.property_asset_id && (
+                <div style={{ border: '1px solid #bbf7d0', borderRadius: 14, padding: 12, background: '#f0fdf4', marginBottom: 12 }}>
+                  <strong style={{ display: 'block', marginBottom: 6 }}>Dados herdados do anúncio/imóvel vinculado</strong>
+                  <p style={{ margin: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                    Este anúncio já possui property_asset vinculado. No backend real, quartos, suítes, banheiros,
+                    vagas, áreas, andar, posição solar e demais características devem carregar automaticamente
+                    para conferência do profissional.
+                  </p>
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+                {[
+                  ['Quartos', 'checklist_bedrooms'],
+                  ['Suítes', 'checklist_suites'],
+                  ['Banheiros', 'checklist_bathrooms'],
+                  ['Vagas', 'checklist_garage_spaces'],
+                  ['Área privativa', 'checklist_private_area'],
+                  ['Área total', 'checklist_total_area'],
+                  ['Andar', 'checklist_floor_number'],
+                  ['Ano construção', 'checklist_built_year'],
+                ].map(([label, name]) => (
+                  <label key={name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {label}
+                    <input name={name} placeholder={isAttachMode ? 'Herdar/conferir' : 'Preencher'} style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Correções ou complementos da composição
+                  <textarea name="checklist_composition_notes" rows={3} placeholder="Use para corrigir dado herdado, registrar divergência ou complementar informação coletada na vistoria." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#7c3aed', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    3 / Acabamento e padrão
+                  </span>
+                  <h3 style={{ margin: 0 }}>Classificar acabamento e padrão construtivo</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  { label: 'Padrão construtivo', name: 'checklist_construction_standard', options: ['Popular', 'Médio baixo', 'Médio', 'Médio elevado', 'Alto padrão', 'Luxo', 'Não avaliado'] },
+                  { label: 'Acabamento', name: 'checklist_finishing_quality', options: ['Simples', 'Bom', 'Muito bom', 'Premium', 'Precisa revisão'] },
+                  { label: 'Conservação geral', name: 'checklist_conservation', options: ['Boa', 'Regular', 'Precisa revisão', 'Crítica', 'Não avaliado'] },
+                  { label: 'Risco estrutural aparente', name: 'checklist_structural_risk', options: ['Baixo', 'Médio', 'Alto', 'Precisa especialista', 'Não avaliado'] },
+                  { label: 'Umidade / infiltração', name: 'checklist_humidity_risk', options: ['Não identificado', 'Baixo', 'Médio', 'Alto', 'Precisa revisar'] },
+                  { label: 'Elétrica / hidráulica aparente', name: 'checklist_systems_condition', options: ['Boa', 'Regular', 'Precisa revisão', 'Crítica', 'Não avaliado'] },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </label>
+                ))}
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#475467', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    4 / Condomínio e infraestrutura
+                  </span>
+                  <h3 style={{ margin: 0 }}>Registrar condomínio, infraestrutura e regras</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  { label: 'Existe condomínio?', name: 'checklist_has_condominium', options: ['Sim', 'Não', 'Não se aplica', 'Não avaliado'] },
+                  { label: 'Nível de infraestrutura', name: 'checklist_infrastructure_level', options: ['Básica', 'Boa', 'Completa', 'Premium', 'Não avaliada'] },
+                  { label: 'Regras para Airbnb/temporada', name: 'checklist_short_term_rules', options: ['Permite', 'Não permite', 'Com restrições', 'Precisa consultar', 'Não se aplica'] },
+                  { label: 'Acessibilidade idoso/PCD', name: 'checklist_accessibility', options: ['Boa', 'Adaptável', 'Ruim', 'Não avaliada'] },
+                  { label: 'Taxa condominial', name: 'checklist_condo_fee_fit', options: ['Compatível', 'Alta', 'Baixa', 'Não informada', 'Não se aplica'] },
+                  { label: 'Segurança percebida', name: 'checklist_security', options: ['Baixa', 'Média', 'Alta', 'Premium', 'Não avaliada'] },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </label>
+                ))}
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#f59e0b', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    5 / Fotos e evidências
+                  </span>
+                  <h3 style={{ margin: 0 }}>Adicionar ou conferir fotos e evidências</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Foto de capa
+                  <select name="checklist_cover_photo_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="ok">Definida</option>
+                    <option value="missing">Faltando</option>
+                    <option value="needs_review">Precisa revisão</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Quantidade de fotos úteis
+                  <input name="checklist_usable_photos_count" placeholder={isAttachMode ? 'Herdar/conferir' : 'Ex.: 22'} style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Ambientes faltantes ou fotos a refazer
+                  <textarea name="checklist_photo_notes" rows={3} placeholder="Ex.: fachada, suíte, cozinha, área gourmet, condomínio, vista, detalhes de acabamento." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#111827', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    6 / Percepção do corretor
+                  </span>
+                  <h3 style={{ margin: 0 }}>Fechar percepção subjetiva do corretor</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  { label: 'Liquidez percebida', name: 'checklist_liquidity', options: ['Baixa', 'Média', 'Alta', 'Muito alta', 'Não avaliada'] },
+                  { label: 'Público provável', name: 'checklist_target_audience', options: ['Família', 'Investidor', 'Casal jovem', 'Idoso', 'Executivo', 'Temporada', 'Comercial'] },
+                  { label: 'Potencial comercial', name: 'checklist_commercial_potential', options: ['Baixo', 'Médio', 'Alto', 'Muito alto', 'Não recomendado'] },
+                  { label: 'Recomendação inicial', name: 'checklist_initial_recommendation', options: ['Seguir', 'Revisar preço', 'Melhorar fotos', 'Solicitar documentos', 'Aguardar', 'Não recomendado'] },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Percepção final do levantamento
+                  <textarea name="checklist_broker_subjective_reading" rows={4} placeholder="Resumo objetivo do corretor sobre potencial, travas, urgência, pontos fortes, pontos fracos e o que precisa acontecer antes da inteligência." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+              </div>
+            </article>
+          </div>
+        </section>
+      )}
 
       {/* PIPELINE_LEVANTAMENTO_SLA_PROGRESS_V1 */}
       {stepKey === 'levantamento' && isPipelineStarted && (
