@@ -5798,6 +5798,586 @@ export default function PipelineStepPage() {
         </section>
       )}
 
+
+      {/* PIPELINE_DIAGNOSTICO_REAL_FIELDS_V1 */}
+      {stepKey === 'diagnostico' && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Esta é a etapa real de Diagnóstico e Risco do Pipeline Pro.
+            - Ela aprofunda o que no Levantamento aparece só como leitura inicial.
+            - Ainda não salva no banco.
+            - Futuramente deve alimentar:
+              documentation_assessment
+              financial_assessment
+              private_notes
+              moderation_notes
+              risk_summary
+            - Responsável comum:
+              suporte documental, administrativo, coordenador ou corretor responsável.
+            - Estes dados são internos e não devem aparecer no anúncio público.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#dc2626',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Diagnóstico e risco
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Documentação, financeiro, prefeitura, cartório e impedimentos
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 960,
+                }}
+              >
+                Esta etapa transforma a checagem documental em processo operacional.
+                Pode ser feita pelo corretor, apoio administrativo, coordenador ou
+                setor documental da agência. O objetivo é identificar riscos antes
+                de gerar estratégia, proposta e publicação.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#dc2626',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              dados internos
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: 10,
+              marginBottom: 14,
+            }}
+          >
+            {[
+              {
+                label: 'Responsável pelo diagnóstico',
+                value: 'Apoio documental / administrativo',
+                detail: 'Futuro: module_responsible_profile_id.',
+                color: '#2563eb',
+              },
+              {
+                label: 'Prazo operacional',
+                value: 'Paralelo ao levantamento',
+                detail: 'Não precisa esperar todos os campos físicos.',
+                color: '#f59e0b',
+              },
+              {
+                label: 'Efeito no fluxo',
+                value: 'Pode bloquear inteligência',
+                detail: 'Risco alto deve impedir proposta fraca.',
+                color: '#dc2626',
+              },
+              {
+                label: 'Visibilidade',
+                value: 'Interna',
+                detail: 'Não expor ao proprietário sem resumo adequado.',
+                color: '#475467',
+              },
+            ].map((item) => (
+              <article
+                key={item.label}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 14,
+                  padding: 12,
+                  background: '#f8fafc',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    borderRadius: 999,
+                    padding: '4px 8px',
+                    background: item.color,
+                    color: '#fff',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    marginBottom: 8,
+                  }}
+                >
+                  {item.label}
+                </span>
+
+                <strong style={{ display: 'block', fontSize: 15 }}>
+                  {item.value}
+                </strong>
+
+                <p
+                  style={{
+                    margin: '6px 0 0',
+                    color: '#667085',
+                    fontSize: 12,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {item.detail}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div style={{ display: 'grid', gap: 16 }}>
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                1. Situação documental do imóvel
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Checagem de titularidade, matrícula, autorização e consistência mínima
+                para seguir com proposta e publicação.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                {[
+                  {
+                    label: 'Matrícula / registro do imóvel',
+                    name: 'property_registry_status',
+                    options: ['Apresentada', 'Pendente', 'Desatualizada', 'Divergente', 'Não se aplica', 'Precisa revisão'],
+                  },
+                  {
+                    label: 'Titularidade',
+                    name: 'ownership_status',
+                    options: ['Titular confirmado', 'Representante', 'Inventário', 'Espólio', 'Empresa', 'Divergente', 'Não avaliado'],
+                  },
+                  {
+                    label: 'Autorização para comercialização',
+                    name: 'commercial_authorization_status',
+                    options: ['Formalizada', 'Verbal', 'Pendente assinatura', 'Não autorizada', 'Precisa revisão'],
+                  },
+                  {
+                    label: 'Documentos do proprietário',
+                    name: 'owner_document_status',
+                    options: ['Completos', 'Pendentes', 'Incompletos', 'Divergentes', 'Não recebidos'],
+                  },
+                  {
+                    label: 'Estado civil / anuência',
+                    name: 'spouse_consent_status',
+                    options: ['Não se aplica', 'Validado', 'Pendente', 'Precisa confirmar', 'Risco identificado'],
+                  },
+                  {
+                    label: 'Procuração / representação',
+                    name: 'representation_status',
+                    options: ['Não se aplica', 'Validada', 'Pendente', 'Vencida', 'Precisa revisão'],
+                  },
+                ].map((field) => (
+                  <label
+                    key={field.name}
+                    style={{
+                      display: 'grid',
+                      gap: 6,
+                      fontSize: 13,
+                      color: '#344054',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {field.label}
+                    <select
+                      name={field.name}
+                      defaultValue=""
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 10,
+                        padding: '10px 11px',
+                        background: '#fff',
+                        color: '#111827',
+                      }}
+                    >
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Observações documentais
+                  <textarea
+                    name="documentation_notes"
+                    rows={4}
+                    placeholder="Registre pendências, divergências, documentos faltantes, necessidade de cartório, prefeitura ou validação jurídica."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      color: '#111827',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                2. Situação financeira e débitos
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Débitos podem afetar preço, proposta, urgência, negociação e segurança
+                da operação.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                {[
+                  {
+                    label: 'IPTU / tributos',
+                    name: 'property_tax_status',
+                    options: ['Regular informado', 'Com débito informado', 'Pendente consulta', 'Não informado', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Débito de condomínio',
+                    name: 'condominium_debt_status',
+                    options: ['Sem débito informado', 'Com débito informado', 'Pendente consulta', 'Não informado', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Financiamento ativo',
+                    name: 'active_financing_status',
+                    options: ['Não possui', 'Possui financiamento', 'Quitação pendente', 'Não informado', 'Precisa revisão'],
+                  },
+                  {
+                    label: 'Alienação / garantia',
+                    name: 'collateral_status',
+                    options: ['Não identificado', 'Alienado', 'Garantia ativa', 'Precisa confirmar', 'Não avaliado'],
+                  },
+                  {
+                    label: 'Ações / processos conhecidos',
+                    name: 'legal_dispute_status',
+                    options: ['Não informado', 'Sem processo informado', 'Há processo informado', 'Precisa pesquisa', 'Risco alto'],
+                  },
+                  {
+                    label: 'Pressão financeira percebida',
+                    name: 'financial_pressure_level',
+                    options: ['Baixa', 'Média', 'Alta', 'Muito alta', 'Não avaliada'],
+                  },
+                ].map((field) => (
+                  <label
+                    key={field.name}
+                    style={{
+                      display: 'grid',
+                      gap: 6,
+                      fontSize: 13,
+                      color: '#344054',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {field.label}
+                    <select
+                      name={field.name}
+                      defaultValue=""
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 10,
+                        padding: '10px 11px',
+                        background: '#fff',
+                        color: '#111827',
+                      }}
+                    >
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Notas financeiras
+                  <textarea
+                    name="financial_notes"
+                    rows={4}
+                    placeholder="Registre débitos, necessidade de consulta, impacto no preço, urgência do proprietário ou riscos que possam afetar a negociação."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      color: '#111827',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                3. Prefeitura, cartório e validações externas
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Módulo próprio para apoio administrativo consultar informações fora
+                do atendimento de campo.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                {[
+                  {
+                    label: 'Consulta prefeitura',
+                    name: 'city_hall_check_status',
+                    options: ['Não iniciada', 'Em andamento', 'Concluída', 'Bloqueada', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Consulta cartório',
+                    name: 'registry_office_check_status',
+                    options: ['Não iniciada', 'Em andamento', 'Concluída', 'Bloqueada', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Zoneamento / uso permitido',
+                    name: 'zoning_status',
+                    options: ['Não avaliado', 'Compatível', 'Restrição identificada', 'Precisa consulta', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Habite-se / regularidade construtiva',
+                    name: 'construction_regularization_status',
+                    options: ['Não avaliado', 'Regular informado', 'Pendente', 'Irregularidade aparente', 'Não se aplica'],
+                  },
+                ].map((field) => (
+                  <label
+                    key={field.name}
+                    style={{
+                      display: 'grid',
+                      gap: 6,
+                      fontSize: 13,
+                      color: '#344054',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {field.label}
+                    <select
+                      name={field.name}
+                      defaultValue=""
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 10,
+                        padding: '10px 11px',
+                        background: '#fff',
+                        color: '#111827',
+                      }}
+                    >
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Resultado das validações externas
+                  <textarea
+                    name="external_validation_notes"
+                    rows={4}
+                    placeholder="Registre protocolos, informações levantadas, pendências de prefeitura/cartório e providências necessárias."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      color: '#111827',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                4. Classificação de risco e recomendação
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Conclusão operacional do diagnóstico. Esta leitura deve influenciar
+                se a inteligência libera, libera com ressalva ou bloqueia a proposta.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Nível geral de risco
+                  <select name="overall_risk_level" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="low">Baixo</option>
+                    <option value="medium">Médio</option>
+                    <option value="high">Alto</option>
+                    <option value="critical">Crítico</option>
+                    <option value="unknown">Não avaliado</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Recomendação do diagnóstico
+                  <select name="diagnosis_recommendation_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="proceed">Pode seguir</option>
+                    <option value="proceed_with_reservations">Seguir com ressalvas</option>
+                    <option value="hold">Aguardar pendências</option>
+                    <option value="block">Bloquear estratégia/proposta</option>
+                    <option value="legal_review">Enviar para revisão jurídica</option>
+                  </select>
+                </label>
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Recomendação final do diagnóstico
+                  <textarea
+                    name="diagnosis_final_recommendation"
+                    rows={5}
+                    placeholder="Explique se o imóvel pode avançar, se precisa ressalvas, se deve aguardar documento ou se deve bloquear estratégia/proposta."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      color: '#111827',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+              </div>
+            </section>
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_STEP_FOOTER_NAV_V1 */}
       {/*
         ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
