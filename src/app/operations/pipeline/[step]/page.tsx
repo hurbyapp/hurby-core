@@ -6605,6 +6605,479 @@ export default function PipelineStepPage() {
       )}
 
 
+
+      {/* PIPELINE_DIAGNOSTICO_EXECUTABLE_CHECKLIST_V1 */}
+      {stepKey === 'diagnostico' && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este é o modelo correto do Diagnóstico: checklist executável.
+            - Cada item contém perguntas reais, status, progresso e futura nota/risco.
+            - Diagnóstico pode ser preenchido por corretor, apoio documental,
+              administrativo ou coordenador, conforme permissão do módulo.
+            - Ainda não salva no banco.
+            - Futuramente deve alimentar:
+              documentation_assessment
+              financial_assessment
+              private_notes
+              moderation_notes
+              workflow risk gates
+            - Dados sensíveis não devem ir para anúncio público.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#dc2626',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Checklist executável do Diagnóstico
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Documentação, financeiro, restrições e risco operacional
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 980,
+                }}
+              >
+                Esta etapa não é vistoria física. É checagem de segurança da operação:
+                proprietário, autorização, matrícula, IPTU, condomínio, financiamento,
+                prefeitura, cartório e risco. Pode rodar em paralelo ao levantamento.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#dc2626',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              checklist v1
+            </span>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #fecaca',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fef2f2',
+              marginBottom: 14,
+            }}
+          >
+            <strong style={{ display: 'block', marginBottom: 6 }}>
+              Regra de segurança
+            </strong>
+            <p style={{ margin: 0, color: '#667085', lineHeight: 1.5 }}>
+              Risco alto, documentação divergente, proprietário não validado ou ausência
+              de autorização podem bloquear inteligência, proposta e publicação. O sistema
+              deve registrar o motivo, não apenas travar o fluxo.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gap: 14 }}>
+            <article
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#2563eb', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    1 / Proprietário e autorização
+                  </span>
+                  <h3 style={{ margin: 0 }}>Conferir proprietário, representação e autorização</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Este passo valida se quem está oferecendo o imóvel tem legitimidade
+                para negociar e se existe autorização mínima para a imobiliária/profissional agir.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  {
+                    label: 'Vínculo com proprietário',
+                    name: 'diagnosis_owner_link_status',
+                    options: ['Proprietário direto', 'Representante', 'Familiar', 'Administrador', 'Não confirmado'],
+                  },
+                  {
+                    label: 'Documento do proprietário',
+                    name: 'diagnosis_owner_document_status',
+                    options: ['Comprovado', 'Pendente', 'Incompleto', 'Divergente', 'Não recebido'],
+                  },
+                  {
+                    label: 'Autorização comercial',
+                    name: 'diagnosis_authorization_status',
+                    options: ['Assinada', 'Verbal', 'Pendente assinatura', 'Não autorizada', 'Precisa revisão'],
+                  },
+                  {
+                    label: 'Exclusividade',
+                    name: 'diagnosis_exclusivity_status',
+                    options: ['Exclusivo', 'Não exclusivo', 'A confirmar', 'Não se aplica', 'Conflito identificado'],
+                  },
+                  {
+                    label: 'Estado civil / anuência',
+                    name: 'diagnosis_spouse_consent_status',
+                    options: ['Não se aplica', 'Validado', 'Pendente', 'Precisa confirmar', 'Risco identificado'],
+                  },
+                  {
+                    label: 'Procuração / representação',
+                    name: 'diagnosis_representation_status',
+                    options: ['Não se aplica', 'Validada', 'Pendente', 'Vencida', 'Precisa revisão'],
+                  },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Observações sobre proprietário/autorização
+                  <textarea
+                    name="diagnosis_owner_authorization_notes"
+                    rows={3}
+                    placeholder="Registre quem autorizou, o que falta, se há representante, risco de anuência, procuração ou conflito."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#7c3aed', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    2 / Documentação do imóvel
+                  </span>
+                  <h3 style={{ margin: 0 }}>Verificar matrícula, registro e regularidade documental</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  {
+                    label: 'Matrícula / registro',
+                    name: 'diagnosis_registry_status',
+                    options: ['Apresentada', 'Pendente', 'Desatualizada', 'Divergente', 'Não se aplica', 'Precisa revisão'],
+                  },
+                  {
+                    label: 'Titularidade',
+                    name: 'diagnosis_ownership_status',
+                    options: ['Titular confirmado', 'Representante', 'Inventário', 'Espólio', 'Empresa', 'Divergente', 'Não avaliado'],
+                  },
+                  {
+                    label: 'Habite-se / regularidade construtiva',
+                    name: 'diagnosis_construction_regularization_status',
+                    options: ['Regular informado', 'Pendente', 'Irregularidade aparente', 'Não avaliado', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Divergência área/documento',
+                    name: 'diagnosis_area_discrepancy_status',
+                    options: ['Não identificada', 'Possível divergência', 'Divergência relevante', 'Precisa conferir', 'Não avaliado'],
+                  },
+                  {
+                    label: 'Restrição jurídica conhecida',
+                    name: 'diagnosis_legal_restriction_status',
+                    options: ['Não informada', 'Não identificada', 'Restrição informada', 'Precisa pesquisa', 'Risco alto'],
+                  },
+                  {
+                    label: 'Elegibilidade para financiamento',
+                    name: 'diagnosis_financing_eligibility',
+                    options: ['Provável', 'Incerta', 'Improvável', 'Não elegível', 'Não avaliada'],
+                  },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Notas documentais
+                  <textarea
+                    name="diagnosis_documentation_notes"
+                    rows={4}
+                    placeholder="Registre documentos recebidos, pendências, divergências e o que precisa ser conferido antes de proposta/publicação."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#f59e0b', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    3 / Financeiro e débitos
+                  </span>
+                  <h3 style={{ margin: 0 }}>Levantar IPTU, condomínio, financiamento e pressão financeira</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  {
+                    label: 'IPTU / tributos',
+                    name: 'diagnosis_tax_status',
+                    options: ['Regular informado', 'Com débito informado', 'Pendente consulta', 'Não informado', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Débito de condomínio',
+                    name: 'diagnosis_condo_debt_status',
+                    options: ['Sem débito informado', 'Com débito informado', 'Pendente consulta', 'Não informado', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Financiamento / alienação',
+                    name: 'diagnosis_financing_status',
+                    options: ['Não possui', 'Possui financiamento', 'Quitação pendente', 'Alienado', 'Não informado', 'Precisa revisão'],
+                  },
+                  {
+                    label: 'Saldo devedor',
+                    name: 'diagnosis_debt_balance_status',
+                    options: ['Não se aplica', 'Informado', 'Pendente', 'Incompatível com preço', 'Não informado'],
+                  },
+                  {
+                    label: 'Risco fiscal / tributário',
+                    name: 'diagnosis_tax_risk_level',
+                    options: ['Baixo', 'Médio', 'Alto', 'Crítico', 'Não avaliado'],
+                  },
+                  {
+                    label: 'Pressão financeira percebida',
+                    name: 'diagnosis_financial_pressure_level',
+                    options: ['Baixa', 'Média', 'Alta', 'Muito alta', 'Não avaliada'],
+                  },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Notas financeiras
+                  <textarea
+                    name="diagnosis_financial_notes"
+                    rows={4}
+                    placeholder="Registre débitos, pressão financeira, saldo devedor, risco de negociação ou impacto no preço/proposta."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#475467', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    4 / Validações externas
+                  </span>
+                  <h3 style={{ margin: 0 }}>Consultar prefeitura, cartório e restrições externas</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  {
+                    label: 'Consulta prefeitura',
+                    name: 'diagnosis_city_hall_check_status',
+                    options: ['Não iniciada', 'Em andamento', 'Concluída', 'Bloqueada', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Consulta cartório',
+                    name: 'diagnosis_registry_office_check_status',
+                    options: ['Não iniciada', 'Em andamento', 'Concluída', 'Bloqueada', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Zoneamento / uso permitido',
+                    name: 'diagnosis_zoning_status',
+                    options: ['Compatível', 'Restrição identificada', 'Precisa consulta', 'Não avaliado', 'Não se aplica'],
+                  },
+                  {
+                    label: 'Processos / restrições externas',
+                    name: 'diagnosis_external_restriction_status',
+                    options: ['Não identificado', 'Indício identificado', 'Confirmado', 'Precisa pesquisa', 'Não avaliado'],
+                  },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Resultado das validações externas
+                  <textarea
+                    name="diagnosis_external_validation_notes"
+                    rows={4}
+                    placeholder="Registre protocolos, retorno de prefeitura/cartório, restrições, pendências e próximos passos."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#dc2626', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    5 / Risco
+                  </span>
+                  <h3 style={{ margin: 0 }}>Classificar risco documental e financeiro</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  {
+                    label: 'Risco documental',
+                    name: 'diagnosis_documentation_risk_level',
+                    options: ['Baixo', 'Médio', 'Alto', 'Crítico', 'Não avaliado'],
+                  },
+                  {
+                    label: 'Risco financeiro',
+                    name: 'diagnosis_financial_risk_level',
+                    options: ['Baixo', 'Médio', 'Alto', 'Crítico', 'Não avaliado'],
+                  },
+                  {
+                    label: 'Risco comercial causado por documentação',
+                    name: 'diagnosis_commercial_blocker_level',
+                    options: ['Nenhum', 'Baixo', 'Médio', 'Alto', 'Bloqueia proposta/publicação'],
+                  },
+                  {
+                    label: 'Impacto na inteligência',
+                    name: 'diagnosis_intelligence_impact',
+                    options: ['Não impacta', 'Libera com ressalva', 'Aguardar pendência', 'Bloquear inteligência', 'Enviar para revisão jurídica'],
+                  },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#111827', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    6 / Recomendação
+                  </span>
+                  <h3 style={{ margin: 0 }}>Fechar recomendação do diagnóstico</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Recomendação documental
+                  <select name="diagnosis_documentation_recommendation" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="request_documents">Solicitar documentos</option>
+                    <option value="proceed">Pode seguir</option>
+                    <option value="proceed_with_reservations">Seguir com ressalvas</option>
+                    <option value="hold">Aguardar pendências</option>
+                    <option value="block">Bloquear</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Recomendação financeira
+                  <select name="diagnosis_financial_recommendation" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="confirm">A confirmar</option>
+                    <option value="regular">Regular informado</option>
+                    <option value="negotiate_debts">Negociar débitos</option>
+                    <option value="adjust_price">Ajustar preço</option>
+                    <option value="block">Bloquear</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Recomendação final do diagnóstico
+                  <textarea
+                    name="diagnosis_final_recommendation"
+                    rows={5}
+                    placeholder="Explique se pode seguir, seguir com ressalvas, aguardar documento, ajustar preço, consultar jurídico ou bloquear estratégia/proposta."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_DIAGNOSTICO_REAL_FIELDS_V1 */}
       {stepKey === 'diagnostico' && (
         <section
