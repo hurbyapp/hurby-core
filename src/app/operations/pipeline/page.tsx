@@ -1,3 +1,5 @@
+'use client'
+
 
 /*
 =========================================
@@ -69,7 +71,15 @@ NAO MEXER SEM AUDITORIA:
 =========================================
 */
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import {
+  buildPipelineStepHref,
+  getPipelineLayerColor,
+  getPipelineStepDefinition,
+  pipelineStepOrder,
+} from '@/lib/services/pipelineProService'
+import { getPipelineCentralListingCandidates } from '@/lib/services/propertyService'
 
 const phases = [
   {
@@ -245,7 +255,182 @@ const phases = [
   },
 ]
 
+
+// PIPELINE_MAIN_SERVICE_HELPERS_V1
+function getPipelineServiceCardData(stepKey: string) {
+  const definition = getPipelineStepDefinition(stepKey)
+  const layerColor = getPipelineLayerColor(definition.layer)
+
+  return {
+    key: definition.key,
+    label: definition.label,
+    shortLabel: definition.shortLabel,
+    layer: definition.layerLabel,
+    layerColor,
+    ownerHint: definition.ownerHint,
+    deadlineHint: definition.deadlineHint,
+    urgencyHint: definition.urgencyHint,
+    accessHint: definition.accessHint,
+    description: definition.description,
+    href: buildPipelineStepHref({ stepKey: definition.key }),
+  }
+}
+
+const pipelineServiceCards = pipelineStepOrder.map(getPipelineServiceCardData)
+
+
+
+// PIPELINE_CENTRAL_KPI_PREVIEW_DATA_V1
+const pipelineCentralKpiPreview = [
+  {
+    label: 'Pipelines ativos',
+    value: '3',
+    detail: 'Captações profissionais em andamento',
+    color: '#2563eb',
+  },
+  {
+    label: 'Em atraso ou risco',
+    value: '1',
+    detail: 'Exigem ação do responsável ou gestor',
+    color: '#dc2626',
+  },
+  {
+    label: 'Com suporte envolvido',
+    value: '2',
+    detail: 'Módulos atribuídos a apoio/documental',
+    color: '#7c3aed',
+  },
+  {
+    label: 'Prontos para inteligência',
+    value: '1',
+    detail: 'Base operacional próxima da maturidade mínima',
+    color: '#16a34a',
+  },
+]
+
+const pipelineCentralFilterPreview = [
+  'Todos',
+  'Meus pipelines',
+  'Em atraso',
+  'Aguardando suporte',
+  'Prontos para inteligência',
+  'Placeholder',
+  'Modo consulta',
+]
+
+// PIPELINE_ACTIVE_WORKFLOWS_PREVIEW_DATA_V1
+const pipelineActiveWorkflowPreview = [
+  {
+    id: 'preview-florais-helio',
+    internalName: 'Captação Florais - Hélio',
+    ownerName: 'Hélio',
+    responsible: 'Marcos',
+    currentStep: 'Levantamento',
+    currentStepKey: 'levantamento',
+    context: 'Casa em condomínio',
+    progress: 62,
+    deadline: 'Vence em 3h',
+    urgency: 'Alta',
+    urgencyColor: '#dc2626',
+    status: 'Em andamento',
+    statusColor: '#2563eb',
+    permission: 'Gestão liberada',
+    permissionColor: '#16a34a',
+    nextAction: 'Completar fotos, composição do imóvel e dados do entorno.',
+  },
+  {
+    id: 'preview-jardim-ana',
+    internalName: 'Captação Jardim Itália - Ana',
+    ownerName: 'Ana',
+    responsible: 'Carlos',
+    currentStep: 'Diagnóstico',
+    currentStepKey: 'diagnostico',
+    context: 'Apartamento',
+    progress: 44,
+    deadline: 'Atenção: prazo em risco',
+    urgency: 'Média',
+    urgencyColor: '#f59e0b',
+    status: 'Aguardando suporte',
+    statusColor: '#7c3aed',
+    permission: 'Consulta operacional',
+    permissionColor: '#f59e0b',
+    nextAction: 'Validar documentação, débitos, matrícula e situação cadastral.',
+  },
+  {
+    id: 'preview-condominio-roberto',
+    internalName: 'Captação Condomínio X - Roberto',
+    ownerName: 'Roberto',
+    responsible: 'Suporte documental',
+    currentStep: 'Prefeitura/cartório',
+    currentStepKey: 'diagnostico',
+    context: 'Terreno em condomínio',
+    progress: 78,
+    deadline: 'Dentro do prazo',
+    urgency: 'Baixa',
+    urgencyColor: '#16a34a',
+    status: 'Quase pronto',
+    statusColor: '#16a34a',
+    permission: 'Módulo atribuído',
+    permissionColor: '#2563eb',
+    nextAction: 'Encerrar diagnóstico com justificativa ou anexar evidências finais.',
+  },
+]
+
+
+// PIPELINE_CENTRAL_FORMAT_MONEY_V1
+function formatPipelineCentralMoney(value: unknown) {
+  if (typeof value !== 'number') {
+    return 'Preço não informado'
+  }
+
+  return value.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  })
+}
+
 export default function PipelinePage() {
+  // PIPELINE_CENTRAL_REAL_LISTINGS_STATE_V1
+  const [realListingCandidates, setRealListingCandidates] = useState<any[]>([])
+  const [realListingCandidatesStatus, setRealListingCandidatesStatus] = useState('')
+  const [realListingCandidatesError, setRealListingCandidatesError] = useState('')
+
+  // PIPELINE_CENTRAL_REAL_LISTINGS_FETCH_V1
+  useEffect(() => {
+    let active = true
+
+    async function loadRealListingCandidates() {
+      setRealListingCandidatesStatus('Carregando anúncios reais candidatos ao Pipeline Pro...')
+      setRealListingCandidatesError('')
+
+      const response = await getPipelineCentralListingCandidates()
+
+      if (!active) return
+
+      if (response.error) {
+        console.error('PIPELINE CENTRAL LISTINGS ERROR:', response.error)
+        setRealListingCandidates([])
+        setRealListingCandidatesStatus('')
+        setRealListingCandidatesError('Não foi possível carregar anúncios reais agora.')
+        return
+      }
+
+      setRealListingCandidates(response.data || [])
+      setRealListingCandidatesStatus(
+        response.data?.length
+          ? 'Anúncios reais carregados.'
+          : 'Nenhum anúncio acessível encontrado para acoplar ao Pipeline Pro.'
+      )
+    }
+
+    loadRealListingCandidates()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+
   return (
     <main
       style={{
@@ -750,6 +935,859 @@ export default function PipelinePage() {
                 {layer.text}
               </p>
             </article>
+          ))}
+        </div>
+      </section>
+
+
+      {/* PIPELINE_MAIN_PAGE_PURPOSE_EXPLANATION_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Esta page /operations/pipeline é a CENTRAL do Pipeline Pro.
+        - Ela NÃO representa um Pipeline Pro individual.
+        - No produto final, esta tela deve listar múltiplos workflows reais simultâneos.
+        - Cada workflow real deverá ter um identificador próprio, provavelmente workflowId.
+        - A rota futura ideal para um pipeline específico será algo como:
+          /operations/pipeline/[workflowId]
+        - A rota atual /operations/pipeline/[step] é foundation visual provisória para validar etapas antes do backend real.
+        - Não criar backend ou migration apenas por causa desta explicação.
+        - Codex pode corrigir acentuação e microcopy mantendo UTF-8.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 22,
+          padding: 22,
+          background: '#f8fafc',
+          marginBottom: 22,
+        }}
+      >
+        <p
+          style={{
+            margin: '0 0 8px',
+            fontSize: 13,
+            color: '#2563eb',
+            textTransform: 'uppercase',
+            letterSpacing: 0.8,
+            fontWeight: 900,
+          }}
+        >
+          Central operacional
+        </p>
+
+        <h1 style={{ margin: '0 0 10px' }}>
+          Central do Pipeline Pro
+        </h1>
+
+        <p
+          style={{
+            margin: 0,
+            color: '#667085',
+            lineHeight: 1.6,
+            maxWidth: 980,
+          }}
+        >
+          Esta tela será a central para acompanhar várias captações profissionais
+          em andamento ao mesmo tempo. Aqui o corretor, atendimento, gestor ou
+          agência deverá enxergar pipelines ativos, responsáveis, prazos, progresso,
+          gargalos, urgências e próximos passos.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 12,
+            marginTop: 16,
+          }}
+        >
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+            }}
+          >
+            <strong>O que esta página é</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+              Uma central/lista futura de Pipelines Pro, com visão de carteira,
+              prazos, progresso e operação.
+            </p>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+            }}
+          >
+            <strong>O que ela ainda não é</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+              Não é ainda um workflow real salvo no banco e não representa um
+              pipeline individual com workflowId.
+            </p>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+            }}
+          >
+            <strong>Função da V1 atual</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+              Validar o produto, as etapas, a navegação, a lógica operacional e
+              a futura separação entre central, pipeline individual e módulos.
+            </p>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fff',
+            }}
+          >
+            <strong>Rota futura provável</strong>
+            <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+              A central fica em /operations/pipeline. Cada pipeline real deverá
+              abrir em rota própria, como /operations/pipeline/[workflowId].
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* PIPELINE_MAIN_SERVICE_NOTE_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - A fonte canônica das etapas do Pipeline Pro deve ser pipelineProService.ts.
+        - Esta página ainda pode manter copy visual própria, mas não deve duplicar regra de ordem, labels e camadas.
+        - Backend real ainda não existe para workflow; esta tela é produto/frontend foundation.
+      */}
+
+
+
+
+      {/* PIPELINE_CENTRAL_KPI_FILTER_BAR_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Esta seção é visual/foundation.
+        - Futuramente os KPIs devem vir de workflows reais.
+        - Filtros devem consultar backend ou estado client-side com dados reais.
+        - Não salvar filtros ainda.
+        - Não criar migration por causa destes filtros.
+        - Esta central deverá listar múltiplos pipelines simultâneos por workflowId.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 22,
+          padding: 20,
+          background: '#fff',
+          marginBottom: 22,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 12,
+            flexWrap: 'wrap',
+            alignItems: 'flex-start',
+            marginBottom: 16,
+          }}
+        >
+          <div>
+            <p
+              style={{
+                margin: '0 0 6px',
+                fontSize: 13,
+                color: '#2563eb',
+                textTransform: 'uppercase',
+                letterSpacing: 0.8,
+                fontWeight: 900,
+              }}
+            >
+              Gestão da carteira
+            </p>
+
+            <h2 style={{ margin: '0 0 6px' }}>
+              Visão de controle dos pipelines
+            </h2>
+
+            <p style={{ margin: 0, color: '#667085', lineHeight: 1.5, maxWidth: 840 }}>
+              Esta área deverá ajudar corretor, atendimento e gestor a priorizar o que
+              precisa de ação agora: atraso, risco, suporte envolvido, maturidade mínima
+              e liberação para inteligência.
+            </p>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+            gap: 12,
+            marginBottom: 16,
+          }}
+        >
+          {pipelineCentralKpiPreview.map((kpi) => (
+            <article
+              key={kpi.label}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 15,
+                background: '#f8fafc',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  borderRadius: 999,
+                  padding: '4px 8px',
+                  background: kpi.color,
+                  color: '#fff',
+                  fontSize: 11,
+                  fontWeight: 900,
+                  marginBottom: 10,
+                }}
+              >
+                KPI
+              </span>
+
+              <strong style={{ display: 'block', fontSize: 24, lineHeight: 1 }}>
+                {kpi.value}
+              </strong>
+
+              <span style={{ display: 'block', marginTop: 8, fontWeight: 800 }}>
+                {kpi.label}
+              </span>
+
+              <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                {kpi.detail}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        <div
+          style={{
+            border: '1px solid #d7dee8',
+            borderRadius: 16,
+            padding: 14,
+            background: '#f8fafc',
+          }}
+        >
+          <strong style={{ display: 'block', marginBottom: 10 }}>
+            Filtros operacionais futuros
+          </strong>
+
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              flexWrap: 'wrap',
+            }}
+          >
+            {pipelineCentralFilterPreview.map((filter, index) => (
+              <button
+                key={filter}
+                type="button"
+                style={{
+                  border: index === 0 ? '1px solid #2563eb' : '1px solid #d7dee8',
+                  borderRadius: 999,
+                  padding: '8px 11px',
+                  background: index === 0 ? '#2563eb' : '#fff',
+                  color: index === 0 ? '#fff' : '#344054',
+                  fontWeight: 800,
+                  fontSize: 12,
+                  cursor: 'default',
+                }}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+
+          <p style={{ margin: '10px 0 0', color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+            Nesta V1, os filtros são apenas demonstração visual. No produto final,
+            deverão filtrar pipelines reais por responsável, etapa, urgência,
+            status, permissão e maturidade.
+          </p>
+        </div>
+      </section>
+
+
+      {/* PIPELINE_CENTRAL_REAL_LISTINGS_ATTACH_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Esta seção é a primeira conexão real da Central do Pipeline Pro com o banco.
+        - Ela apenas lista anúncios reais acessíveis por RLS.
+        - Não cria workflow.
+        - Não cria Anúncio Placeholder.
+        - Não salva progresso.
+        - Não cria migration.
+        - O botão "Acoplar Pipeline Pro" leva para o modo attach usando listingId real.
+        - Futuramente esta área deve ser substituída ou complementada por workflows reais.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 22,
+          padding: 20,
+          background: '#fff',
+          marginBottom: 22,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 12,
+            flexWrap: 'wrap',
+            alignItems: 'flex-start',
+            marginBottom: 16,
+          }}
+        >
+          <div>
+            <p
+              style={{
+                margin: '0 0 6px',
+                fontSize: 13,
+                color: '#2563eb',
+                textTransform: 'uppercase',
+                letterSpacing: 0.8,
+                fontWeight: 900,
+              }}
+            >
+              Banco real
+            </p>
+
+            <h2 style={{ margin: '0 0 6px' }}>
+              Anúncios reais candidatos ao Pipeline Pro
+            </h2>
+
+            <p style={{ margin: 0, color: '#667085', lineHeight: 1.5, maxWidth: 860 }}>
+              Estes anúncios já existem no banco e podem ser acoplados ao Pipeline Pro.
+              Nesta fase, o sistema apenas lê os anúncios e leva para o modo attach.
+              O workflow real ainda não é criado.
+            </p>
+          </div>
+
+          <span
+            style={{
+              display: 'inline-flex',
+              borderRadius: 999,
+              padding: '6px 10px',
+              background: '#16a34a',
+              color: '#fff',
+              fontSize: 12,
+              fontWeight: 900,
+            }}
+          >
+            leitura real
+          </span>
+        </div>
+
+        {(realListingCandidatesStatus || realListingCandidatesError) && (
+          <div
+            style={{
+              border: realListingCandidatesError ? '1px solid #fecaca' : '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 12,
+              background: realListingCandidatesError ? '#fef2f2' : '#f8fafc',
+              color: realListingCandidatesError ? '#991b1b' : '#667085',
+              marginBottom: 14,
+              fontSize: 13,
+            }}
+          >
+            {realListingCandidatesError || realListingCandidatesStatus}
+          </div>
+        )}
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: 12,
+          }}
+        >
+          {realListingCandidates.map((listing) => (
+            <article
+              key={listing.id}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+                display: 'grid',
+                gap: 10,
+              }}
+            >
+              <div>
+                <strong style={{ display: 'block', fontSize: 15 }}>
+                  {listing.title || 'Anúncio sem título'}
+                </strong>
+
+                <span style={{ display: 'block', color: '#667085', fontSize: 13, marginTop: 4 }}>
+                  {formatPipelineCentralMoney(listing.price)}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                  gap: 8,
+                }}
+              >
+                <div
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 12,
+                    padding: 9,
+                    background: '#fff',
+                  }}
+                >
+                  <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                    Visibilidade
+                  </span>
+                  <strong style={{ display: 'block', fontSize: 12, marginTop: 3 }}>
+                    {listing.visibility_scope || 'Não informado'}
+                  </strong>
+                </div>
+
+                <div
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 12,
+                    padding: 9,
+                    background: '#fff',
+                  }}
+                >
+                  <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                    Origem
+                  </span>
+                  <strong style={{ display: 'block', fontSize: 12, marginTop: 3 }}>
+                    {listing.metadata?.source || listing.metadata?.flow || 'Não informado'}
+                  </strong>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 8,
+                  flexWrap: 'wrap',
+                }}
+              >
+                <Link
+                  href={`/operations/pipeline/atendimento?listingId=${listing.id}&mode=attach`}
+                  style={{
+                    display: 'inline-flex',
+                    padding: '9px 12px',
+                    borderRadius: 10,
+                    border: '1px solid #2563eb',
+                    background: '#2563eb',
+                    color: '#fff',
+                    textDecoration: 'none',
+                    fontWeight: 800,
+                    fontSize: 13,
+                  }}
+                >
+                  Acoplar Pipeline Pro
+                </Link>
+
+                <Link
+                  href={`/operations/properties/${listing.id}`}
+                  style={{
+                    display: 'inline-flex',
+                    padding: '9px 12px',
+                    borderRadius: 10,
+                    border: '1px solid #d7dee8',
+                    background: '#fff',
+                    color: '#344054',
+                    textDecoration: 'none',
+                    fontWeight: 700,
+                    fontSize: 13,
+                  }}
+                >
+                  Abrir checkup
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* PIPELINE_ACTIVE_WORKFLOWS_PREVIEW_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - Esta seção representa a futura lista real de workflows ativos.
+        - Hoje os dados são mockados/controlados para validar UX.
+        - Futuramente deve consumir tabela própria do Pipeline Pro, provavelmente property_pipeline_workflows.
+        - Cada card deverá abrir um workflow real por workflowId.
+        - A rota atual /operations/pipeline/[step] é provisória e valida etapas sem workflow real.
+        - Não conectar backend aqui sem migration planejada e RLS revisada.
+      */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 22,
+          padding: 20,
+          background: '#fff',
+          marginBottom: 22,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 12,
+            flexWrap: 'wrap',
+            alignItems: 'flex-start',
+            marginBottom: 16,
+          }}
+        >
+          <div>
+            <p
+              style={{
+                margin: '0 0 6px',
+                fontSize: 13,
+                color: '#2563eb',
+                textTransform: 'uppercase',
+                letterSpacing: 0.8,
+                fontWeight: 900,
+              }}
+            >
+              Operação em andamento
+            </p>
+
+            <h2 style={{ margin: '0 0 6px' }}>
+              Pipelines ativos
+            </h2>
+
+            <p style={{ margin: 0, color: '#667085', lineHeight: 1.5, maxWidth: 820 }}>
+              Prévia da futura carteira de captações profissionais. Aqui ficarão os
+              pipelines reais em andamento, com responsável, prazo, urgência, progresso
+              e próxima ação operacional.
+            </p>
+          </div>
+
+          <Link
+            href="/operations/pipeline/atendimento"
+            style={{
+              display: 'inline-flex',
+              padding: '10px 14px',
+              borderRadius: 10,
+              border: '1px solid #2563eb',
+              background: '#2563eb',
+              color: '#fff',
+              textDecoration: 'none',
+              fontWeight: 800,
+            }}
+          >
+            Iniciar novo Pipeline
+          </Link>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 14,
+          }}
+        >
+          {pipelineActiveWorkflowPreview.map((workflow) => (
+            <article
+              key={workflow.id}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 18,
+                padding: 16,
+                background: '#f8fafc',
+                display: 'grid',
+                gap: 12,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  gap: 10,
+                  alignItems: 'flex-start',
+                }}
+              >
+                <div>
+                  <strong style={{ display: 'block', fontSize: 16 }}>
+                    {workflow.internalName}
+                  </strong>
+
+                  <span style={{ display: 'block', color: '#667085', fontSize: 13, marginTop: 4 }}>
+                    {workflow.context}
+                  </span>
+                </div>
+
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    borderRadius: 999,
+                    padding: '5px 8px',
+                    background: workflow.statusColor,
+                    color: '#fff',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {workflow.status}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                  gap: 8,
+                }}
+              >
+                {[
+                  {
+                    label: 'Responsável',
+                    value: workflow.responsible,
+                  },
+                  {
+                    label: 'Etapa atual',
+                    value: workflow.currentStep,
+                  },
+                  {
+                    label: 'Prazo',
+                    value: workflow.deadline,
+                  },
+                  {
+                    label: 'Permissão',
+                    value: workflow.permission,
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 12,
+                      padding: 10,
+                      background: '#fff',
+                    }}
+                  >
+                    <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                      {item.label}
+                    </span>
+                    <strong style={{ display: 'block', fontSize: 12, marginTop: 3 }}>
+                      {item.value}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    gap: 8,
+                    marginBottom: 6,
+                    fontSize: 12,
+                    color: '#667085',
+                  }}
+                >
+                  <span>Progresso operacional</span>
+                  <strong>{workflow.progress}%</strong>
+                </div>
+
+                <div
+                  style={{
+                    height: 9,
+                    borderRadius: 999,
+                    background: '#e5eaf0',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: workflow.progress + '%',
+                      height: '100%',
+                      background: workflow.progress >= 70 ? '#16a34a' : workflow.progress >= 50 ? '#2563eb' : '#f59e0b',
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 12,
+                  padding: 10,
+                  background: '#fff',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    borderRadius: 999,
+                    padding: '4px 7px',
+                    background: workflow.urgencyColor,
+                    color: '#fff',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    marginBottom: 8,
+                  }}
+                >
+                  Urgência {workflow.urgency}
+                </span>
+
+                <p style={{ margin: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                  {workflow.nextAction}
+                </p>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 8,
+                  flexWrap: 'wrap',
+                }}
+              >
+                <Link
+                  href={`/operations/pipeline/${workflow.currentStepKey}`}
+                  style={{
+                    display: 'inline-flex',
+                    padding: '9px 12px',
+                    borderRadius: 10,
+                    border: '1px solid #2563eb',
+                    background: '#2563eb',
+                    color: '#fff',
+                    textDecoration: 'none',
+                    fontWeight: 800,
+                    fontSize: 13,
+                  }}
+                >
+                  Abrir etapa
+                </Link>
+
+                <Link
+                  href="/operations/properties/list"
+                  style={{
+                    display: 'inline-flex',
+                    padding: '9px 12px',
+                    borderRadius: 10,
+                    border: '1px solid #d7dee8',
+                    background: '#fff',
+                    color: '#344054',
+                    textDecoration: 'none',
+                    fontWeight: 700,
+                    fontSize: 13,
+                  }}
+                >
+                  Ver anúncio
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* PIPELINE_MAIN_SERVICE_REFERENCE_RAIL_V1 */}
+      <section
+        style={{
+          border: '1px solid #dbe3ea',
+          borderRadius: 18,
+          padding: 16,
+          background: '#fff',
+          marginBottom: 22,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 12,
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            marginBottom: 12,
+          }}
+        >
+          <div>
+            <strong>Mapa canônico das etapas</strong>
+            <p style={{ margin: '4px 0 0', color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+              Esta trilha usa o pipelineProService.ts como fonte central de ordem,
+              labels, camadas, responsáveis sugeridos e prazos conceituais.
+            </p>
+          </div>
+
+          <span
+            style={{
+              display: 'inline-flex',
+              borderRadius: 999,
+              padding: '5px 10px',
+              background: '#2563eb',
+              color: '#fff',
+              fontSize: 12,
+              fontWeight: 800,
+            }}
+          >
+            service centralizado
+          </span>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: 8,
+          }}
+        >
+          {pipelineServiceCards.map((item) => (
+            <Link
+              key={item.key}
+              href={item.href}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 12,
+                padding: 10,
+                background: '#f8fafc',
+                color: '#344054',
+                textDecoration: 'none',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  borderRadius: 999,
+                  padding: '3px 7px',
+                  background: item.layerColor,
+                  color: '#fff',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  marginBottom: 8,
+                }}
+              >
+                {item.layer}
+              </span>
+
+              <strong style={{ display: 'block', fontSize: 13 }}>
+                {item.shortLabel}
+              </strong>
+
+              <span style={{ display: 'block', color: '#667085', fontSize: 12, marginTop: 4 }}>
+                {item.deadlineHint}
+              </span>
+            </Link>
           ))}
         </div>
       </section>

@@ -1338,3 +1338,22 @@ export async function getListingAccessContext(listingId: string) {
     error: null,
   }
 }
+
+
+// =========================================================
+// PIPELINE PRO CENTRAL LISTING CANDIDATES
+// Read-only helper.
+// Used by /operations/pipeline to show real listings that can be attached
+// to Pipeline Pro before workflow tables exist.
+// =========================================================
+
+export async function getPipelineCentralListingCandidates() {
+  return await supabase
+    .from('property_listings')
+    .select(
+      'id, title, price, updated_at, published_at, visibility_scope, metadata, property_asset_id, listing_status_id, property_business_context_id, responsible_profile_id, created_by_profile_id'
+    )
+    .is('deleted_at', null)
+    .order('updated_at', { ascending: false })
+    .limit(12)
+}
