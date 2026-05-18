@@ -4362,6 +4362,369 @@ export default function PipelineStepPage() {
       )}
 
 
+
+      {/* PIPELINE_LEVANTAMENTO_REAL_FIELDS_V1 */}
+      {stepKey === 'levantamento' && isPipelineStarted && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este bloco começa a trazer campos reais da antiga ficha/checkup para o Pipeline.
+            - Ainda não salva no banco.
+            - Não criar migration agora.
+            - Não conectar autosave ainda.
+            - Estes campos devem futuramente alimentar:
+              technical_assessment
+              documentation_assessment
+              financial_assessment
+              owner_interview
+              commercial_assessment
+            - O objetivo agora é redistribuir campos nos módulos certos.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#2563eb',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Campos reais do levantamento
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Primeira redistribuição da antiga ficha para o Pipeline
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 940,
+                }}
+              >
+                Estes campos começam a transformar o levantamento em ferramenta de
+                trabalho real. A conexão com banco, autosave, progresso e permissões
+                por módulo fica para a próxima camada.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#2563eb',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              campos v1
+            </span>
+          </div>
+
+          <div style={{ display: 'grid', gap: 16 }}>
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                1. Levantamento físico do imóvel
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Dados técnicos observados em campo. Alimenta a futura avaliação
+                técnica, nota do patrimônio, posicionamento e estratégia.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                {[
+                  { label: 'Topografia', name: 'topography', type: 'select', options: ['Plana', 'Aclive', 'Declive', 'Irregular', 'Não avaliado'] },
+                  { label: 'Solo / implantação', name: 'soil_condition', type: 'select', options: ['Aparentemente estável', 'Exige atenção', 'Risco aparente', 'Não avaliado'] },
+                  { label: 'Padrão construtivo', name: 'construction_standard', type: 'select', options: ['Popular', 'Médio baixo', 'Médio', 'Médio elevado', 'Alto padrão', 'Luxo', 'Não avaliado'] },
+                  { label: 'Acabamento', name: 'finishing_quality', type: 'select', options: ['Simples', 'Bom', 'Muito bom', 'Premium', 'Precisa revisão'] },
+                  { label: 'Conservação geral', name: 'general_conservation_status', type: 'select', options: ['Boa', 'Regular', 'Precisa revisão', 'Crítica', 'Não avaliado'] },
+                  { label: 'Risco estrutural aparente', name: 'structural_risk_perception', type: 'select', options: ['Baixo', 'Médio', 'Alto', 'Não identificado', 'Precisa especialista'] },
+                ].map((field) => (
+                  <label
+                    key={field.name}
+                    style={{
+                      display: 'grid',
+                      gap: 6,
+                      fontSize: 13,
+                      color: '#344054',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {field.label}
+                    <select
+                      name={field.name}
+                      defaultValue=""
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 10,
+                        padding: '10px 11px',
+                        background: '#fff',
+                        color: '#111827',
+                      }}
+                    >
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                    fontSize: 13,
+                    color: '#344054',
+                    fontWeight: 800,
+                    gridColumn: '1 / -1',
+                  }}
+                >
+                  Observações técnicas do imóvel
+                  <textarea
+                    name="technical_notes"
+                    rows={4}
+                    placeholder="Descreva pontos relevantes sobre estrutura, conservação, acabamento, manutenção, pontos fortes e pontos de atenção."
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '10px 11px',
+                      background: '#fff',
+                      color: '#111827',
+                      resize: 'vertical',
+                    }}
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                2. Fotos públicas e evidências
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Avaliação das imagens que vão sustentar o anúncio público. Fotos
+                técnicas privadas devem ficar separadas depois.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Foto de capa definida?
+                  <select name="cover_photo_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="yes">Sim</option>
+                    <option value="no">Não</option>
+                    <option value="needs_review">Precisa revisão</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Quantidade estimada de fotos úteis
+                  <input name="usable_photos_count" type="number" min="0" placeholder="Ex.: 18" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Qualidade geral das fotos
+                  <select name="photo_quality" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="poor">Ruim</option>
+                    <option value="regular">Regular</option>
+                    <option value="good">Boa</option>
+                    <option value="excellent">Excelente</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Ambientes faltantes
+                  <input name="missing_photo_rooms" placeholder="Ex.: fachada, suíte, área gourmet" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Observações sobre fotos e evidências
+                  <textarea name="photo_notes" rows={3} placeholder="Indique se precisa voltar ao local, refazer fotos, melhorar capa ou coletar imagens específicas." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+              </div>
+            </section>
+
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                3. Localização, entorno e percepção comercial
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Informações que podem ser observadas no local ou complementadas
+                depois por pesquisa.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Tipo de localização
+                  <select name="location_profile" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="urban">Urbana</option>
+                    <option value="condominium">Condomínio</option>
+                    <option value="rural">Rural</option>
+                    <option value="commercial_axis">Eixo comercial</option>
+                    <option value="mixed">Mista</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Acesso
+                  <select name="access_quality" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="easy">Fácil</option>
+                    <option value="regular">Regular</option>
+                    <option value="difficult">Difícil</option>
+                    <option value="needs_explanation">Precisa orientação</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Atratividade da região
+                  <select name="region_attractiveness" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="low">Baixa</option>
+                    <option value="medium">Média</option>
+                    <option value="high">Alta</option>
+                    <option value="premium">Muito alta</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Pontos fortes do entorno
+                  <textarea name="surrounding_strengths" rows={3} placeholder="Ex.: escolas, mercado, shopping, farmácia, acesso rápido, segurança, silêncio, lazer, potencial de valorização." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Pontos de atenção do entorno
+                  <textarea name="surrounding_risks" rows={3} placeholder="Ex.: ruído, acesso ruim, rua sem pavimento, comércio fraco, vizinhança sensível, distância, trânsito." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+              </div>
+            </section>
+
+            <section
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 16,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              <h3 style={{ margin: '0 0 8px' }}>
+                4. Diagnóstico documental e risco inicial
+              </h3>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                Primeira leitura documental e financeira. Pode ser preenchida pelo
+                corretor ou por apoio administrativo/documental.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                }}
+              >
+                {[
+                  { label: 'Matrícula / registro', name: 'property_registry_status', options: ['Apresentado', 'Pendente', 'Incompleto', 'Precisa revisão', 'Não se aplica'] },
+                  { label: 'Documentos do proprietário', name: 'owner_document_status', options: ['Apresentados', 'Pendentes', 'Incompletos', 'Precisa revisão'] },
+                  { label: 'IPTU / tributos', name: 'property_tax_status', options: ['Regular informado', 'Pendente', 'Débito informado', 'Não avaliado'] },
+                  { label: 'Débito de condomínio', name: 'condominium_debt_status', options: ['Sem débito informado', 'Com débito informado', 'Não informado', 'Não se aplica'] },
+                  { label: 'Nível de risco documental', name: 'documentation_risk_level', options: ['Baixo', 'Médio', 'Alto', 'Crítico', 'Não avaliado'] },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Recomendação documental / financeira
+                  <textarea name="documentation_recommendation" rows={4} placeholder="Descreva o que precisa validar antes de publicar, negociar, propor preço ou apresentar ao proprietário." style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }} />
+                </label>
+              </div>
+            </section>
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_LEVANTAMENTO_OPERATIONAL_MODULES_V1 */}
       {stepKey === 'levantamento' && isPipelineStarted && (
         <section
