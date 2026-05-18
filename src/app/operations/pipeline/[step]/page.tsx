@@ -8924,6 +8924,412 @@ export default function PipelineStepPage() {
         </section>
       )}
 
+
+      {/* PIPELINE_PUBLICACAO_EXECUTABLE_CHECKLIST_V1 */}
+      {stepKey === 'publicacao' && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Esta é a etapa executável de Publicação.
+            - Ela transforma proposta aprovada em anúncio público/operacional.
+            - Ainda não salva no banco.
+            - Futuramente deve atualizar property_listings:
+              title, description_text, description_html, price, status,
+              published_at, visibility_scope, media readiness e distribution metadata.
+            - Não expor dados internos:
+              preço mínimo, notas privadas, riscos sensíveis, perfil do proprietário,
+              estratégia confidencial, documentação e observações internas.
+            - Publicação deve notificar equipe/corretores e liberar checkup/dossiê conforme regra.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#16a34a',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Checklist executável da Publicação
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Transformar proposta aprovada em anúncio publicado
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 980,
+                }}
+              >
+                Esta etapa prepara o anúncio público, valida fotos, preço, descrição,
+                canais, visibilidade e libera a publicação para equipe, marketplace e
+                distribuição futura.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#16a34a',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              publicação
+            </span>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #bbf7d0',
+              borderRadius: 14,
+              padding: 14,
+              background: '#f0fdf4',
+              marginBottom: 14,
+            }}
+          >
+            <strong style={{ display: 'block', marginBottom: 6 }}>
+              Regra de liberação
+            </strong>
+            <p style={{ margin: 0, color: '#667085', lineHeight: 1.5 }}>
+              A publicação só deve liberar quando a proposta estiver aprovada ou
+              aprovada com ressalvas, as fotos públicas estiverem adequadas e não
+              houver bloqueio crítico em diagnóstico/documentação.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gap: 14 }}>
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#0f766e', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    1 / Aprovação
+                  </span>
+                  <h3 style={{ margin: 0 }}>Conferir aprovação da proposta</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Status da proposta
+                  <select name="publication_proposal_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="approved">Aprovada</option>
+                    <option value="approved_with_reservations">Aprovada com ressalvas</option>
+                    <option value="pending_owner">Aguardando proprietário</option>
+                    <option value="needs_adjustment">Precisa ajuste</option>
+                    <option value="blocked">Bloqueada</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Bloqueio crítico?
+                  <select name="publication_critical_blocker" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="no">Não</option>
+                    <option value="documents">Sim, documentação</option>
+                    <option value="owner">Sim, proprietário/autorização</option>
+                    <option value="price">Sim, preço</option>
+                    <option value="photos">Sim, fotos</option>
+                    <option value="risk">Sim, risco</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Observações de aprovação
+                  <textarea
+                    name="publication_approval_notes"
+                    rows={3}
+                    placeholder="Registre ressalvas, aprovações, pendências finais ou motivo de bloqueio."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#2563eb', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    2 / Anúncio público
+                  </span>
+                  <h3 style={{ margin: 0 }}>Preparar título público e descrição</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Título público do anúncio
+                  <input
+                    name="publication_public_title"
+                    placeholder="Ex.: Casa térrea em condomínio com área gourmet e lazer completo"
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}
+                  />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Descrição pública
+                  <textarea
+                    name="publication_public_description"
+                    rows={6}
+                    placeholder="Descrição comercial limpa, sem notas privadas, riscos sensíveis, preço mínimo interno ou estratégia confidencial."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Status da revisão do texto
+                  <select name="publication_text_review_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="draft">Rascunho</option>
+                    <option value="ready">Pronto</option>
+                    <option value="needs_review">Precisa revisão</option>
+                    <option value="blocked_sensitive_info">Bloqueado por informação sensível</option>
+                  </select>
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#f59e0b', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    3 / Fotos públicas
+                  </span>
+                  <h3 style={{ margin: 0 }}>Validar fotos públicas</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Foto de capa
+                  <select name="publication_cover_photo_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="ready">Pronta</option>
+                    <option value="missing">Faltando</option>
+                    <option value="needs_review">Precisa revisão</option>
+                    <option value="blocked">Bloqueada</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Quantidade de fotos públicas
+                  <input name="publication_public_photos_count" placeholder="Ex.: 22" inputMode="numeric" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Qualidade visual
+                  <select name="publication_photo_quality_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="excellent">Excelente</option>
+                    <option value="good">Boa</option>
+                    <option value="regular">Regular</option>
+                    <option value="poor">Ruim</option>
+                    <option value="needs_new_photos">Precisa novas fotos</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Observações sobre fotos públicas
+                  <textarea
+                    name="publication_photo_notes"
+                    rows={3}
+                    placeholder="Ambientes faltantes, foto de capa, fotos que não devem ir ao anúncio, necessidade de nova visita."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#16a34a', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    4 / Preço publicado
+                  </span>
+                  <h3 style={{ margin: 0 }}>Definir preço publicado e condição comercial</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Preço publicado
+                  <input name="publication_price" placeholder="Ex.: 790000" inputMode="numeric" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Finalidade
+                  <select name="publication_purpose" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="sale">Venda</option>
+                    <option value="rent">Locação</option>
+                    <option value="lease">Arrendamento</option>
+                    <option value="seasonal">Temporada</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Aceita proposta?
+                  <select name="publication_accepts_offer" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="yes">Sim</option>
+                    <option value="no">Não</option>
+                    <option value="depends">Depende da proposta</option>
+                    <option value="not_disclosed">Não divulgar</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Financiamento
+                  <select name="publication_financing_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="accepts">Aceita financiamento</option>
+                    <option value="does_not_accept">Não aceita</option>
+                    <option value="to_confirm">A confirmar</option>
+                    <option value="not_disclosed">Não divulgar</option>
+                  </select>
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#7c3aed', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    5 / Canais e destaque
+                  </span>
+                  <h3 style={{ margin: 0 }}>Definir visibilidade, canais e destaque</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Visibilidade
+                  <select name="publication_visibility_scope" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="marketplace">Marketplace público</option>
+                    <option value="agency_only">Somente imobiliária</option>
+                    <option value="partners">Parceiros autorizados</option>
+                    <option value="private">Privado</option>
+                    <option value="draft">Rascunho</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Canal principal
+                  <select name="publication_primary_channel" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="marketplace">Marketplace</option>
+                    <option value="agency_network">Rede da imobiliária</option>
+                    <option value="brokers">Corretores internos</option>
+                    <option value="social">Redes sociais</option>
+                    <option value="partners">Parceiros</option>
+                    <option value="premium">Campanha premium</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Destaque inicial
+                  <select name="publication_initial_boost" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="none">Sem destaque</option>
+                    <option value="3_days">Destaque 3 dias</option>
+                    <option value="7_days">Destaque 7 dias</option>
+                    <option value="premium">Premium</option>
+                    <option value="manual">Definir manualmente</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Notificar equipe?
+                  <select name="publication_notify_team" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="yes">Sim</option>
+                    <option value="no">Não</option>
+                    <option value="only_responsible">Somente responsáveis</option>
+                    <option value="after_review">Depois da revisão</option>
+                  </select>
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#111827', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    6 / Publicar
+                  </span>
+                  <h3 style={{ margin: 0 }}>Liberar publicação e notificar equipe</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Status final
+                  <select name="publication_final_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="ready_to_publish">Pronto para publicar</option>
+                    <option value="published">Publicado</option>
+                    <option value="scheduled">Agendado</option>
+                    <option value="needs_review">Precisa revisão</option>
+                    <option value="blocked">Bloqueado</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Data/hora de publicação
+                  <input name="publication_scheduled_at" placeholder="dd/mm/aaaa hh:mm" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Parecer final de publicação
+                  <textarea
+                    name="publication_final_notes"
+                    rows={5}
+                    placeholder="Registre o que foi publicado, canais, ressalvas, notificações e próximos acompanhamentos."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_STEP_FOOTER_NAV_V1 */}
       {/*
         ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
