@@ -1287,3 +1287,54 @@ export async function getClientRelationshipById(clientRelationshipId: string) {
     .eq('id', clientRelationshipId)
     .maybeSingle()
 }
+
+
+// =========================================================
+// LISTING ACCESS CONTEXT
+// Added for Pipeline Pro attach mode.
+// Read-only helper based on audited RPCs.
+// Does not change listing, asset, portfolio, client or assessment.
+// =========================================================
+
+export async function getListingAccessContext(listingId: string) {
+  if (!listingId) {
+    return {
+      data: {
+        can_access: false,
+        can_manage: false,
+      },
+      error: null,
+    }
+  }
+
+  const [accessResponse, manageResponse] = await Promise.all([
+    supabase.rpc('can_access_listing', {
+      p_property_listing_id: listingId,
+    }),
+    supabase.rpc('can_manage_listing', {
+      p_property_listing_id: listingId,
+    }),
+  ])
+
+  if (accessResponse.error) {
+    return {
+      data: null,
+      error: accessResponse.error,
+    }
+  }
+
+  if (manageResponse.error) {
+    return {
+      data: null,
+      error: manageResponse.error,
+    }
+  }
+
+  return {
+    data: {
+      can_access: Boolean(accessResponse.data),
+      can_manage: Boolean(manageResponse.data),
+    },
+    error: null,
+  }
+}

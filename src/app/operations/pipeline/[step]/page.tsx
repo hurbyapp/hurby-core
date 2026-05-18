@@ -57,7 +57,7 @@ REGRA:
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { getPropertyListingById, getProfessionalAssessmentByListingId, getClientEntityById, getClientRelationshipById } from '@/lib/services/propertyService'
+import { getPropertyListingById, getProfessionalAssessmentByListingId, getClientEntityById, getClientRelationshipById , getListingAccessContext } from '@/lib/services/propertyService'
 
 const steps: Record<string, any> = {
   atendimento: {
@@ -190,6 +190,14 @@ export default function PipelineStepPage() {
   const [attachedClientStatus, setAttachedClientStatus] = useState('')
   const [attachedClientError, setAttachedClientError] = useState('')
 
+  // ATTACH_LISTING_PERMISSION_CONTEXT_STATE_V1
+  const [listingPermission, setListingPermission] = useState({
+    can_access: false,
+    can_manage: false,
+  })
+  const [listingPermissionStatus, setListingPermissionStatus] = useState('')
+  const [listingPermissionError, setListingPermissionError] = useState('')
+
   const stepKey = String(params.step || '')
   const step = steps[stepKey] || steps.atendimento
 
@@ -222,6 +230,12 @@ export default function PipelineStepPage() {
       setAttachedClientRelationship(null)
       setAttachedClientStatus('')
       setAttachedClientError('')
+      setListingPermission({
+        can_access: false,
+        can_manage: false,
+      })
+      setListingPermissionStatus('')
+      setListingPermissionError('')
       return
     }
 
@@ -231,9 +245,10 @@ export default function PipelineStepPage() {
       setAttachedListingStatus('Carregando anúncio existente...')
       setAttachedListingError('')
 
-      const [listingResponse, assessmentResponse] = await Promise.all([
+      const [listingResponse, assessmentResponse, permissionResponse] = await Promise.all([
         getPropertyListingById(listingId),
         getProfessionalAssessmentByListingId(listingId),
+        getListingAccessContext(listingId),
       ])
 
       if (!active) return
@@ -248,6 +263,27 @@ export default function PipelineStepPage() {
 
       setAttachedListing(listingResponse.data)
       setAttachedListingStatus('Anúncio existente carregado.')
+
+      // ATTACH_LISTING_PERMISSION_CONTEXT_FETCH_V1
+      if (permissionResponse.error || !permissionResponse.data) {
+        console.error('ATTACH LISTING PERMISSION ERROR:', permissionResponse.error)
+        setListingPermission({
+          can_access: false,
+          can_manage: false,
+        })
+        setListingPermissionStatus('')
+        setListingPermissionError('Não foi possível verificar sua permissão neste anúncio.')
+      } else {
+        setListingPermission(permissionResponse.data)
+        setListingPermissionStatus(
+          permissionResponse.data.can_manage
+            ? 'Você pode gerenciar este anúncio.'
+            : permissionResponse.data.can_access
+              ? 'Você pode consultar este anúncio, mas a edição deve ser restrita.'
+              : 'Você não possui permissão para acessar este anúncio.'
+        )
+        setListingPermissionError('')
+      }
 
       // ATTACH_ASSESSMENT_REAL_CONTEXT_FETCH_V1
       if (assessmentResponse.error) {
@@ -363,6 +399,19 @@ export default function PipelineStepPage() {
   const attachedClientRelationshipStatus =
     attachedClientRelationship?.relationship_status ||
     'Não informado'
+
+  // ATTACH_LISTING_PERMISSION_CONTEXT_DERIVED_V1
+  const permissionModeLabel = listingPermission.can_manage
+    ? 'Gestão liberada'
+    : listingPermission.can_access
+      ? 'Somente consulta'
+      : 'Sem permissão'
+
+  const permissionModeColor = listingPermission.can_manage
+    ? '#16a34a'
+    : listingPermission.can_access
+      ? '#f59e0b'
+      : '#dc2626'
 
   const formatMoney = (value: unknown) => {
     if (typeof value !== 'number') return 'Não informado'
@@ -811,6 +860,113 @@ export default function PipelineStepPage() {
         </section>
       )}
 
+
+
+      {isAttachMode && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 16,
+            background: '#fff',
+            marginBottom: 20,
+          }}
+        >
+          {/* ATTACH_LISTING_PERMISSION_CONTEXT_PANEL_V1 */}
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este painel mostra permissao real baseada em can_access_listing/can_manage_listing.
+            - Nao substitui RLS.
+            - Nao salva nada.
+            - Nao altera permissao no banco.
+            - Futuramente deve controlar edicao por modulo, participante convidado,
+              responsavel principal, responsavel por modulo e supervisao da agencia.
+            - Se can_manage=false e can_access=true, a tela deve tender a modo consulta.
+            - Se can_access=false, futuramente deve bloquear detalhes confidenciais.
+          */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              marginBottom: 12,
+            }}
+          >
+            <div>
+              <strong>Permissão real neste anúncio</strong>
+              <p style={{ margin: '4px 0 0', color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                {listingPermissionError ||
+                  listingPermissionStatus ||
+                  'Verificando permissão com base nas regras do banco.'}
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: permissionModeColor,
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 800,
+              }}
+            >
+              {permissionModeLabel}
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gap: 10,
+            }}
+          >
+            {[
+              {
+                label: 'Pode acessar',
+                value: listingPermission.can_access ? 'Sim' : 'Não',
+              },
+              {
+                label: 'Pode gerenciar',
+                value: listingPermission.can_manage ? 'Sim' : 'Não',
+              },
+              {
+                label: 'Modo recomendado',
+                value: listingPermission.can_manage
+                  ? 'Edição/gestão'
+                  : listingPermission.can_access
+                    ? 'Consulta supervisionada'
+                    : 'Bloqueio futuro',
+              },
+              {
+                label: 'Base da regra',
+                value: 'can_access_listing / can_manage_listing',
+              },
+            ].map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 12,
+                  padding: 10,
+                  background: '#f8fafc',
+                }}
+              >
+                <strong style={{ display: 'block', fontSize: 12 }}>
+                  {item.label}
+                </strong>
+                <span style={{ color: '#667085', fontSize: 13, wordBreak: 'break-word' }}>
+                  {item.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {isAttachMode && (
         <section
