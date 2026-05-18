@@ -7658,6 +7658,415 @@ export default function PipelineStepPage() {
       )}
 
 
+
+      {/* PIPELINE_INTELIGENCIA_EXECUTABLE_CHECKLIST_V1 */}
+      {stepKey === 'inteligencia' && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este é o modelo correto da Inteligência: checklist executável.
+            - Não é ficha solta, nem bloco conceitual.
+            - A inteligência consome levantamento + diagnóstico + proprietário + mercado.
+            - Ainda não salva no banco.
+            - Futuramente deve alimentar:
+              commercial_assessment
+              public_summary
+              owner_visibility_summary
+              partner_visibility_summary
+              private_notes
+              metadata.strategy
+            - Esta etapa só deve liberar se houver maturidade mínima ou encerramento justificado.
+            - Estratégia não pode nascer com dado fraco sem sinalizar confiança/risco.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#7c3aed',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Checklist executável da Inteligência
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Transformar dados em preço, estratégia, narrativa e plano de ação
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 980,
+                }}
+              >
+                Esta etapa não coleta vistoria. Ela interpreta o que já foi levantado
+                e define como o imóvel será posicionado, precificado, apresentado ao
+                proprietário e distribuído para venda.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#7c3aed',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              cérebro do pipeline
+            </span>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #f59e0b',
+              borderRadius: 14,
+              padding: 14,
+              background: '#fffbeb',
+              marginBottom: 14,
+            }}
+          >
+            <strong style={{ display: 'block', marginBottom: 6 }}>
+              Trava de qualidade
+            </strong>
+            <p style={{ margin: 0, color: '#667085', lineHeight: 1.5 }}>
+              No workflow real, esta etapa deve depender da maturidade do Levantamento
+              e do Diagnóstico. Se dados essenciais estiverem fracos, a inteligência
+              pode até gerar rascunho, mas precisa marcar baixa confiança ou bloquear
+              proposta/publicação.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gap: 14 }}>
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#475467', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    1 / Maturidade
+                  </span>
+                  <h3 style={{ margin: 0 }}>Consolidar maturidade mínima dos dados</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  {
+                    label: 'Maturidade do levantamento',
+                    name: 'intelligence_levantamento_maturity',
+                    options: ['Abaixo do mínimo', 'Mínima aceitável', 'Boa', 'Forte', 'Encerrado com justificativa'],
+                  },
+                  {
+                    label: 'Maturidade do diagnóstico',
+                    name: 'intelligence_diagnostico_maturity',
+                    options: ['Abaixo do mínimo', 'Mínima aceitável', 'Boa', 'Forte', 'Encerrado com justificativa'],
+                  },
+                  {
+                    label: 'Risco impeditivo?',
+                    name: 'intelligence_blocking_risk',
+                    options: ['Não identificado', 'Risco baixo', 'Risco médio', 'Risco alto', 'Bloqueia estratégia'],
+                  },
+                  {
+                    label: 'Nível de confiança geral',
+                    name: 'intelligence_confidence_level',
+                    options: ['Baixo', 'Médio', 'Alto', 'Precisa mais dados', 'Não avaliado'],
+                  },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Parecer sobre qualidade dos dados
+                  <textarea
+                    name="intelligence_data_quality_notes"
+                    rows={3}
+                    placeholder="Explique se os dados são suficientes para gerar estratégia ou se falta vistoria, documento, fotos, preço ou validação."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#16a34a', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    2 / Preço
+                  </span>
+                  <h3 style={{ margin: 0 }}>Definir preço, faixa e agressividade</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Preço pedido pelo proprietário
+                  <input name="intelligence_owner_requested_price" placeholder="Ex.: 850000" inputMode="numeric" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Preço recomendado
+                  <input name="intelligence_recommended_price" placeholder="Ex.: 790000" inputMode="numeric" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Preço mínimo estratégico
+                  <input name="intelligence_minimum_strategy_price" placeholder="Ex.: 760000" inputMode="numeric" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Agressividade
+                  <select name="intelligence_price_aggressiveness" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="conservative">Conservadora</option>
+                    <option value="balanced">Equilibrada</option>
+                    <option value="aggressive">Agressiva</option>
+                    <option value="urgent">Venda urgente</option>
+                    <option value="premium">Premium</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Justificativa do preço
+                  <textarea
+                    name="intelligence_price_rationale"
+                    rows={4}
+                    placeholder="Explique preço recomendado considerando mercado, estado do imóvel, liquidez, documentação, risco, proprietário e concorrência."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#2563eb', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    3 / Posicionamento
+                  </span>
+                  <h3 style={{ margin: 0 }}>Definir posicionamento do imóvel</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Posicionamento recomendado
+                  <select name="intelligence_positioning" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="standard">Mercado padrão</option>
+                    <option value="premium">Premium</option>
+                    <option value="opportunity">Oportunidade</option>
+                    <option value="investment">Investimento</option>
+                    <option value="family">Moradia familiar</option>
+                    <option value="income">Renda / locação</option>
+                    <option value="hard_sell">Difícil liquidez</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Potencial de destaque
+                  <select name="intelligence_highlight_potential" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="low">Baixo</option>
+                    <option value="medium">Médio</option>
+                    <option value="high">Alto</option>
+                    <option value="very_high">Muito alto</option>
+                    <option value="not_recommended">Não recomendado</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Narrativa estratégica
+                  <textarea
+                    name="intelligence_strategic_narrative"
+                    rows={4}
+                    placeholder="Defina como o imóvel deve ser contado: diferencial principal, emoção, oportunidade, objeções e argumento central."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#0f766e', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    4 / Público e canais
+                  </span>
+                  <h3 style={{ margin: 0 }}>Definir público-alvo e canais de distribuição</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Público-alvo principal
+                  <input name="intelligence_target_audience" placeholder="Ex.: família, investidor, casal jovem, alto padrão, temporada" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Perfil de uso
+                  <select name="intelligence_use_profile" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="family">Moradia familiar</option>
+                    <option value="investment">Investimento</option>
+                    <option value="rental">Locação tradicional</option>
+                    <option value="short_term">Airbnb / temporada</option>
+                    <option value="elderly">Terceira idade</option>
+                    <option value="pcd">PCD / acessibilidade</option>
+                    <option value="commercial">Comercial</option>
+                    <option value="mixed">Misto</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Canal inicial recomendado
+                  <select name="intelligence_primary_channel" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="marketplace">Marketplace</option>
+                    <option value="agency_network">Rede da imobiliária</option>
+                    <option value="social_media">Redes sociais</option>
+                    <option value="brokers">Corretores internos</option>
+                    <option value="partners">Parceiros</option>
+                    <option value="premium_campaign">Campanha premium</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Tipo de campanha
+                  <select name="intelligence_campaign_type" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="standard">Padrão</option>
+                    <option value="launch">Lançamento interno</option>
+                    <option value="premium">Premium</option>
+                    <option value="opportunity">Oportunidade</option>
+                    <option value="silent">Discreta / seletiva</option>
+                  </select>
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#f59e0b', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    5 / Script
+                  </span>
+                  <h3 style={{ margin: 0 }}>Gerar script comercial para equipe</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Script para corretores
+                  <textarea
+                    name="intelligence_broker_script"
+                    rows={4}
+                    placeholder="Como o corretor deve oferecer o imóvel? Qual abertura, diferencial, público e objeção principal?"
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Argumentação para o proprietário
+                  <textarea
+                    name="intelligence_owner_argument"
+                    rows={4}
+                    placeholder="Como defender preço, ajustes, fotos, estratégia e prazo para o proprietário?"
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#111827', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    6 / Plano e liberação
+                  </span>
+                  <h3 style={{ margin: 0 }}>Fechar plano de ação e liberar para proposta</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Status da estratégia
+                  <select name="intelligence_strategy_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="draft">Rascunho</option>
+                    <option value="ready">Pronta para proposta</option>
+                    <option value="needs_review">Precisa revisão</option>
+                    <option value="blocked">Bloqueada</option>
+                    <option value="waiting_data">Aguardando dados</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Próxima etapa recomendada
+                  <select name="intelligence_next_step" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="owner_proposal">Gerar proposta ao proprietário</option>
+                    <option value="align_price">Alinhar preço</option>
+                    <option value="review_photos">Revisar fotos</option>
+                    <option value="resolve_documents">Resolver documentação</option>
+                    <option value="publish">Seguir para publicação</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Plano de ação antes da proposta/publicação
+                  <textarea
+                    name="intelligence_action_plan"
+                    rows={5}
+                    placeholder="Liste o que precisa acontecer: revisar preço, pedir documentos, refazer fotos, alinhar proprietário, preparar anúncio, campanha ou proposta."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_INTELIGENCIA_REAL_FIELDS_V1 */}
       {stepKey === 'inteligencia' && (
         <section
