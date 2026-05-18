@@ -862,6 +862,216 @@ export default function PipelineStepPage() {
             marginBottom: 20,
           }}
         >
+
+          {/* PIPELINE_ATTACH_IDENTITY_FOUNDATION_V1 */}
+          {isAttachMode && stepKey === 'atendimento' && (
+            <section
+              style={{
+                border: '1px solid #dbe3ea',
+                borderRadius: 18,
+                padding: 18,
+                background: '#fff',
+                marginBottom: 18,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  flexWrap: 'wrap',
+                  alignItems: 'flex-start',
+                  marginBottom: 14,
+                }}
+              >
+                <div>
+                  <p
+                    style={{
+                      margin: '0 0 6px',
+                      fontSize: 13,
+                      color: '#2563eb',
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.8,
+                      fontWeight: 900,
+                    }}
+                  >
+                    Identidade operacional
+                  </p>
+
+                  <h2 style={{ margin: '0 0 6px' }}>
+                    Imóvel e anúncio precisam ser tratados separadamente
+                  </h2>
+
+                  <p
+                    style={{
+                      margin: 0,
+                      color: '#667085',
+                      lineHeight: 1.5,
+                      maxWidth: 920,
+                    }}
+                  >
+                    Este anúncio já existe e está sendo acoplado ao Pipeline Pro.
+                    O próximo backend deverá separar o nome interno do imóvel, o
+                    nome interno da peça de anúncio, o código do imóvel e o código
+                    do anúncio.
+                  </p>
+                </div>
+
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    borderRadius: 999,
+                    padding: '6px 10px',
+                    background: '#2563eb',
+                    color: '#fff',
+                    fontSize: 12,
+                    fontWeight: 900,
+                  }}
+                >
+                  foundation
+                </span>
+              </div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                  gap: 12,
+                }}
+              >
+                <article
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 14,
+                    padding: 14,
+                    background: '#f8fafc',
+                  }}
+                >
+                  <strong style={{ display: 'block', marginBottom: 8 }}>
+                    Imóvel / patrimônio
+                  </strong>
+
+                  <div style={{ display: 'grid', gap: 8 }}>
+                    <div
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 12,
+                        padding: 10,
+                        background: '#fff',
+                      }}
+                    >
+                      <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                        Campo futuro
+                      </span>
+                      <strong style={{ display: 'block', fontSize: 13, marginTop: 3 }}>
+                        property_assets.internal_name
+                      </strong>
+                      <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                        Exemplo: Florais - Hélio. Nome interno para equipe,
+                        carteira, atendimento e Pipeline Pro.
+                      </p>
+                    </div>
+
+                    <div
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 12,
+                        padding: 10,
+                        background: '#fff',
+                      }}
+                    >
+                      <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                        Código futuro
+                      </span>
+                      <strong style={{ display: 'block', fontSize: 13, marginTop: 3 }}>
+                        property_assets.property_reference_code
+                      </strong>
+                      <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                        Código do imóvel/patrimônio. Serve para histórico,
+                        dossiê, transferência e continuidade operacional.
+                      </p>
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 14,
+                    padding: 14,
+                    background: '#f8fafc',
+                  }}
+                >
+                  <strong style={{ display: 'block', marginBottom: 8 }}>
+                    Anúncio / publicação
+                  </strong>
+
+                  <div style={{ display: 'grid', gap: 8 }}>
+                    <div
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 12,
+                        padding: 10,
+                        background: '#fff',
+                      }}
+                    >
+                      <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                        Título público atual
+                      </span>
+                      <strong style={{ display: 'block', fontSize: 13, marginTop: 3 }}>
+                        {attachedListing?.title || 'Anúncio sem título'}
+                      </strong>
+                      <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                        Este é o title atual de property_listings, usado como
+                        título comercial/publicável.
+                      </p>
+                    </div>
+
+                    <div
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 12,
+                        padding: 10,
+                        background: '#fff',
+                      }}
+                    >
+                      <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                        Campo futuro
+                      </span>
+                      <strong style={{ display: 'block', fontSize: 13, marginTop: 3 }}>
+                        property_listings.ad_internal_name
+                      </strong>
+                      <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                        Nome interno da peça de anúncio, campanha, versão,
+                        importação ou republicação.
+                      </p>
+                    </div>
+
+                    <div
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 12,
+                        padding: 10,
+                        background: '#fff',
+                      }}
+                    >
+                      <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                        Código futuro
+                      </span>
+                      <strong style={{ display: 'block', fontSize: 13, marginTop: 3 }}>
+                        property_listings.ad_reference_code
+                      </strong>
+                      <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                        Código público/operacional do anúncio. Serve para busca,
+                        atendimento, importação e compartilhamento autorizado.
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+          )}
+
           {/* ATTACH_LISTING_PERMISSION_CONTEXT_PANEL_V1 */}
           {/*
             ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
