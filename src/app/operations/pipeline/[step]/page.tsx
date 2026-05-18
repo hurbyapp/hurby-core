@@ -370,6 +370,22 @@ export default function PipelineStepPage() {
       ? 'Dados da visita e do solicitante'
       : 'Dados do anúncio e da operação vinculada'
 
+
+  // PIPELINE_STARTED_FLOW_HYDRATION_SAFE_V2
+  const [isPipelineStarted, setIsPipelineStarted] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setIsPipelineStarted(params.get('started') === '1')
+  }, [])
+
+  // PIPELINE_STARTED_FLOW_HELPERS_V1
+
+  const buildStartedStepHref = (targetStep: string) => {
+    const href = buildStepHref(targetStep)
+    return href.includes('?') ? `${href}&started=1` : `${href}?started=1`
+  }
+
   // PIPELINE_PREV_NEXT_CONTEXT_V1
   const stepDefinition = getPipelineStepDefinition(stepKey)
   const previousStep = getPreviousPipelineStep(stepKey)
@@ -3704,6 +3720,59 @@ export default function PipelineStepPage() {
         </section>
       )}
 
+
+          {/* PIPELINE_ATENDIMENTO_START_TO_LEVANTAMENTO_CTA_V1 */}
+          {stepKey === 'atendimento' && (
+            <section
+              style={{
+                border: '1px solid #2563eb',
+                borderRadius: 18,
+                padding: 18,
+                background: '#eff6ff',
+                marginBottom: 18,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <strong style={{ display: 'block', fontSize: 16 }}>
+                    Chegou no local ou iniciou formalmente o atendimento?
+                  </strong>
+
+                  <p style={{ margin: '6px 0 0', color: '#667085', lineHeight: 1.5 }}>
+                    Ao marcar como iniciado, o sistema libera a etapa de levantamento
+                    patrimonial. No backend futuro, este clique deverá gravar started_at,
+                    abrir o SLA do levantamento e gerar evento auditável.
+                  </p>
+                </div>
+
+                <a
+                  href={buildStartedStepHref('levantamento')}
+                  style={{
+                    display: 'inline-flex',
+                    padding: '11px 14px',
+                    borderRadius: 10,
+                    border: '1px solid #2563eb',
+                    background: '#2563eb',
+                    color: '#fff',
+                    textDecoration: 'none',
+                    fontWeight: 900,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Marcar como iniciado
+                </a>
+              </div>
+            </section>
+          )}
+
       {/* PIPELINE_ATENDIMENTO_OPERATIONAL_INTAKE_V1 */}
       {stepKey === 'atendimento' && (
         <section
@@ -4034,6 +4103,288 @@ export default function PipelineStepPage() {
               </a>
             </div>
           </div>
+        </section>
+      )}
+
+
+      {/* PIPELINE_LEVANTAMENTO_STARTED_GATE_V1 */}
+      {stepKey === 'levantamento' && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Levantamento patrimonial só deve ser liberado após started_at.
+            - Nesta foundation usamos ?started=1 apenas como simulação visual.
+            - Backend futuro deve validar started_at no workflow real.
+            - Não liberar edição de módulos sem permissão/responsabilidade.
+            - Cada módulo deverá ter status, responsável, progresso, "não se aplica" e autosave.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: isPipelineStarted ? '#16a34a' : '#dc2626',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                {isPipelineStarted ? 'Levantamento liberado' : 'Levantamento bloqueado'}
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Levantamento patrimonial
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 940,
+                }}
+              >
+                Esta etapa organiza a coleta em campo: imóvel, fotos, entorno,
+                infraestrutura, documentação inicial, percepção comercial e evidências.
+                Ela só deve abrir depois que o atendimento for iniciado.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: isPipelineStarted ? '#16a34a' : '#dc2626',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              {isPipelineStarted ? 'started=1' : 'aguardando início'}
+            </span>
+          </div>
+
+          {!isPipelineStarted && (
+            <div
+              style={{
+                border: '1px solid #fecaca',
+                borderRadius: 14,
+                padding: 14,
+                background: '#fef2f2',
+                marginBottom: 14,
+              }}
+            >
+              <strong style={{ display: 'block', marginBottom: 6 }}>
+                Esta etapa ainda não deveria ser preenchida
+              </strong>
+
+              <p style={{ margin: '0 0 12px', color: '#667085', lineHeight: 1.5 }}>
+                O correto é voltar ao Atendimento e marcar a tarefa como iniciada
+                apenas quando o profissional chegou ao local ou iniciou formalmente
+                a vistoria. Isso dispara o prazo operacional do levantamento.
+              </p>
+
+              <a
+                href={buildStepHref('atendimento')}
+                style={{
+                  display: 'inline-flex',
+                  padding: '9px 12px',
+                  borderRadius: 10,
+                  border: '1px solid #dc2626',
+                  background: '#dc2626',
+                  color: '#fff',
+                  textDecoration: 'none',
+                  fontWeight: 900,
+                }}
+              >
+                Voltar para atendimento
+              </a>
+            </div>
+          )}
+
+          {isPipelineStarted && (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: 12,
+              }}
+            >
+              {[
+                {
+                  title: '1. Dados básicos do patrimônio',
+                  progress: '0%',
+                  owner: 'Corretor responsável',
+                  detail: 'Tipo, padrão, composição, áreas, quartos, suítes, vagas e características principais.',
+                },
+                {
+                  title: '2. Fotos e evidências',
+                  progress: '0%',
+                  owner: 'Corretor responsável',
+                  detail: 'Fotos selecionadas, qualidade, quantidade, capa, ambientes, fachada, entorno e registros técnicos.',
+                },
+                {
+                  title: '3. Localização e entorno',
+                  progress: '0%',
+                  owner: 'Corretor ou apoio',
+                  detail: 'Endereço, condomínio, bairro, referências, acesso, comércio próximo, ruído, vizinhança e percepção.',
+                },
+                {
+                  title: '4. Conservação e riscos visíveis',
+                  progress: '0%',
+                  owner: 'Corretor responsável',
+                  detail: 'Estado geral, manutenção, infiltração, acabamento, estrutura aparente e pontos de atenção.',
+                },
+                {
+                  title: '5. Documentos iniciais',
+                  progress: '0%',
+                  owner: 'Apoio documental',
+                  detail: 'Matrícula, IPTU, autorização, documentos do proprietário e pendências preliminares.',
+                },
+                {
+                  title: '6. Notas de campo',
+                  progress: '0%',
+                  owner: 'Corretor responsável',
+                  detail: 'Percepção do proprietário, urgência, flexibilidade, motivação, diferenciais e observações estratégicas.',
+                },
+              ].map((module) => (
+                <article
+                  key={module.title}
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 14,
+                    padding: 14,
+                    background: '#f8fafc',
+                  }}
+                >
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      borderRadius: 999,
+                      padding: '4px 8px',
+                      background: '#2563eb',
+                      color: '#fff',
+                      fontSize: 11,
+                      fontWeight: 900,
+                      marginBottom: 10,
+                    }}
+                  >
+                    liberado
+                  </span>
+
+                  <strong style={{ display: 'block', fontSize: 14 }}>
+                    {module.title}
+                  </strong>
+
+                  <p style={{ margin: '7px 0', color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                    {module.detail}
+                  </p>
+
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: 8,
+                      marginTop: 10,
+                    }}
+                  >
+                    <div
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 10,
+                        padding: 9,
+                        background: '#fff',
+                      }}
+                    >
+                      <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                        Progresso
+                      </span>
+                      <strong style={{ display: 'block', fontSize: 12, marginTop: 3 }}>
+                        {module.progress}
+                      </strong>
+                    </div>
+
+                    <div
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 10,
+                        padding: 9,
+                        background: '#fff',
+                      }}
+                    >
+                      <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                        Responsável
+                      </span>
+                      <strong style={{ display: 'block', fontSize: 12, marginTop: 3 }}>
+                        {module.owner}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 8,
+                      flexWrap: 'wrap',
+                      marginTop: 10,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 10,
+                        padding: '8px 10px',
+                        background: '#fff',
+                        color: '#344054',
+                        fontWeight: 800,
+                        fontSize: 12,
+                        cursor: 'default',
+                      }}
+                    >
+                      Preencher módulo
+                    </button>
+
+                    <button
+                      type="button"
+                      style={{
+                        border: '1px solid #d7dee8',
+                        borderRadius: 10,
+                        padding: '8px 10px',
+                        background: '#fff',
+                        color: '#344054',
+                        fontWeight: 800,
+                        fontSize: 12,
+                        cursor: 'default',
+                      }}
+                    >
+                      Não se aplica
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       )}
 
