@@ -395,6 +395,13 @@ export default function PipelinePage() {
   const [realListingCandidatesStatus, setRealListingCandidatesStatus] = useState('')
   const [realListingCandidatesError, setRealListingCandidatesError] = useState('')
 
+  // PIPELINE_CENTRAL_REAL_FILTERS_STATE_V1
+  const [realListingSearch, setRealListingSearch] = useState('')
+  const [realListingFilter, setRealListingFilter] = useState('all')
+
+  // PIPELINE_CENTRAL_REAL_PAGINATION_STATE_V1
+  const [realListingPage, setRealListingPage] = useState(1)
+
   // PIPELINE_CENTRAL_REAL_LISTINGS_FETCH_V1
   useEffect(() => {
     let active = true
@@ -429,6 +436,83 @@ export default function PipelinePage() {
       active = false
     }
   }, [])
+
+  // PIPELINE_CENTRAL_REAL_DERIVED_DATA_V1
+  const filteredRealListingCandidates = realListingCandidates.filter((listing) => {
+    const query = realListingSearch.trim().toLowerCase()
+
+    const title = String(listing.title || '').toLowerCase()
+    const source = String(listing.metadata?.source || listing.metadata?.flow || '').toLowerCase()
+    const visibility = String(listing.visibility_scope || '').toLowerCase()
+
+    const matchesSearch =
+      !query ||
+      title.includes(query) ||
+      source.includes(query) ||
+      visibility.includes(query)
+
+    const matchesFilter =
+      realListingFilter === 'all' ||
+      (realListingFilter === 'marketplace' && visibility === 'marketplace') ||
+      (realListingFilter === 'private' && visibility === 'private') ||
+      (realListingFilter === 'published' && Boolean(listing.published_at)) ||
+      (realListingFilter === 'draft' && !listing.published_at) ||
+      (realListingFilter === 'with_price' && typeof listing.price === 'number') ||
+      (realListingFilter === 'without_price' && typeof listing.price !== 'number')
+
+    return matchesSearch && matchesFilter
+  })
+
+  const realListingsWithPrice = realListingCandidates.filter(
+    (listing) => typeof listing.price === 'number'
+  ).length
+
+  const realListingsPublished = realListingCandidates.filter(
+    (listing) => Boolean(listing.published_at)
+  ).length
+
+  const realListingsDraft = realListingCandidates.length - realListingsPublished
+
+  const pipelineCentralRealKpis = [
+    {
+      label: 'Anúncios acessíveis',
+      value: String(realListingCandidates.length),
+      detail: 'Listados por RLS para possível acoplagem',
+      color: '#2563eb',
+    },
+    {
+      label: 'Publicados',
+      value: String(realListingsPublished),
+      detail: 'Já possuem published_at',
+      color: '#16a34a',
+    },
+    {
+      label: 'Rascunho / não publicados',
+      value: String(realListingsDraft),
+      detail: 'Podem virar operação profissional antes de publicar',
+      color: '#f59e0b',
+    },
+    {
+      label: 'Com preço informado',
+      value: String(realListingsWithPrice),
+      detail: 'Base mínima para análise comercial',
+      color: '#7c3aed',
+    },
+  ]
+
+  // PIPELINE_CENTRAL_REAL_PAGINATION_DERIVED_V1
+  const realListingPageSize = 12
+  const realListingTotalPages = Math.max(
+    1,
+    Math.ceil(filteredRealListingCandidates.length / realListingPageSize)
+  )
+  const realListingSafePage = Math.min(realListingPage, realListingTotalPages)
+  const realListingStartIndex = (realListingSafePage - 1) * realListingPageSize
+  const realListingEndIndex = realListingStartIndex + realListingPageSize
+  const paginatedRealListingCandidates = filteredRealListingCandidates.slice(
+    realListingStartIndex,
+    realListingEndIndex
+  )
 
 
   return (
@@ -1312,6 +1396,247 @@ export default function PipelinePage() {
           </div>
         )}
 
+        {/* PIPELINE_CENTRAL_REAL_LISTINGS_FILTERS_V1 */}
+        <div
+          style={{
+            border: '1px solid #d7dee8',
+            borderRadius: 16,
+            padding: 14,
+            background: '#f8fafc',
+            marginBottom: 14,
+          }}
+        >
+          <strong style={{ display: 'block', marginBottom: 10 }}>
+            Busca e filtros dos anúncios reais
+          </strong>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(220px, 1fr) auto',
+              gap: 10,
+              alignItems: 'center',
+            }}
+          >
+            <input
+              value={realListingSearch}
+              onChange={(event) => {
+                setRealListingSearch(event.target.value)
+                setRealListingPage(1)
+              }}
+              placeholder="Buscar por título, origem ou visibilidade..."
+              style={{
+                width: '100%',
+                border: '1px solid #d7dee8',
+                borderRadius: 12,
+                padding: '11px 12px',
+                fontSize: 14,
+                background: '#fff',
+              }}
+            />
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '8px 11px',
+                background: '#2563eb',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {filteredRealListingCandidates.length} exibidos
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              flexWrap: 'wrap',
+              marginTop: 12,
+            }}
+          >
+            {[
+              { key: 'all', label: 'Todos' },
+              { key: 'marketplace', label: 'Marketplace' },
+              { key: 'private', label: 'Privados' },
+              { key: 'published', label: 'Publicados' },
+              { key: 'draft', label: 'Não publicados' },
+              { key: 'with_price', label: 'Com preço' },
+              { key: 'without_price', label: 'Sem preço' },
+            ].map((filter) => {
+              const active = realListingFilter === filter.key
+
+              return (
+                <button
+                  key={filter.key}
+                  type="button"
+                  onClick={() => {
+                    setRealListingFilter(filter.key)
+                    setRealListingPage(1)
+                  }}
+                  style={{
+                    border: active ? '1px solid #2563eb' : '1px solid #d7dee8',
+                    borderRadius: 999,
+                    padding: '8px 11px',
+                    background: active ? '#2563eb' : '#fff',
+                    color: active ? '#fff' : '#344054',
+                    fontWeight: 800,
+                    fontSize: 12,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {filter.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* PIPELINE_CENTRAL_REAL_KPIS_V1 */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+            gap: 10,
+            marginBottom: 14,
+          }}
+        >
+          {pipelineCentralRealKpis.map((kpi) => (
+            <article
+              key={kpi.label}
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 14,
+                padding: 12,
+                background: '#f8fafc',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  borderRadius: 999,
+                  padding: '3px 7px',
+                  background: kpi.color,
+                  color: '#fff',
+                  fontSize: 11,
+                  fontWeight: 900,
+                  marginBottom: 8,
+                }}
+              >
+                real
+              </span>
+
+              <strong style={{ display: 'block', fontSize: 22 }}>
+                {kpi.value}
+              </strong>
+
+              <span style={{ display: 'block', marginTop: 4, fontSize: 13, fontWeight: 800 }}>
+                {kpi.label}
+              </span>
+
+              <p style={{ margin: '5px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                {kpi.detail}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        {/* PIPELINE_CENTRAL_REAL_PAGINATION_CONTROLS_V1 */}
+        {filteredRealListingCandidates.length > 0 && (
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 16,
+              padding: 12,
+              background: '#f8fafc',
+              marginBottom: 14,
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'center',
+            }}
+          >
+            <div>
+              <strong style={{ display: 'block', fontSize: 13 }}>
+                Página {realListingSafePage} de {realListingTotalPages}
+              </strong>
+              <span style={{ display: 'block', color: '#667085', fontSize: 12, marginTop: 3 }}>
+                Exibindo {paginatedRealListingCandidates.length} de {filteredRealListingCandidates.length} anúncios filtrados.
+              </span>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: 8,
+                flexWrap: 'wrap',
+              }}
+            >
+              <button
+                type="button"
+                disabled={realListingSafePage <= 1}
+                onClick={() => setRealListingPage((page) => Math.max(1, page - 1))}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 10,
+                  padding: '8px 11px',
+                  background: realListingSafePage <= 1 ? '#f1f5f9' : '#fff',
+                  color: realListingSafePage <= 1 ? '#98a2b3' : '#344054',
+                  fontWeight: 800,
+                  fontSize: 12,
+                  cursor: realListingSafePage <= 1 ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Anterior
+              </button>
+
+              <button
+                type="button"
+                disabled={realListingSafePage >= realListingTotalPages}
+                onClick={() =>
+                  setRealListingPage((page) => Math.min(realListingTotalPages, page + 1))
+                }
+                style={{
+                  border: '1px solid #2563eb',
+                  borderRadius: 10,
+                  padding: '8px 11px',
+                  background: realListingSafePage >= realListingTotalPages ? '#f1f5f9' : '#2563eb',
+                  color: realListingSafePage >= realListingTotalPages ? '#98a2b3' : '#fff',
+                  fontWeight: 800,
+                  fontSize: 12,
+                  cursor: realListingSafePage >= realListingTotalPages ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Próxima
+              </button>
+            </div>
+          </div>
+        )}
+
+        {filteredRealListingCandidates.length === 0 && (
+          <div
+            style={{
+              border: '1px dashed #d7dee8',
+              borderRadius: 16,
+              padding: 22,
+              background: '#f8fafc',
+              color: '#667085',
+              marginBottom: 14,
+            }}
+          >
+            {/* PIPELINE_CENTRAL_REAL_EMPTY_STATE_V1 */}
+            <strong style={{ display: 'block', color: '#111827', marginBottom: 6 }}>
+              Nenhum anúncio encontrado com os filtros atuais
+            </strong>
+            Ajuste a busca ou remova filtros para visualizar anúncios candidatos ao Pipeline Pro.
+          </div>
+        )}
+
         <div
           style={{
             display: 'grid',
@@ -1319,7 +1644,7 @@ export default function PipelinePage() {
             gap: 12,
           }}
         >
-          {realListingCandidates.map((listing) => (
+          {paginatedRealListingCandidates.map((listing) => (
             <article
               key={listing.id}
               style={{

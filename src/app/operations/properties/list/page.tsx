@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /*
 =========================================================
@@ -15,6 +15,8 @@ REGRA DE PRODUTO:
 - Acoplar Pipeline Pro e fluxo separado.
 - Esta pagina nao deve exibir dados sensiveis da ficha.
 - Thumbnail usa fotos publicas do anuncio.
+- PROPERTY_LIST_PAGINATION_FORCE_FULL_V1:
+  pagina com 12 anuncios por pagina, numeracao de linha e paginador.
 
 CODEX:
 Pode corrigir portugues, acentuacao e comunicacao diretamente no VS Code/editor,
@@ -71,12 +73,101 @@ function MarketplaceTag({ listing }: { listing: any }) {
   )
 }
 
+function PaginationBlock({
+  page,
+  totalPages,
+  totalItems,
+  currentItems,
+  startIndex,
+  endIndex,
+  onPrevious,
+  onNext,
+}: {
+  page: number
+  totalPages: number
+  totalItems: number
+  currentItems: number
+  startIndex: number
+  endIndex: number
+  onPrevious: () => void
+  onNext: () => void
+}) {
+  return (
+    <section
+      style={{
+        border: '1px solid #d7dee8',
+        borderRadius: 16,
+        padding: 14,
+        background: '#fff',
+        marginTop: 18,
+        marginBottom: 18,
+        display: 'flex',
+        justifyContent: 'space-between',
+        gap: 12,
+        flexWrap: 'wrap',
+        alignItems: 'center',
+      }}
+    >
+      <div>
+        <strong style={{ display: 'block', fontSize: 13 }}>
+          Pagina {page} de {totalPages}
+        </strong>
+        <span style={{ display: 'block', color: '#667085', fontSize: 12, marginTop: 3 }}>
+          Exibindo {currentItems} de {totalItems} anuncios. Linhas {startIndex + 1} a{' '}
+          {Math.min(endIndex, totalItems)}.
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          disabled={page <= 1}
+          onClick={onPrevious}
+          style={{
+            border: '1px solid #d7dee8',
+            borderRadius: 10,
+            padding: '8px 11px',
+            background: page <= 1 ? '#f1f5f9' : '#fff',
+            color: page <= 1 ? '#98a2b3' : '#344054',
+            fontWeight: 800,
+            fontSize: 12,
+            cursor: page <= 1 ? 'not-allowed' : 'pointer',
+          }}
+        >
+          Anterior
+        </button>
+
+        <button
+          type="button"
+          disabled={page >= totalPages}
+          onClick={onNext}
+          style={{
+            border: '1px solid #2563eb',
+            borderRadius: 10,
+            padding: '8px 11px',
+            background: page >= totalPages ? '#f1f5f9' : '#2563eb',
+            color: page >= totalPages ? '#98a2b3' : '#fff',
+            fontWeight: 800,
+            fontSize: 12,
+            cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+          }}
+        >
+          Proxima
+        </button>
+      </div>
+    </section>
+  )
+}
+
 export default function PropertyListPage() {
   const [loading, setLoading] = useState(true)
   const [listings, setListings] = useState<any[]>([])
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({})
   const [error, setError] = useState('')
   const [status, setStatus] = useState('')
+
+  // PROPERTY_LIST_PAGINATION_FORCE_FULL_V1
+  const [propertyListPage, setPropertyListPage] = useState(1)
 
   useEffect(() => {
     const init = async () => {
@@ -141,6 +232,27 @@ export default function PropertyListPage() {
     setStatus('Saindo...')
     await supabase.auth.signOut()
     window.location.href = '/login'
+  }
+
+  const propertyListPageSize = 12
+  const propertyListTotalPages = Math.max(
+    1,
+    Math.ceil(listings.length / propertyListPageSize)
+  )
+  const propertyListSafePage = Math.min(propertyListPage, propertyListTotalPages)
+  const propertyListStartIndex = (propertyListSafePage - 1) * propertyListPageSize
+  const propertyListEndIndex = propertyListStartIndex + propertyListPageSize
+  const paginatedPropertyListings = listings.slice(
+    propertyListStartIndex,
+    propertyListEndIndex
+  )
+
+  const goPreviousPage = () => {
+    setPropertyListPage((page) => Math.max(1, page - 1))
+  }
+
+  const goNextPage = () => {
+    setPropertyListPage((page) => Math.min(propertyListTotalPages, page + 1))
   }
 
   if (loading) {
@@ -247,53 +359,8 @@ export default function PropertyListPage() {
         - Codex pode corrigir acentuação e refinar layout mantendo UTF-8.
 
         PROPERTY_LIST_BUTTON_SEMANTICS_V1
-
         PROPERTY_LIST_ATTACH_PIPELINE_ACTION_V1
-
         ACOPLAR_PIPELINE_BLUE_ACTION_V1
-        Diretriz visual:
-        - O botão Acoplar Pipeline Pro deve ter destaque visual de ação principal.
-        - Preferência atual: azul.
-        - Ele substitui a antiga ficha profissional.
-        - Não deve abrir ficha longa isolada.
-        - Deve conduzir o usuário para Pipeline Pro em modo attach quando houver listingId.
-        Ajuste de produto:
-        - O antigo botão "Acoplar Pipeline Pro" deve ser tratado como legado.
-        - O novo conceito é "Acoplar Pipeline Pro".
-        - Ao acoplar, o anúncio existente não recomeça do zero.
-        - O Pipeline Pro deve iniciar em estágio mais avançado, aproveitando dados preliminares já cadastrados no anúncio.
-        - Futuro ideal: rota com listingId/contexto, exemplo:
-          /operations/pipeline/atendimento?listingId=<id>&mode=attach
-        - Não implementar persistência sem revisar schema/service/RLS.
-
-        Semantica futura dos botoes:
-        1. Abrir Checkup:
-           Deve evoluir para Dossie/Checkup de qualidade do anuncio.
-           Avalia montagem do anuncio, dados estruturais, cliente vinculado,
-           portfolio, anuncio chaveado, fotos, dimensoes, extensoes, peso,
-           qualidade das imagens, vinculos e, quando for Anuncio Pro, tambem
-           resumo executivo, estrategia, indicadores de levantamento, documentacao
-           e conteudo consolidado do Pipeline Pro.
-
-        2. Editar anuncio:
-           Deve permanecer como edicao do anuncio publico/profissional.
-           Corrige descricao, fotos, preco, dados publicaveis, distribuicao,
-           parcerias, balcao de negocios, turbinamento com Axe, indexacao e redes.
-           Nao deve virar Pipeline Pro.
-
-        3. Acoplar Pipeline Pro:
-           Nome atual legado.
-           Deve virar "Acoplar Pipeline Pro" ou equivalente.
-           Deve iniciar o Pipeline Pro em fase mais avancada quando o anuncio
-           ja possui dados preliminares. A ficha longa isolada deve deixar de ser
-           a experiencia principal.
-
-        4. Diagnostico automatico Hurby:
-           Futuramente o Diagnostico/Risco ou Inteligencia Estrategica deve usar
-           levantamentos automaticos: media interna do ecossistema, media externa
-           quando houver integracao com portais, media do portfolio da agencia/
-           corretor, tempo medio de vida de anuncio por perfil/faixa de preco,
-           indicadores de liquidez e ferramentas internas de pesquisa de mercado.
       */}
       <section
         style={{
@@ -420,7 +487,6 @@ export default function PropertyListPage() {
 
           <div style={{ border: '1px solid #2563eb', borderRadius: 12, padding: 12, background: '#eff6ff' }}>
             <strong>Acoplar Pipeline Pro</strong>
-            {/* ACOPLAR_PIPELINE_BUTTON_VISUAL_NOTE_V1 */}
             <p style={{ marginBottom: 0, color: '#667085', fontSize: 13, lineHeight: 1.4 }}>
               Substitui a antiga Pipeline Pro. Inicia o Pipeline Pro em fase
               mais avançada quando o anúncio já possui dados preliminares.
@@ -428,8 +494,6 @@ export default function PropertyListPage() {
           </div>
         </div>
       </section>
-
-
 
       <h1>Lista de imoveis</h1>
 
@@ -447,11 +511,80 @@ export default function PropertyListPage() {
         <p>Nenhum imovel encontrado.</p>
       )}
 
-      {listings.map((listing) => {
+      {listings.length > 0 && (
+        <section
+          style={{
+            border: '2px solid #2563eb',
+            borderRadius: 16,
+            padding: 14,
+            background: '#eff6ff',
+            marginBottom: 16,
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 12,
+            flexWrap: 'wrap',
+            alignItems: 'center',
+          }}
+        >
+          <div>
+            <strong style={{ display: 'block' }}>
+              Lista paginada de imóveis
+            </strong>
+            <span style={{ display: 'block', color: '#344054', fontSize: 13, marginTop: 4 }}>
+              Exibindo 12 anúncios por página. Página {propertyListSafePage} de{' '}
+              {propertyListTotalPages}.
+            </span>
+          </div>
+
+          <span
+            style={{
+              display: 'inline-flex',
+              borderRadius: 999,
+              padding: '6px 10px',
+              background: '#2563eb',
+              color: '#fff',
+              fontSize: 12,
+              fontWeight: 900,
+            }}
+          >
+            {listings.length} anúncios encontrados
+          </span>
+        </section>
+      )}
+
+      {paginatedPropertyListings.map((listing, propertyListIndex) => {
         const thumbnailUrl = thumbnailUrls[listing.id]
+        const rowNumber = propertyListStartIndex + propertyListIndex + 1
 
         return (
           <div className="hurby-card" key={listing.id}>
+            <div
+              style={{
+                width: 76,
+                minWidth: 76,
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 999,
+                  padding: '6px 10px',
+                  background: '#111827',
+                  color: '#fff',
+                  fontSize: 12,
+                  fontWeight: 900,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Linha {rowNumber}
+              </span>
+            </div>
+
             <div className="hurby-thumb-box">
               {thumbnailUrl ? (
                 <img
@@ -518,24 +651,40 @@ export default function PropertyListPage() {
                 <Link
                   className="button-link"
                   href={`/operations/pipeline/atendimento?listingId=${listing.id}&mode=attach`}
-                 style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '8px 12px',
-                borderRadius: 8,
-                border: '1px solid #2563eb',
-                background: '#2563eb',
-                color: '#fff',
-                textDecoration: 'none',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}>Acoplar Pipeline Pro</Link>
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '8px 12px',
+                    borderRadius: 8,
+                    border: '1px solid #2563eb',
+                    background: '#2563eb',
+                    color: '#fff',
+                    textDecoration: 'none',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Acoplar Pipeline Pro
+                </Link>
               </p>
             </div>
           </div>
         )
       })}
+
+      {listings.length > 0 && (
+        <PaginationBlock
+          page={propertyListSafePage}
+          totalPages={propertyListTotalPages}
+          totalItems={listings.length}
+          currentItems={paginatedPropertyListings.length}
+          startIndex={propertyListStartIndex}
+          endIndex={propertyListEndIndex}
+          onPrevious={goPreviousPage}
+          onNext={goNextPage}
+        />
+      )}
 
       {status && <p>{status}</p>}
 

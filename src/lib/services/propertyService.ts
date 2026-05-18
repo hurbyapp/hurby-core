@@ -1348,12 +1348,90 @@ export async function getListingAccessContext(listingId: string) {
 // =========================================================
 
 export async function getPipelineCentralListingCandidates() {
-  return await supabase
-    .from('property_listings')
-    .select(
-      'id, title, price, updated_at, published_at, visibility_scope, metadata, property_asset_id, listing_status_id, property_business_context_id, responsible_profile_id, created_by_profile_id'
-    )
-    .is('deleted_at', null)
-    .order('updated_at', { ascending: false })
-    .limit(12)
+  // PIPELINE_CENTRAL_OPERATIONAL_SCOPE_SECURITY_V3
+  // Regra de segurança:
+  // A Central do Pipeline Pro NÃO é vitrine pública.
+  // Ela é uma lista operacional/confidencial.
+  // Portanto, não deve listar anúncios apenas porque são marketplace/public.
+  // Deve listar somente anúncios/imóveis pertencentes ao profissional logado
+  // ou ao contexto operacional/portfolio/agência que ele pode acessar.
+  //
+  // Nesta etapa, enquanto não existe workflow real, usamos getPropertyListings()
+  // como base, mas aplicamos recorte conservador no client/service.
+  //
+  // Futuro obrigatório:
+  // - criar RPC própria para candidatos do Pipeline Pro;
+  // - bloquear por RLS/funções no banco;
+  // - considerar organização, portfolio, responsible_profile_id, created_by_profile_id;
+  // - não expor cliente, pipeline, dossiê ou dados sensíveis fora do contexto.
+  //
+  // Não cria workflow, não salva nada e não altera banco.
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return {
+      data: [],
+      error: null,
+    }
+  }
+
+  const response = await getPropertyListings()
+
+  if (response.error) {
+    return response
+  }
+
+  const filtered = (response.data || []).filter((listing: any) => {
+    const source = listing?.metadata?.source
+    const isMarketplace = source === 'marketplace_user_listing'
+
+    const belongsToLoggedUser =
+      listing.created_by_profile_id === user.id ||
+      listing.responsible_profile_id === user.id
+
+    // Marketplace comum só entra se for do próprio usuário logado.
+    // Marketplace de outro usuário não é candidato operacional do Pipeline Pro.
+    if (isMarketplace && !belongsToLoggedUser) {
+      return false
+    }
+
+    // Em ambiente profissional, só entra se houver pertencimento direto por enquanto.
+    // Agency/organization/portfolio será consolidado em RPC própria futura.
+    if (!belongsToLoggedUser) {
+      return false
+    }
+
+    if (listing.deleted_at) {
+      return false
+    }
+
+    if (listing.archived_at) {
+      return false
+    }
+
+    const statusLabel = String(
+      listing?.listing_status?.label ||
+      listing?.listing_status_id ||
+      ''
+    ).toLowerCase()
+
+    if (
+      statusLabel.includes('deleted') ||
+      statusLabel.includes('deletado') ||
+      statusLabel.includes('archived') ||
+      statusLabel.includes('arquivado')
+    ) {
+      return false
+    }
+
+    return true
+  })
+
+  return {
+    data: filtered.slice(0, 120),
+    error: null,
+  }
 }
