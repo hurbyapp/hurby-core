@@ -4107,6 +4107,260 @@ export default function PipelineStepPage() {
       )}
 
 
+
+      {/* PIPELINE_LEVANTAMENTO_SLA_PROGRESS_V1 */}
+      {stepKey === 'levantamento' && isPipelineStarted && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este bloco modela a camada de controle operacional do levantamento.
+            - Ainda não salva no banco.
+            - No backend futuro:
+              started_at deve disparar o SLA.
+              due_at deve considerar regra operacional, exemplo 12h após vistoria/início.
+              module_progress deve vir de property_pipeline_modules.
+              intelligence_release_status deve considerar maturidade mínima.
+            - A inteligência/proposta não deve liberar com dados ruins.
+            - Regra inicial sugerida: liberar inteligência com 60% de maturidade nos módulos essenciais
+              ou com encerramento formal justificado dos módulos impossíveis.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#2563eb',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Controle do levantamento
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                SLA, progresso e maturidade operacional
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 940,
+                }}
+              >
+                Depois que o atendimento é iniciado, o levantamento patrimonial passa
+                a ter prazo, responsáveis por módulo e critérios mínimos para liberar
+                a camada de inteligência e proposta.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#16a34a',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              em andamento
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+              gap: 10,
+              marginBottom: 14,
+            }}
+          >
+            {[
+              {
+                label: 'Prazo sugerido',
+                value: '12h após início',
+                detail: 'Conta a partir de started_at/vistoria, não da primeira ligação.',
+                color: '#f59e0b',
+              },
+              {
+                label: 'Progresso geral',
+                value: '0%',
+                detail: 'Soma ponderada dos módulos do levantamento.',
+                color: '#2563eb',
+              },
+              {
+                label: 'Módulos essenciais',
+                value: '0 de 4',
+                detail: 'Base mínima para liberar inteligência com qualidade.',
+                color: '#7c3aed',
+              },
+              {
+                label: 'Inteligência',
+                value: 'Bloqueada',
+                detail: 'Libera com maturidade mínima ou encerramento justificado.',
+                color: '#dc2626',
+              },
+            ].map((item) => (
+              <article
+                key={item.label}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 14,
+                  padding: 12,
+                  background: '#f8fafc',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    borderRadius: 999,
+                    padding: '4px 8px',
+                    background: item.color,
+                    color: '#fff',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    marginBottom: 8,
+                  }}
+                >
+                  {item.label}
+                </span>
+
+                <strong style={{ display: 'block', fontSize: 20 }}>
+                  {item.value}
+                </strong>
+
+                <p
+                  style={{
+                    margin: '6px 0 0',
+                    color: '#667085',
+                    fontSize: 12,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {item.detail}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#f8fafc',
+              marginBottom: 14,
+            }}
+          >
+            <strong style={{ display: 'block', marginBottom: 8 }}>
+              Critério de liberação da inteligência
+            </strong>
+
+            <p style={{ margin: 0, color: '#667085', lineHeight: 1.5 }}>
+              A estratégia, proposta, precificação, abordagem comercial e script de
+              divulgação não devem nascer com qualquer preenchimento fraco. A regra
+              inicial da foundation é: atingir pelo menos 60% de maturidade nos módulos
+              essenciais ou encerrar formalmente o que não pôde ser levantado por
+              impossibilidade justificada.
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: 10,
+            }}
+          >
+            {[
+              {
+                title: 'Essencial 1: imóvel',
+                status: 'pendente',
+                detail: 'Tipo, padrão, composição, áreas, estado e características principais.',
+              },
+              {
+                title: 'Essencial 2: fotos/evidências',
+                status: 'pendente',
+                detail: 'Capa, ambientes, fachada, entorno e qualidade mínima para anúncio.',
+              },
+              {
+                title: 'Essencial 3: localização',
+                status: 'pendente',
+                detail: 'Endereço, condomínio, bairro, entorno, acessos e percepção comercial.',
+              },
+              {
+                title: 'Essencial 4: risco/documentos',
+                status: 'pendente',
+                detail: 'Documentos iniciais, restrições visíveis, débitos, pendências e alertas.',
+              },
+            ].map((item) => (
+              <article
+                key={item.title}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 14,
+                  padding: 12,
+                  background: '#fff',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    borderRadius: 999,
+                    padding: '4px 8px',
+                    background: '#f59e0b',
+                    color: '#fff',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    marginBottom: 8,
+                  }}
+                >
+                  {item.status}
+                </span>
+
+                <strong style={{ display: 'block', fontSize: 13 }}>
+                  {item.title}
+                </strong>
+
+                <p
+                  style={{
+                    margin: '6px 0 0',
+                    color: '#667085',
+                    fontSize: 12,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {item.detail}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_LEVANTAMENTO_STARTED_GATE_V1 */}
       {stepKey === 'levantamento' && (
         <section
