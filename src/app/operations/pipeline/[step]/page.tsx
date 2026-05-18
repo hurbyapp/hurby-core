@@ -4361,6 +4361,388 @@ export default function PipelineStepPage() {
         </section>
       )}
 
+
+      {/* PIPELINE_LEVANTAMENTO_OPERATIONAL_MODULES_V1 */}
+      {stepKey === 'levantamento' && isPipelineStarted && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este bloco detalha os módulos operacionais do levantamento.
+            - Ainda é foundation visual/read-only.
+            - Backend futuro:
+              property_pipeline_modules
+              property_pipeline_module_tasks
+              property_pipeline_module_assignments
+              property_pipeline_events
+            - Cada módulo deve ter:
+              status, responsável, prazo, progresso, started_at, completed_at,
+              not_applicable_reason, blocked_reason e last_saved_at.
+            - Botão "Não se aplica" não pode ser burla de progresso.
+              Deve exigir justificativa quando afetar módulo essencial.
+            - Botão "Encerrar com justificativa" libera fluxo sem travar por força maior,
+              mas precisa registrar motivo e impacto.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#2563eb',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Módulos do levantamento
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Execução por responsabilidade, prazo e maturidade
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 940,
+                }}
+              >
+                O levantamento não é uma ficha única. Ele é um conjunto de módulos
+                que podem evoluir em paralelo, com responsáveis diferentes e níveis
+                próprios de maturidade. Cada módulo alimenta a futura inteligência.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#2563eb',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              foundation visual
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gap: 12,
+            }}
+          >
+            {[
+              {
+                title: 'Levantamento físico do imóvel',
+                type: 'essencial',
+                status: 'Pendente',
+                progress: '0%',
+                responsible: 'Corretor responsável',
+                deadline: 'Até 12h após início',
+                description:
+                  'Tipo, padrão construtivo, composição, metragem, cômodos, acabamento, conservação, diferenciais e limitações visíveis.',
+                unlockImpact:
+                  'Alimenta nota do patrimônio, precificação, público-alvo e script comercial.',
+              },
+              {
+                title: 'Fotos públicas e evidências de campo',
+                type: 'essencial',
+                status: 'Pendente',
+                progress: '0%',
+                responsible: 'Corretor responsável',
+                deadline: 'Durante ou logo após vistoria',
+                description:
+                  'Foto de capa, ambientes, fachada, área externa, condomínio, entorno e seleção mínima de fotos para anúncio.',
+                unlockImpact:
+                  'Alimenta qualidade do anúncio, performance visual e material de divulgação.',
+              },
+              {
+                title: 'Localização, entorno e percepção da região',
+                type: 'essencial',
+                status: 'Pendente',
+                progress: '0%',
+                responsible: 'Corretor ou apoio de pesquisa',
+                deadline: 'Até 12h após início',
+                description:
+                  'Condomínio, bairro, acesso, vizinhança, serviços próximos, ruídos, comércio, segurança percebida e atratividade.',
+                unlockImpact:
+                  'Alimenta posicionamento comercial, narrativa, tags e diferenciais de localização.',
+              },
+              {
+                title: 'Diagnóstico documental e risco inicial',
+                type: 'essencial',
+                status: 'Pendente',
+                progress: '0%',
+                responsible: 'Apoio documental / administrativo',
+                deadline: 'Pode seguir em paralelo',
+                description:
+                  'Matrícula, IPTU, débitos aparentes, autorização, titularidade, pendências, restrições e sinais de risco.',
+                unlockImpact:
+                  'Alimenta risco comercial, segurança operacional e limites da proposta.',
+              },
+              {
+                title: 'Perfil do proprietário e contexto da negociação',
+                type: 'estratégico',
+                status: 'Pendente',
+                progress: '0%',
+                responsible: 'Corretor responsável',
+                deadline: 'Durante atendimento',
+                description:
+                  'Motivação, urgência, flexibilidade, expectativa de preço, resistência, abertura para estratégia e perfil relacional.',
+                unlockImpact:
+                  'Alimenta abordagem, proposta, argumentação e gestão de expectativa.',
+              },
+              {
+                title: 'Notas internas e observações de campo',
+                type: 'apoio',
+                status: 'Pendente',
+                progress: '0%',
+                responsible: 'Participantes autorizados',
+                deadline: 'Livre durante o processo',
+                description:
+                  'Observações do corretor, contribuições de especialistas, pontos de atenção, insights e recomendações internas.',
+                unlockImpact:
+                  'Alimenta histórico operacional, dossiê interno e colaboração da equipe.',
+              },
+            ].map((module) => (
+              <article
+                key={module.title}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 16,
+                  padding: 14,
+                  background: '#f8fafc',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    flexWrap: 'wrap',
+                    alignItems: 'flex-start',
+                    marginBottom: 10,
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: 8,
+                        flexWrap: 'wrap',
+                        marginBottom: 8,
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          borderRadius: 999,
+                          padding: '4px 8px',
+                          background:
+                            module.type === 'essencial'
+                              ? '#dc2626'
+                              : module.type === 'estratégico'
+                                ? '#7c3aed'
+                                : '#475467',
+                          color: '#fff',
+                          fontSize: 11,
+                          fontWeight: 900,
+                        }}
+                      >
+                        {module.type}
+                      </span>
+
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          borderRadius: 999,
+                          padding: '4px 8px',
+                          background: '#f59e0b',
+                          color: '#fff',
+                          fontSize: 11,
+                          fontWeight: 900,
+                        }}
+                      >
+                        {module.status}
+                      </span>
+                    </div>
+
+                    <strong style={{ display: 'block', fontSize: 15 }}>
+                      {module.title}
+                    </strong>
+
+                    <p
+                      style={{
+                        margin: '7px 0 0',
+                        color: '#667085',
+                        fontSize: 13,
+                        lineHeight: 1.5,
+                        maxWidth: 920,
+                      }}
+                    >
+                      {module.description}
+                    </p>
+                  </div>
+
+                  <div
+                    style={{
+                      minWidth: 120,
+                      border: '1px solid #d7dee8',
+                      borderRadius: 12,
+                      padding: 10,
+                      background: '#fff',
+                    }}
+                  >
+                    <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                      Progresso
+                    </span>
+                    <strong style={{ display: 'block', fontSize: 22, marginTop: 3 }}>
+                      {module.progress}
+                    </strong>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+                    gap: 10,
+                    marginBottom: 12,
+                  }}
+                >
+                  <div
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 12,
+                      padding: 10,
+                      background: '#fff',
+                    }}
+                  >
+                    <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                      Responsável
+                    </span>
+                    <strong style={{ display: 'block', fontSize: 12, marginTop: 3 }}>
+                      {module.responsible}
+                    </strong>
+                  </div>
+
+                  <div
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 12,
+                      padding: 10,
+                      background: '#fff',
+                    }}
+                  >
+                    <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                      Prazo
+                    </span>
+                    <strong style={{ display: 'block', fontSize: 12, marginTop: 3 }}>
+                      {module.deadline}
+                    </strong>
+                  </div>
+
+                  <div
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 12,
+                      padding: 10,
+                      background: '#fff',
+                    }}
+                  >
+                    <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                      Impacto na inteligência
+                    </span>
+                    <strong style={{ display: 'block', fontSize: 12, marginTop: 3 }}>
+                      {module.unlockImpact}
+                    </strong>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 8,
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <button
+                    type="button"
+                    style={{
+                      border: '1px solid #2563eb',
+                      borderRadius: 10,
+                      padding: '8px 10px',
+                      background: '#2563eb',
+                      color: '#fff',
+                      fontWeight: 800,
+                      fontSize: 12,
+                      cursor: 'default',
+                    }}
+                  >
+                    Preencher módulo
+                  </button>
+
+                  <button
+                    type="button"
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 10,
+                      padding: '8px 10px',
+                      background: '#fff',
+                      color: '#344054',
+                      fontWeight: 800,
+                      fontSize: 12,
+                      cursor: 'default',
+                    }}
+                  >
+                    Não se aplica
+                  </button>
+
+                  <button
+                    type="button"
+                    style={{
+                      border: '1px solid #f59e0b',
+                      borderRadius: 10,
+                      padding: '8px 10px',
+                      background: '#fff7ed',
+                      color: '#92400e',
+                      fontWeight: 800,
+                      fontSize: 12,
+                      cursor: 'default',
+                    }}
+                  >
+                    Encerrar com justificativa
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_LEVANTAMENTO_STARTED_GATE_V1 */}
       {stepKey === 'levantamento' && (
         <section
