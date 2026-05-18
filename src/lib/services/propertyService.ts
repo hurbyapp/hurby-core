@@ -1435,3 +1435,104 @@ export async function getPipelineCentralListingCandidates() {
     error: null,
   }
 }
+
+
+// =========================================================
+// LISTING COMPOSITION CONTEXT
+// Added for Pipeline Pro attach mode.
+// Reads listing -> property_asset -> features/location/media.
+// Does not mutate listing, asset, portfolio, client or assessment.
+// =========================================================
+
+export async function getListingCompositionContext(listingId: string) {
+  if (!listingId) {
+    return {
+      data: null,
+      error: {
+        message: 'listingId não informado.',
+      },
+    }
+  }
+
+  const listingResponse = await supabase
+    .from('property_listings')
+    .select('id, title, property_asset_id, price, published_at, metadata')
+    .eq('id', listingId)
+    .maybeSingle()
+
+  if (listingResponse.error || !listingResponse.data) {
+    return {
+      data: null,
+      error: listingResponse.error || {
+        message: 'Anúncio não encontrado.',
+      },
+    }
+  }
+
+  const assetId = listingResponse.data.property_asset_id
+
+  if (!assetId) {
+    return {
+      data: {
+        listing: listingResponse.data,
+        asset: null,
+        features: null,
+        location: null,
+        media: [],
+      },
+      error: null,
+    }
+  }
+
+  const [assetResponse, featuresResponse, locationResponse, mediaResponse] =
+    await Promise.all([
+      supabase
+        .from('property_assets')
+        .select('*')
+        .eq('id', assetId)
+        .maybeSingle(),
+
+      supabase
+        .from('property_asset_features')
+        .select('*')
+        .eq('property_asset_id', assetId)
+        .maybeSingle(),
+
+      supabase
+        .from('property_asset_locations')
+        .select('*')
+        .eq('property_asset_id', assetId)
+        .maybeSingle(),
+
+      supabase
+        .from('property_listing_media')
+        .select('*')
+        .eq('property_listing_id', listingId)
+        .order('sort_order', { ascending: true }),
+    ])
+
+  const firstError =
+    assetResponse.error ||
+    featuresResponse.error ||
+    locationResponse.error ||
+    mediaResponse.error ||
+    null
+
+  if (firstError) {
+    return {
+      data: null,
+      error: firstError,
+    }
+  }
+
+  return {
+    data: {
+      listing: listingResponse.data,
+      asset: assetResponse.data || null,
+      features: featuresResponse.data || null,
+      location: locationResponse.data || null,
+      media: mediaResponse.data || [],
+    },
+    error: null,
+  }
+}

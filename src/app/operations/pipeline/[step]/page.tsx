@@ -57,7 +57,7 @@ REGRA:
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { getPropertyListingById, getProfessionalAssessmentByListingId, getClientEntityById, getClientRelationshipById , getListingAccessContext } from '@/lib/services/propertyService'
+import { getPropertyListingById, getProfessionalAssessmentByListingId, getClientEntityById, getClientRelationshipById , getListingAccessContext, getListingCompositionContext } from '@/lib/services/propertyService'
 import {
   buildPipelineStepHref,
   getNextPipelineStep,
@@ -179,6 +179,24 @@ export default function PipelineStepPage() {
   const [attachedClientError, setAttachedClientError] = useState('')
 
   // ATTACH_LISTING_PERMISSION_CONTEXT_STATE_V1
+  // PIPELINE_INHERITED_COMPOSITION_STATE_V1
+  const [listingCompositionContext, setListingCompositionContext] = useState<any>(null)
+  const [listingCompositionLoading, setListingCompositionLoading] = useState(false)
+  const [listingCompositionError, setListingCompositionError] = useState<string | null>(null)
+
+  const formatInheritedCompositionValue = (value: any) => {
+    if (value === null || value === undefined || value === '') return 'Não informado'
+    if (typeof value === 'object') {
+      if ('value' in value) return String(value.value)
+      try {
+        return JSON.stringify(value)
+      } catch {
+        return String(value)
+      }
+    }
+    return String(value)
+  }
+
   const [listingPermission, setListingPermission] = useState({
     can_access: false,
     can_manage: false,
@@ -386,7 +404,54 @@ export default function PipelineStepPage() {
     return href.includes('?') ? `${href}&started=1` : `${href}?started=1`
   }
 
-  // PIPELINE_PREV_NEXT_CONTEXT_V1
+  
+  // PIPELINE_INHERITED_COMPOSITION_FETCH_V1
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const currentListingId = params.get('listingId')
+    const currentMode = params.get('mode')
+
+    if (currentMode !== 'attach' || !currentListingId) {
+      setListingCompositionContext(null)
+      setListingCompositionError(null)
+      setListingCompositionLoading(false)
+      return
+    }
+
+    let active = true
+
+    setListingCompositionLoading(true)
+    setListingCompositionError(null)
+
+    getListingCompositionContext(currentListingId)
+      .then((response) => {
+        if (!active) return
+
+        if (response.error) {
+          setListingCompositionContext(null)
+          setListingCompositionError(response.error.message || 'Erro ao buscar composição herdada.')
+          return
+        }
+
+        setListingCompositionContext(response.data)
+      })
+      .catch((error) => {
+        if (!active) return
+
+        setListingCompositionContext(null)
+        setListingCompositionError(error?.message || 'Erro inesperado ao buscar composição herdada.')
+      })
+      .finally(() => {
+        if (!active) return
+        setListingCompositionLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+// PIPELINE_PREV_NEXT_CONTEXT_V1
   const stepDefinition = getPipelineStepDefinition(stepKey)
   const previousStep = getPreviousPipelineStep(stepKey)
   const nextStep = getNextPipelineStep(stepKey)
@@ -4304,6 +4369,90 @@ export default function PipelineStepPage() {
                     Este anúncio já possui property_asset vinculado. No backend real, quartos, suítes, banheiros,
                     vagas, áreas, andar, posição solar e demais características devem carregar automaticamente
                     para conferência do profissional.
+                  </p>
+                </div>
+              )}
+
+
+              {/* PIPELINE_INHERITED_COMPOSITION_PANEL_V1 */}
+              {isAttachMode && (
+                <div
+                  style={{
+                    border: '1px solid #bbf7d0',
+                    borderRadius: 14,
+                    padding: 12,
+                    background: '#f0fdf4',
+                    marginBottom: 12,
+                  }}
+                >
+                  <strong style={{ display: 'block', marginBottom: 6 }}>
+                    Composição herdada do anúncio/property_asset
+                  </strong>
+
+                  {listingCompositionLoading && (
+                    <p style={{ margin: 0, color: '#667085', fontSize: 13 }}>
+                      Buscando dados herdados do anúncio...
+                    </p>
+                  )}
+
+                  {!listingCompositionLoading && listingCompositionError && (
+                    <p style={{ margin: 0, color: '#dc2626', fontSize: 13 }}>
+                      {listingCompositionError}
+                    </p>
+                  )}
+
+                  {!listingCompositionLoading && !listingCompositionError && !listingCompositionContext?.features && (
+                    <p style={{ margin: 0, color: '#667085', fontSize: 13 }}>
+                      Nenhum registro encontrado em property_asset_features para este anúncio.
+                    </p>
+                  )}
+
+                  {!listingCompositionLoading && listingCompositionContext?.features && (
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+                        gap: 8,
+                        marginTop: 10,
+                      }}
+                    >
+                      {[
+                        ['Quartos', listingCompositionContext.features.bedrooms],
+                        ['Suítes', listingCompositionContext.features.suites],
+                        ['Banheiros', listingCompositionContext.features.bathrooms],
+                        ['Vagas', listingCompositionContext.features.garage_spaces],
+                        ['Área privativa', listingCompositionContext.features.private_area],
+                        ['Área total', listingCompositionContext.features.total_area],
+                        ['Andar', listingCompositionContext.features.floor_number],
+                        ['Total andares', listingCompositionContext.features.total_floors],
+                        ['Ano construção', listingCompositionContext.features.built_year],
+                        ['Elevador', listingCompositionContext.features.has_elevator === true ? 'Sim' : listingCompositionContext.features.has_elevator === false ? 'Não' : null],
+                        ['Mobiliado', listingCompositionContext.features.is_furnished === true || listingCompositionContext.features.furnished === true ? 'Sim' : listingCompositionContext.features.is_furnished === false || listingCompositionContext.features.furnished === false ? 'Não' : null],
+                        ['Posição solar', listingCompositionContext.features.sun_position],
+                      ].map(([label, value]) => (
+                        <div
+                          key={label}
+                          style={{
+                            border: '1px solid #bbf7d0',
+                            borderRadius: 10,
+                            padding: 9,
+                            background: '#fff',
+                          }}
+                        >
+                          <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                            {label}
+                          </span>
+                          <strong style={{ display: 'block', fontSize: 13, marginTop: 3 }}>
+                            {formatInheritedCompositionValue(value)}
+                          </strong>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <p style={{ margin: '10px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                    Regra operacional: dados herdados não são verdade absoluta. O profissional deve conferir,
+                    corrigir divergências e complementar o que estiver ausente.
                   </p>
                 </div>
               )}
