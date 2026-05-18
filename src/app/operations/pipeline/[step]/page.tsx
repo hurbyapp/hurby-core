@@ -343,6 +343,33 @@ export default function PipelineStepPage() {
     }
   }, [listingId, mode])
 
+
+  // PIPELINE_ATENDIMENTO_ORIGIN_CONTEXT_V1
+  const atendimentoOriginContext = isAttachMode
+    ? attachedListing?.metadata?.source === 'marketplace_user_listing'
+      ? 'marketplace_attach'
+      : 'existing_listing_attach'
+    : 'new_intake'
+
+  const atendimentoOriginLabel =
+    atendimentoOriginContext === 'marketplace_attach'
+      ? 'Marketplace / chaveamento'
+      : atendimentoOriginContext === 'existing_listing_attach'
+        ? 'Anúncio existente'
+        : 'Novo atendimento'
+
+  const atendimentoOriginDescription =
+    atendimentoOriginContext === 'marketplace_attach'
+      ? 'Pipeline iniciado a partir de anúncio do marketplace. Precisa respeitar autorização, vínculo e importação controlada.'
+      : atendimentoOriginContext === 'existing_listing_attach'
+        ? 'Pipeline acoplado a um anúncio já existente no ambiente profissional. Pode reaproveitar dados do anúncio e do imóvel vinculado.'
+        : 'Pipeline iniciado por atendimento direto, secretaria, ligação, WhatsApp, indicação ou captação nova. Precisa priorizar dados da visita.'
+
+  const atendimentoPrimaryInfoTitle =
+    atendimentoOriginContext === 'new_intake'
+      ? 'Dados da visita e do solicitante'
+      : 'Dados do anúncio e da operação vinculada'
+
   // PIPELINE_PREV_NEXT_CONTEXT_V1
   const stepDefinition = getPipelineStepDefinition(stepKey)
   const previousStep = getPreviousPipelineStep(stepKey)
@@ -3190,6 +3217,826 @@ export default function PipelineStepPage() {
           ))}
         </div>
       </section>
+
+
+      {/* PIPELINE_ATENDIMENTO_ORIGIN_PANEL_V1 */}
+      {stepKey === 'atendimento' && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO:
+            A tela de Atendimento deve se moldar conforme origem:
+            - new_intake: novo atendimento/secretaria/ligação/WhatsApp.
+            - existing_listing_attach: anúncio profissional já existente.
+            - marketplace_attach: anúncio do marketplace/chaveamento/importação.
+            Essa origem define o que aparece primeiro e quais dados são críticos.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#2563eb',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Origem do Pipeline
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                {atendimentoOriginLabel}
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 940,
+                }}
+              >
+                {atendimentoOriginDescription}
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background:
+                  atendimentoOriginContext === 'marketplace_attach'
+                    ? '#7c3aed'
+                    : atendimentoOriginContext === 'existing_listing_attach'
+                      ? '#2563eb'
+                      : '#16a34a',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              {atendimentoOriginContext}
+            </span>
+          </div>
+        </section>
+      )}
+
+      {/* PIPELINE_ATENDIMENTO_ASSIGNMENT_DECISION_V2 */}
+      {stepKey === 'atendimento' && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este painel representa a tarefa recebida pelo corretor/responsável.
+            - Antes de aceitar/recusar, o profissional precisa ver:
+              cliente/proprietário, contato, local, data, dia da semana e horário.
+            - Sem isso, não há decisão operacional possível.
+            - "Marcar como iniciado" só deve ser usado quando o profissional chegou
+              ao local ou iniciou formalmente a vistoria/levantamento.
+            - No backend futuro:
+              accepted_at / declined_at / rescheduled_at / started_at
+              devem virar eventos auditáveis do workflow.
+            - Se o Pipeline nasceu de anúncio existente, o pré-check do anúncio
+              fica como bloco secundário, não como centro da decisão.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#2563eb',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Tarefa recebida
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Avaliar atendimento antes de assumir a captação
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 940,
+                }}
+              >
+                O corretor precisa enxergar os dados mínimos da visita para decidir
+                se aceita, recusa ou propõe novo horário. Depois que chegar ao local,
+                marca como iniciado para liberar o levantamento/análise patrimonial.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#f59e0b',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              aguardando decisão
+            </span>
+          </div>
+
+
+          {/* PIPELINE_ATENDIMENTO_CONTEXTUAL_REQUIREMENTS_NOTE_V1 */}
+          {atendimentoOriginContext === 'new_intake' && (
+            <div
+              style={{
+                border: '1px solid #f59e0b',
+                borderRadius: 14,
+                padding: 14,
+                background: '#fffbeb',
+                marginBottom: 14,
+              }}
+            >
+              <strong style={{ display: 'block', marginBottom: 6 }}>
+                Dados obrigatórios para decisão do corretor
+              </strong>
+              <p style={{ margin: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                Em novo atendimento, o responsável só consegue decidir se aceita,
+                recusa ou propõe novo horário se enxergar cliente/proprietário,
+                contato, endereço/local do imóvel, data, dia da semana e horário.
+              </p>
+            </div>
+          )}
+
+          {atendimentoOriginContext !== 'new_intake' && (
+            <div
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 14,
+                padding: 14,
+                background: '#f8fafc',
+                marginBottom: 14,
+              }}
+            >
+              <strong style={{ display: 'block', marginBottom: 6 }}>
+                Dados aproveitados do anúncio existente
+              </strong>
+              <p style={{ margin: 0, color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                Como este Pipeline nasceu de anúncio existente, a tela pode reaproveitar
+                título, asset, preço, origem, visibilidade e dados já cadastrados.
+                Mesmo assim, cliente/proprietário, autorização e local da visita ainda
+                precisam ser validados quando a operação avançar.
+              </p>
+            </div>
+          )}
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+              gap: 10,
+              marginBottom: 14,
+            }}
+          >
+            {[
+              {
+                label: atendimentoOriginContext === 'new_intake' ? 'Identificação interna' : 'Anúncio vinculado',
+                value: atendimentoOriginContext === 'new_intake' ? 'Florais - Hélio' : attachedListing?.title || 'Anúncio vinculado sem título',
+                detail: atendimentoOriginContext === 'new_intake' ? 'Nome operacional da captação/imóvel. Não é título público do anúncio.' : 'Título atual do anúncio já existente. O nome interno do imóvel deve ficar separado.',
+              },
+              {
+                label: 'Cliente / proprietário',
+                value: attachedClient?.full_name || attachedClient?.name || 'Hélio',
+                detail: 'Pessoa que solicitou avaliação, captação ou atendimento.',
+              },
+              {
+                label: 'Contato',
+                value: attachedClient?.phone || attachedClient?.mobile_phone || '(00) 00000-0000',
+                detail: 'Telefone/WhatsApp para confirmação ou reagendamento.',
+              },
+              {
+                label: 'Local do imóvel',
+                value: 'Endereço do imóvel a ser analisado',
+                detail: 'Rua, condomínio, bairro, cidade e referência de chegada.',
+              },
+              {
+                label: 'Data da visita',
+                value: 'A definir / data agendada',
+                detail: 'No backend futuro: scheduled_visit_at.',
+              },
+              {
+                label: 'Dia e horário',
+                value: 'Dia da semana - horário combinado',
+                detail: 'Informação crítica para aceitar, recusar ou propor novo horário.',
+              },
+              {
+                label: 'Origem',
+                value: isAttachMode ? 'Anúncio existente / modo attach' : 'Atendimento / secretaria / ligação',
+                detail: 'Origem operacional da demanda.',
+              },
+              {
+                label: 'Prazo operacional',
+                value: 'Contador inicia ao marcar como iniciado',
+                detail: 'O SLA de levantamento deve contar a partir da vistoria/início formal.',
+              },
+            ].map((item) => (
+              <article
+                key={item.label}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 14,
+                  padding: 12,
+                  background: '#f8fafc',
+                }}
+              >
+                <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                  {item.label}
+                </span>
+
+                <strong
+                  style={{
+                    display: 'block',
+                    fontSize: 13,
+                    marginTop: 4,
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {item.value}
+                </strong>
+
+                <p
+                  style={{
+                    margin: '6px 0 0',
+                    color: '#667085',
+                    fontSize: 12,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {item.detail}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: 10,
+              marginBottom: 14,
+            }}
+          >
+            {[
+              {
+                label: 'Aceitar atendimento',
+                detail: 'Assume a captação e mantém o horário combinado.',
+                color: '#16a34a',
+              },
+              {
+                label: 'Recusar',
+                detail: 'Não assume a tarefa. Futuramente redistribui para outro responsável.',
+                color: '#dc2626',
+              },
+              {
+                label: 'Propor novo horário',
+                detail: 'Solicita reagendamento e recalcula o prazo operacional.',
+                color: '#7c3aed',
+              },
+              {
+                label: 'Marcar como iniciado',
+                detail: 'Usar somente ao chegar no local ou iniciar formalmente a vistoria. Libera o levantamento patrimonial.',
+                color: '#2563eb',
+              },
+            ].map((action) => (
+              <article
+                key={action.label}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 14,
+                  padding: 14,
+                  background: '#f8fafc',
+                }}
+              >
+                <button
+                  type="button"
+                  style={{
+                    width: '100%',
+                    border: '1px solid ' + action.color,
+                    borderRadius: 10,
+                    padding: '10px 12px',
+                    background: action.color,
+                    color: '#fff',
+                    fontWeight: 900,
+                    cursor: 'default',
+                    textAlign: 'center',
+                  }}
+                >
+                  {action.label}
+                </button>
+
+                <p
+                  style={{
+                    margin: '10px 0 0',
+                    color: '#667085',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {action.detail}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          {isAttachMode && attachedListing && (
+            <details
+              style={{
+                border: '1px solid #d7dee8',
+                borderRadius: 14,
+                padding: 14,
+                background: '#f8fafc',
+              }}
+            >
+              {/* PIPELINE_ATTACH_PRECHECK_SECONDARY_V2 | PIPELINE_ATENDIMENTO_CONTEXTUAL_ORIGIN_RULES_V1 */}
+              <summary
+                style={{
+                  cursor: 'pointer',
+                  fontWeight: 900,
+                  color: '#111827',
+                }}
+              >
+                Ver pré-check do anúncio já vinculado
+              </summary>
+
+              <p style={{ color: '#667085', fontSize: 13, lineHeight: 1.5 }}>
+                Este bloco só faz sentido quando o Pipeline nasce de anúncio existente,
+                importado, chaveado ou profissionalizado. Ele não substitui os dados
+                da tarefa/agendamento.
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                  gap: 8,
+                }}
+              >
+                {[
+                  {
+                    label: 'Título do anúncio',
+                    value: attachedListing.title || 'Ausente',
+                    ok: Boolean(attachedListing.title),
+                  },
+                  {
+                    label: 'Preço',
+                    value:
+                      attachedListing.price !== null && attachedListing.price !== undefined
+                        ? String(attachedListing.price)
+                        : 'Ausente',
+                    ok: attachedListing.price !== null && attachedListing.price !== undefined,
+                  },
+                  {
+                    label: 'Asset',
+                    value: attachedListing.property_asset_id ? 'Vinculado' : 'Ausente',
+                    ok: Boolean(attachedListing.property_asset_id),
+                  },
+                  {
+                    label: 'Responsável',
+                    value: attachedListing.responsible_profile_id ? 'Definido' : 'Ausente',
+                    ok: Boolean(attachedListing.responsible_profile_id),
+                  },
+                  {
+                    label: 'Origem',
+                    value:
+                      attachedListing.metadata?.source ||
+                      attachedListing.metadata?.flow ||
+                      'Não informado',
+                    ok: Boolean(attachedListing.metadata?.source || attachedListing.metadata?.flow),
+                  },
+                  {
+                    label: 'Publicação',
+                    value: attachedListing.published_at ? 'Publicado' : 'Não publicado',
+                    ok: true,
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 12,
+                      padding: 10,
+                      background: '#fff',
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        borderRadius: 999,
+                        padding: '3px 7px',
+                        background: item.ok ? '#16a34a' : '#f59e0b',
+                        color: '#fff',
+                        fontSize: 11,
+                        fontWeight: 900,
+                        marginBottom: 7,
+                      }}
+                    >
+                      {item.ok ? 'ok' : 'atenção'}
+                    </span>
+
+                    <strong style={{ display: 'block', fontSize: 12 }}>
+                      {item.label}
+                    </strong>
+
+                    <span
+                      style={{
+                        display: 'block',
+                        color: '#667085',
+                        fontSize: 12,
+                        marginTop: 4,
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {item.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
+        </section>
+      )}
+
+      {/* PIPELINE_ATENDIMENTO_OPERATIONAL_INTAKE_V1 */}
+      {stepKey === 'atendimento' && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Este bloco estrutura a abertura operacional do Pipeline Pro.
+            - Ainda não salva no banco.
+            - No backend futuro, estes dados devem virar workflow real:
+              property_pipeline_workflows + modules + participants + tasks + events.
+            - O atendimento é a entrada formal da captação.
+            - Aqui nasce: nome interno, responsável, origem, agendamento, prazo e contexto.
+            - Não confundir com anúncio público.
+            - Título público do anúncio nasce depois, na camada de estratégia/publicação.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 16,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#2563eb',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Atendimento operacional
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Abertura formal do Pipeline Pro
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 940,
+                }}
+              >
+                Esta etapa registra a entrada da oportunidade. É aqui que o sistema
+                identifica o imóvel/captação, define responsável, origem, prazo inicial,
+                agendamento e próximos passos. Ainda não é o anúncio final.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#2563eb',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              etapa inicial
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: 12,
+              marginBottom: 14,
+            }}
+          >
+            {[
+              {
+                title: '1. Identificação interna',
+                badge: 'imóvel',
+                color: '#2563eb',
+                description:
+                  'Nome operacional da captação/imóvel. Exemplo: Florais - Hélio. Não é título público do anúncio.',
+                futureFields:
+                  'property_assets.internal_name / property_assets.property_reference_code',
+              },
+              {
+                title: '2. Origem da oportunidade',
+                badge: 'origem',
+                color: '#7c3aed',
+                description:
+                  'Define se veio de ligação, WhatsApp, indicação, marketplace, captação direta, agência ou campanha.',
+                futureFields:
+                  'workflow_origin / operational_origin_id / metadata controlado',
+              },
+              {
+                title: '3. Responsável principal',
+                badge: 'owner',
+                color: '#16a34a',
+                description:
+                  'Corretor definido pelo atendimento, rodízio interno, captação direta ou responsável atribuído pela agência.',
+                futureFields:
+                  'main_responsible_profile_id / responsible_organization_id',
+              },
+              {
+                title: '4. Agendamento e prazo',
+                badge: 'sla',
+                color: '#f59e0b',
+                description:
+                  'A vistoria/agendamento dispara prazos. A partir dela o fluxo ganha urgência e contador operacional.',
+                futureFields:
+                  'scheduled_visit_at / started_at / due_at',
+              },
+              {
+                title: '5. Aceite ou recusa',
+                badge: 'decisão',
+                color: '#dc2626',
+                description:
+                  'Responsável pode aceitar, recusar ou propor novo horário. Isso precisa gerar evento e histórico.',
+                futureFields:
+                  'accepted_at / declined_at / rescheduled_at / events',
+              },
+              {
+                title: '6. Próxima etapa',
+                badge: 'fluxo',
+                color: '#475467',
+                description:
+                  'Depois do atendimento, o processo segue para levantamento patrimonial, fotos, entorno e evidências.',
+                futureFields:
+                  'property_pipeline_modules / module_status / tasks',
+              },
+            ].map((item) => (
+              <article
+                key={item.title}
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 14,
+                  padding: 14,
+                  background: '#f8fafc',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    borderRadius: 999,
+                    padding: '4px 8px',
+                    background: item.color,
+                    color: '#fff',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    marginBottom: 10,
+                  }}
+                >
+                  {item.badge}
+                </span>
+
+                <strong style={{ display: 'block', fontSize: 14 }}>
+                  {item.title}
+                </strong>
+
+                <p
+                  style={{
+                    margin: '7px 0 10px',
+                    color: '#667085',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {item.description}
+                </p>
+
+                <div
+                  style={{
+                    border: '1px solid #d7dee8',
+                    borderRadius: 10,
+                    padding: 9,
+                    background: '#fff',
+                  }}
+                >
+                  <span style={{ display: 'block', color: '#667085', fontSize: 11 }}>
+                    Backend futuro
+                  </span>
+                  <strong
+                    style={{
+                      display: 'block',
+                      fontSize: 12,
+                      marginTop: 3,
+                      wordBreak: 'break-word',
+                    }}
+                  >
+                    {item.futureFields}
+                  </strong>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #d7dee8',
+              borderRadius: 14,
+              padding: 14,
+              background: '#f8fafc',
+              display: 'grid',
+              gap: 10,
+            }}
+          >
+            <strong>Leitura de produto</strong>
+
+            <p style={{ margin: 0, color: '#667085', lineHeight: 1.5 }}>
+              O atendimento é a porta de entrada do processo. Ele não precisa ter
+              todos os dados do imóvel. Precisa apenas criar contexto suficiente
+              para a equipe saber quem é o responsável, qual é a origem, qual imóvel
+              está sendo trabalhado, qual prazo está correndo e qual próxima etapa
+              deve ser executada.
+            </p>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: 10,
+              }}
+            >
+              <div
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 12,
+                  padding: 10,
+                  background: '#fff',
+                }}
+              >
+                <strong style={{ display: 'block', fontSize: 13 }}>
+                  Se começou do zero
+                </strong>
+                <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                  Cria primeiro o contexto operacional do imóvel/captação e depois
+                  evolui para anúncio.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 12,
+                  padding: 10,
+                  background: '#fff',
+                }}
+              >
+                <strong style={{ display: 'block', fontSize: 13 }}>
+                  Se veio de anúncio existente
+                </strong>
+                <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                  O Pipeline começa mais avançado, aproveitando dados do anúncio
+                  e do property_asset já vinculado.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 12,
+                  padding: 10,
+                  background: '#fff',
+                }}
+              >
+                <strong style={{ display: 'block', fontSize: 13 }}>
+                  Se veio do marketplace
+                </strong>
+                <p style={{ margin: '6px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.4 }}>
+                  Precisa autorização/vínculo antes de virar operação profissional,
+                  preservando ownership, LGPD e segurança.
+                </p>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: 8,
+                flexWrap: 'wrap',
+              }}
+            >
+              <a
+                href={buildStepHref('levantamento')}
+                style={{
+                  display: 'inline-flex',
+                  padding: '9px 12px',
+                  borderRadius: 10,
+                  border: '1px solid #2563eb',
+                  background: '#2563eb',
+                  color: '#fff',
+                  textDecoration: 'none',
+                  fontWeight: 800,
+                  fontSize: 13,
+                }}
+              >
+                Ir para levantamento
+              </a>
+
+              <a
+                href="/operations/pipeline"
+                style={{
+                  display: 'inline-flex',
+                  padding: '9px 12px',
+                  borderRadius: 10,
+                  border: '1px solid #d7dee8',
+                  background: '#fff',
+                  color: '#344054',
+                  textDecoration: 'none',
+                  fontWeight: 800,
+                  fontSize: 13,
+                }}
+              >
+                Voltar para central
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_STEP_FOOTER_NAV_V1 */}
       {/*
         ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
