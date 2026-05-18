@@ -8537,6 +8537,393 @@ export default function PipelineStepPage() {
         </section>
       )}
 
+
+      {/* PIPELINE_PROPOSTA_EXECUTABLE_CHECKLIST_V1 */}
+      {stepKey === 'proposta' && (
+        <section
+          style={{
+            border: '1px solid #dbe3ea',
+            borderRadius: 18,
+            padding: 18,
+            background: '#fff',
+            marginBottom: 18,
+          }}
+        >
+          {/*
+            ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+            - Esta é a etapa executável de Proposta e Aprovação.
+            - Ainda não salva no banco.
+            - Futuramente deve consumir a sugestão gerada pela Inteligência.
+            - A proposta ao proprietário deve ser controlada:
+              não expor notas privadas, risco sensível, preço mínimo interno,
+              perfil comportamental ou estratégia confidencial.
+            - Deve alimentar:
+              owner_visibility_summary
+              proposal_status
+              owner_feedback
+              strategy_adjustments
+              publication_release_status
+              pipeline_events
+            - No backend futuro, cada versão da proposta deve ser auditável.
+          */}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              marginBottom: 14,
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  margin: '0 0 6px',
+                  fontSize: 13,
+                  color: '#0f766e',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontWeight: 900,
+                }}
+              >
+                Checklist executável da Proposta
+              </p>
+
+              <h2 style={{ margin: '0 0 6px' }}>
+                Transformar inteligência em proposta aprovada pelo proprietário
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  color: '#667085',
+                  lineHeight: 1.5,
+                  maxWidth: 980,
+                }}
+              >
+                Esta etapa pega a estratégia criada pela inteligência e monta uma
+                proposta controlada para o proprietário aprovar preço, posicionamento,
+                próximos passos e publicação.
+              </p>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                borderRadius: 999,
+                padding: '6px 10px',
+                background: '#0f766e',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              aprovação
+            </span>
+          </div>
+
+          <div
+            style={{
+              border: '1px solid #bfdbfe',
+              borderRadius: 14,
+              padding: 14,
+              background: '#eff6ff',
+              marginBottom: 14,
+            }}
+          >
+            <strong style={{ display: 'block', marginBottom: 6 }}>
+              Sugestão automática futura
+            </strong>
+            <p style={{ margin: 0, color: '#667085', lineHeight: 1.5 }}>
+              No produto real, o banco/função deverá gerar uma sugestão inicial de
+              proposta com base nos dados do levantamento, diagnóstico e inteligência.
+              O profissional entra aqui para revisar, ajustar, aprovar e registrar o
+              retorno do proprietário.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gap: 14 }}>
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#2563eb', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    1 / Proposta
+                  </span>
+                  <h3 style={{ margin: 0 }}>Preparar proposta ao proprietário</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Preço sugerido para apresentar
+                  <input name="proposal_owner_price" placeholder="Ex.: 790000" inputMode="numeric" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Estratégia apresentada
+                  <select name="proposal_strategy_type" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="standard">Venda padrão</option>
+                    <option value="premium">Campanha premium</option>
+                    <option value="opportunity">Oportunidade</option>
+                    <option value="price_adjustment">Revisão de preço</option>
+                    <option value="document_pending">Aguardar documento</option>
+                    <option value="photo_improvement">Melhorar fotos antes</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Texto da proposta ao proprietário
+                  <textarea
+                    name="proposal_owner_text"
+                    rows={5}
+                    placeholder="Monte a proposta em linguagem adequada ao proprietário: diagnóstico resumido, preço sugerido, estratégia, próximos passos e justificativa."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#7c3aed', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    2 / Comunicação controlada
+                  </span>
+                  <h3 style={{ margin: 0 }}>Definir o que pode ser mostrado ao proprietário</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  {
+                    label: 'Nível de exposição para proprietário',
+                    name: 'proposal_owner_visibility_level',
+                    options: ['Resumo controlado', 'Resumo completo permitido', 'Somente verbal', 'Somente interno', 'Precisa revisão'],
+                  },
+                  {
+                    label: 'Sensibilidade comercial',
+                    name: 'proposal_commercial_sensitivity',
+                    options: ['Baixa', 'Média', 'Alta', 'Muito alta', 'Jurídico/comercial sensível'],
+                  },
+                  {
+                    label: 'Pode mostrar riscos?',
+                    name: 'proposal_risk_visibility',
+                    options: ['Sim, resumido', 'Somente ressalva geral', 'Não mostrar detalhes', 'Precisa validação'],
+                  },
+                  {
+                    label: 'Pode mostrar análise de preço?',
+                    name: 'proposal_price_visibility',
+                    options: ['Sim', 'Com cautela', 'Somente preço sugerido', 'Não mostrar análise interna'],
+                  },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Resumo controlado para proprietário
+                  <textarea
+                    name="proposal_owner_safe_summary"
+                    rows={4}
+                    placeholder="Resumo seguro, sem expor notas privadas, preço mínimo interno, risco sensível ou leitura comportamental."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#16a34a', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    3 / Validação interna
+                  </span>
+                  <h3 style={{ margin: 0 }}>Validar preço e estratégia com responsável</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Status da validação interna
+                  <select name="proposal_internal_approval_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="not_required">Não exige aprovação</option>
+                    <option value="pending">Pendente</option>
+                    <option value="approved">Aprovado</option>
+                    <option value="needs_adjustment">Precisa ajuste</option>
+                    <option value="blocked">Bloqueado</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Responsável pela validação
+                  <input name="proposal_internal_approver" placeholder="Ex.: coordenador, dono da imobiliária, broker responsável" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Observações da validação interna
+                  <textarea
+                    name="proposal_internal_approval_notes"
+                    rows={3}
+                    placeholder="Registre ajustes solicitados, aprovação, ressalvas, trava documental ou alteração de estratégia."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#f59e0b', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    4 / Retorno do proprietário
+                  </span>
+                  <h3 style={{ margin: 0 }}>Registrar retorno do proprietário</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Retorno do proprietário
+                  <select name="proposal_owner_feedback_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="accepted">Aceitou</option>
+                    <option value="accepted_with_adjustments">Aceitou com ajustes</option>
+                    <option value="rejected">Recusou</option>
+                    <option value="asked_changes">Pediu mudanças</option>
+                    <option value="waiting">Aguardando retorno</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Data prevista de retorno
+                  <input name="proposal_owner_followup_date" placeholder="dd/mm/aaaa" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }} />
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Observações do retorno
+                  <textarea
+                    name="proposal_owner_feedback_notes"
+                    rows={4}
+                    placeholder="Registre o que o proprietário aceitou, recusou, pediu para mudar ou precisa decidir."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#475467', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    5 / Ajustes
+                  </span>
+                  <h3 style={{ margin: 0 }}>Ajustar proposta se necessário</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                {[
+                  {
+                    label: 'Ajuste de preço',
+                    name: 'proposal_price_adjustment_status',
+                    options: ['Não necessário', 'Reduzir preço', 'Aumentar preço', 'Criar faixa de negociação', 'Aguardando proprietário'],
+                  },
+                  {
+                    label: 'Ajuste de fotos',
+                    name: 'proposal_photo_adjustment_status',
+                    options: ['Não necessário', 'Refazer fotos', 'Adicionar fotos', 'Trocar capa', 'Aguardando visita'],
+                  },
+                  {
+                    label: 'Ajuste documental',
+                    name: 'proposal_document_adjustment_status',
+                    options: ['Não necessário', 'Solicitar documento', 'Aguardar cartório', 'Aguardar prefeitura', 'Bloqueado'],
+                  },
+                  {
+                    label: 'Ajuste de estratégia',
+                    name: 'proposal_strategy_adjustment_status',
+                    options: ['Não necessário', 'Revisar posicionamento', 'Revisar canal', 'Revisar público-alvo', 'Revisar texto'],
+                  },
+                ].map((field) => (
+                  <label key={field.name} style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                    {field.label}
+                    <select name={field.name} defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                      <option value="">Selecionar</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </div>
+            </article>
+
+            <article style={{ border: '1px solid #d7dee8', borderRadius: 16, padding: 14, background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <span style={{ display: 'inline-flex', borderRadius: 999, padding: '4px 8px', background: '#111827', color: '#fff', fontSize: 11, fontWeight: 900, marginBottom: 8 }}>
+                    6 / Liberação
+                  </span>
+                  <h3 style={{ margin: 0 }}>Aprovar para publicação ou devolver para ajustes</h3>
+                </div>
+                <strong style={{ color: '#f59e0b' }}>Progresso: 0%</strong>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Status final da proposta
+                  <select name="proposal_final_status" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="approved_to_publish">Aprovada para publicação</option>
+                    <option value="approved_with_reservations">Aprovada com ressalvas</option>
+                    <option value="needs_adjustment">Devolver para ajustes</option>
+                    <option value="waiting_owner">Aguardando proprietário</option>
+                    <option value="blocked">Bloqueada</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800 }}>
+                  Próxima etapa
+                  <select name="proposal_next_step" defaultValue="" style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff' }}>
+                    <option value="">Selecionar</option>
+                    <option value="publication">Seguir para publicação</option>
+                    <option value="intelligence">Voltar para inteligência</option>
+                    <option value="diagnostico">Voltar para diagnóstico</option>
+                    <option value="levantamento">Voltar para levantamento</option>
+                    <option value="hold">Manter em espera</option>
+                  </select>
+                </label>
+
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, color: '#344054', fontWeight: 800, gridColumn: '1 / -1' }}>
+                  Parecer final da proposta
+                  <textarea
+                    name="proposal_final_decision_notes"
+                    rows={5}
+                    placeholder="Registre a decisão: aprovado, aprovado com ressalvas, devolvido para ajuste, aguardando proprietário ou bloqueado."
+                    style={{ border: '1px solid #d7dee8', borderRadius: 10, padding: '10px 11px', background: '#fff', resize: 'vertical' }}
+                  />
+                </label>
+              </div>
+            </article>
+          </div>
+        </section>
+      )}
+
       {/* PIPELINE_STEP_FOOTER_NAV_V1 */}
       {/*
         ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
