@@ -58,6 +58,14 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { getPropertyListingById, getProfessionalAssessmentByListingId, getClientEntityById, getClientRelationshipById , getListingAccessContext } from '@/lib/services/propertyService'
+import {
+  buildPipelineStepHref,
+  getNextPipelineStep,
+  getPipelinePermissionMode,
+  getPipelineStepDefinition,
+  getPreviousPipelineStep,
+  pipelineStepOrder,
+} from '@/lib/services/pipelineProService'
 
 const steps: Record<string, any> = {
   atendimento: {
@@ -146,27 +154,7 @@ const steps: Record<string, any> = {
   },
 }
 
-// PIPELINE_STEP_ORDER_V1
-const stepOrder = [
-  'atendimento',
-  'levantamento',
-  'diagnostico',
-  'estrategia',
-  'proposta',
-  'publicacao',
-  'acompanhamento',
-]
-
-const stepLabels: Record<string, string> = {
-  atendimento: 'Atendimento',
-  levantamento: 'Levantamento',
-  diagnostico: 'Diagnóstico',
-  estrategia: 'Inteligência',
-  proposta: 'Proposta',
-  publicacao: 'Publicação',
-  acompanhamento: 'Lifecycle',
-}
-
+// PIPELINE_STEP_SERVICE_INTEGRATION_V1
 export default function PipelineStepPage() {
   const params = useParams()
   const [attachContext, setAttachContext] = useState({
@@ -356,17 +344,16 @@ export default function PipelineStepPage() {
   }, [listingId, mode])
 
   // PIPELINE_PREV_NEXT_CONTEXT_V1
-  const currentStepIndex = stepOrder.indexOf(stepKey)
-  const previousStep = currentStepIndex > 0 ? stepOrder[currentStepIndex - 1] : ''
-  const nextStep =
-    currentStepIndex >= 0 && currentStepIndex < stepOrder.length - 1
-      ? stepOrder[currentStepIndex + 1]
-      : ''
+  const stepDefinition = getPipelineStepDefinition(stepKey)
+  const previousStep = getPreviousPipelineStep(stepKey)
+  const nextStep = getNextPipelineStep(stepKey)
 
   const buildStepHref = (targetStep: string) =>
-    isAttachMode
-      ? `/operations/pipeline/${targetStep}?listingId=${listingId}&mode=attach`
-      : `/operations/pipeline/${targetStep}`
+    buildPipelineStepHref({
+      stepKey: targetStep,
+      listingId,
+      mode,
+    })
 
   // ATTACH_LISTING_REAL_CONTEXT_DERIVED_V1
   const attachedAsset = attachedListing?.property_assets || {}
@@ -401,17 +388,14 @@ export default function PipelineStepPage() {
     'Não informado'
 
   // ATTACH_LISTING_PERMISSION_CONTEXT_DERIVED_V1
-  const permissionModeLabel = listingPermission.can_manage
-    ? 'Gestão liberada'
-    : listingPermission.can_access
-      ? 'Somente consulta'
-      : 'Sem permissão'
+  // PIPELINE_PERMISSION_MODE_FROM_SERVICE_V1
+  const permissionMode = getPipelinePermissionMode({
+    canAccess: listingPermission.can_access,
+    canManage: listingPermission.can_manage,
+  })
 
-  const permissionModeColor = listingPermission.can_manage
-    ? '#16a34a'
-    : listingPermission.can_access
-      ? '#f59e0b'
-      : '#dc2626'
+  const permissionModeLabel = permissionMode.label
+  const permissionModeColor = permissionMode.color
 
   const formatMoney = (value: unknown) => {
     if (typeof value !== 'number') return 'Não informado'
@@ -445,6 +429,14 @@ export default function PipelineStepPage() {
         <Link href="/operations/pipeline">Pipeline Pro</Link>
         <Link href="/operations/properties/list">Listar imoveis</Link>
       </nav>
+
+      {/* PIPELINE_STEP_DEFINITION_FROM_SERVICE_NOTE_V1 */}
+      {/*
+        ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+        - A ordem, labels, camadas, prazos e hints do Pipeline Pro devem ser centralizados em pipelineProService.ts.
+        - Evitar duplicar listas de etapas diretamente nesta page.
+        - Esta page deve consumir service e depois consumir backend real.
+      */}
 
       {/* PIPELINE_STEP_NAVIGATION_RAIL_V1 */}
       {/*
@@ -506,15 +498,13 @@ export default function PipelineStepPage() {
             gap: 8,
           }}
         >
-          {[
-            { key: 'atendimento', label: 'Atendimento', layer: 'Operação' },
-            { key: 'levantamento', label: 'Levantamento', layer: 'Operação' },
-            { key: 'diagnostico', label: 'Diagnóstico', layer: 'Operação' },
-            { key: 'estrategia', label: 'Inteligência', layer: 'Cérebro' },
-            { key: 'proposta', label: 'Proposta', layer: 'Validação' },
-            { key: 'publicacao', label: 'Publicação', layer: 'Distribuição' },
-            { key: 'acompanhamento', label: 'Lifecycle', layer: 'Continuidade' },
-          ].map((item) => {
+          {pipelineStepOrder.map((stepItem) => {
+            const definition = getPipelineStepDefinition(stepItem)
+            const item = {
+              key: definition.key,
+              label: definition.shortLabel,
+              layer: definition.layerLabel,
+            }
             const active = item.key === stepKey
 
             return (
@@ -2743,7 +2733,7 @@ export default function PipelineStepPage() {
                 fontWeight: 700,
               }}
             >
-              Voltar para {stepLabels[previousStep]}
+              Voltar para {getPipelineStepDefinition(previousStep).shortLabel}
             </Link>
           ) : (
             <Link
@@ -2779,7 +2769,7 @@ export default function PipelineStepPage() {
                 fontWeight: 800,
               }}
             >
-              Avançar para {stepLabels[nextStep]}
+              Avançar para {getPipelineStepDefinition(nextStep).shortLabel}
             </Link>
           ) : (
             <Link
