@@ -863,6 +863,291 @@ export default function PipelineStepPage() {
           }}
         >
 
+
+          {/* PIPELINE_ATTACH_OPERATIONAL_PRECHECK_V1 */}
+          {isAttachMode && stepKey === 'atendimento' && attachedListing && (
+            <section
+              style={{
+                border: '1px solid #dbe3ea',
+                borderRadius: 18,
+                padding: 18,
+                background: '#fff',
+                marginBottom: 18,
+              }}
+            >
+              {/*
+                ORIENTACAO PARA CODEX / EXECUTORES FUTUROS:
+                - Este bloco é read-only/foundation.
+                - Ele avalia dados mínimos do anúncio real acoplado ao Pipeline Pro.
+                - Não cria workflow real.
+                - Não salva progresso.
+                - Não substitui validação backend/RLS.
+                - Futuramente este precheck deverá vir de uma RPC/service próprio do Pipeline Pro.
+                - Regras críticas:
+                  1) anúncio não é imóvel;
+                  2) imóvel é property_asset;
+                  3) anúncio é property_listing/ad;
+                  4) acoplar Pipeline Pro não transfere ownership;
+                  5) usuário só pode agir se tiver permissão real no contexto.
+              */}
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  flexWrap: 'wrap',
+                  alignItems: 'flex-start',
+                  marginBottom: 14,
+                }}
+              >
+                <div>
+                  <p
+                    style={{
+                      margin: '0 0 6px',
+                      fontSize: 13,
+                      color: '#2563eb',
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.8,
+                      fontWeight: 900,
+                    }}
+                  >
+                    Pré-check de acoplagem
+                  </p>
+
+                  <h2 style={{ margin: '0 0 6px' }}>
+                    Antes de transformar este anúncio em Pipeline Pro
+                  </h2>
+
+                  <p
+                    style={{
+                      margin: 0,
+                      color: '#667085',
+                      lineHeight: 1.5,
+                      maxWidth: 920,
+                    }}
+                  >
+                    Esta leitura confirma se o anúncio possui dados mínimos para iniciar
+                    a jornada profissional. A validação definitiva deverá acontecer no
+                    backend quando existir workflow real, permissões por módulo e regras
+                    de portfolio/agência.
+                  </p>
+                </div>
+
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    borderRadius: 999,
+                    padding: '6px 10px',
+                    background: listingPermission.can_manage
+                      ? '#16a34a'
+                      : listingPermission.can_access
+                        ? '#f59e0b'
+                        : '#dc2626',
+                    color: '#fff',
+                    fontSize: 12,
+                    fontWeight: 900,
+                  }}
+                >
+                  {listingPermission.can_manage
+                    ? 'pode gerenciar'
+                    : listingPermission.can_access
+                      ? 'somente consulta'
+                      : 'sem permissão'}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: 10,
+                  marginBottom: 14,
+                }}
+              >
+                {[
+                  {
+                    label: 'Título público',
+                    value: attachedListing.title || 'Ausente',
+                    ok: Boolean(attachedListing.title),
+                    detail: 'property_listings.title',
+                  },
+                  {
+                    label: 'Preço',
+                    value:
+                      typeof attachedListing.price === 'number'
+                        ? attachedListing.price.toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })
+                        : attachedListing.price
+                          ? String(attachedListing.price)
+                          : 'Ausente',
+                    ok: attachedListing.price !== null && attachedListing.price !== undefined,
+                    detail: 'Base mínima para estratégia comercial',
+                  },
+                  {
+                    label: 'Imóvel vinculado',
+                    value: attachedListing.property_asset_id ? 'Asset vinculado' : 'Sem asset',
+                    ok: Boolean(attachedListing.property_asset_id),
+                    detail: 'property_listings.property_asset_id',
+                  },
+                  {
+                    label: 'Visibilidade',
+                    value: attachedListing.visibility_scope || 'Não informado',
+                    ok: Boolean(attachedListing.visibility_scope),
+                    detail: 'private, marketplace ou escopo futuro',
+                  },
+                  {
+                    label: 'Origem',
+                    value:
+                      attachedListing.metadata?.source ||
+                      attachedListing.metadata?.flow ||
+                      'Não informado',
+                    ok: Boolean(attachedListing.metadata?.source || attachedListing.metadata?.flow),
+                    detail: 'metadata.source / metadata.flow',
+                  },
+                  {
+                    label: 'Responsável',
+                    value: attachedListing.responsible_profile_id
+                      ? 'Responsável definido'
+                      : 'Sem responsável',
+                    ok: Boolean(attachedListing.responsible_profile_id),
+                    detail: 'responsible_profile_id',
+                  },
+                  {
+                    label: 'Criador',
+                    value: attachedListing.created_by_profile_id
+                      ? 'Criador definido'
+                      : 'Sem criador',
+                    ok: Boolean(attachedListing.created_by_profile_id),
+                    detail: 'created_by_profile_id',
+                  },
+                  {
+                    label: 'Publicação',
+                    value: attachedListing.published_at ? 'Publicado' : 'Não publicado',
+                    ok: true,
+                    detail: 'published_at pode ser nulo em rascunho',
+                  },
+                ].map((item) => (
+                  <article
+                    key={item.label}
+                    style={{
+                      border: '1px solid #d7dee8',
+                      borderRadius: 14,
+                      padding: 12,
+                      background: '#f8fafc',
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        borderRadius: 999,
+                        padding: '4px 7px',
+                        background: item.ok ? '#16a34a' : '#f59e0b',
+                        color: '#fff',
+                        fontSize: 11,
+                        fontWeight: 900,
+                        marginBottom: 8,
+                      }}
+                    >
+                      {item.ok ? 'ok' : 'atenção'}
+                    </span>
+
+                    <strong style={{ display: 'block', fontSize: 13 }}>
+                      {item.label}
+                    </strong>
+
+                    <span
+                      style={{
+                        display: 'block',
+                        color: '#111827',
+                        fontSize: 13,
+                        marginTop: 4,
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {item.value}
+                    </span>
+
+                    <p
+                      style={{
+                        margin: '6px 0 0',
+                        color: '#667085',
+                        fontSize: 12,
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {item.detail}
+                    </p>
+                  </article>
+                ))}
+              </div>
+
+              <div
+                style={{
+                  border: '1px solid #d7dee8',
+                  borderRadius: 14,
+                  padding: 14,
+                  background: '#f8fafc',
+                  display: 'grid',
+                  gap: 10,
+                }}
+              >
+                <strong>Leitura operacional</strong>
+
+                <p style={{ margin: 0, color: '#667085', lineHeight: 1.5 }}>
+                  Este anúncio pode ser tratado como candidato a Pipeline Pro se
+                  estiver dentro do contexto permitido do profissional/agência e
+                  possuir vínculo com imóvel. Dados ausentes não bloqueiam a foundation,
+                  mas devem virar pendências no workflow real.
+                </p>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 8,
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <a
+                    href={buildStepHref('levantamento')}
+                    style={{
+                      display: 'inline-flex',
+                      padding: '9px 12px',
+                      borderRadius: 10,
+                      border: '1px solid #2563eb',
+                      background: '#2563eb',
+                      color: '#fff',
+                      textDecoration: 'none',
+                      fontWeight: 800,
+                      fontSize: 13,
+                    }}
+                  >
+                    Avançar para levantamento
+                  </a>
+
+                  <a
+                    href={buildStepHref('diagnostico')}
+                    style={{
+                      display: 'inline-flex',
+                      padding: '9px 12px',
+                      borderRadius: 10,
+                      border: '1px solid #d7dee8',
+                      background: '#fff',
+                      color: '#344054',
+                      textDecoration: 'none',
+                      fontWeight: 800,
+                      fontSize: 13,
+                    }}
+                  >
+                    Ir para diagnóstico
+                  </a>
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* PIPELINE_ATTACH_IDENTITY_FOUNDATION_V1 */}
           {isAttachMode && stepKey === 'atendimento' && (
             <section
